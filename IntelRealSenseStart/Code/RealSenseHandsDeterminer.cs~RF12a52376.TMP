@@ -1,26 +1,18 @@
 ﻿using System;
-using System.Drawing;
 using System.Threading;
 
 namespace IntelRealSenseStart.Code
 {
     internal class RealSenseHandsDeterminer
     {
-        public delegate void NewBitmapDelegate(Bitmap bitmap);
-
-        private readonly RealSenseFactory realSenseFactory;
-        private readonly PXCMSenseManager realSenseManager;
-
-        private PXCMHandData handData;
         private Thread realSenseDeterminerThread;
+        private PXCMSenseManager realSenseManager;
+        private PXCMHandData handData;
 
         private volatile bool stopped;
 
-
-        public RealSenseHandsDeterminer(PXCMSenseManager realSenseManager, RealSenseFactory realSenseFactory)
+        public RealSenseHandsDeterminer()
         {
-            this.realSenseManager = realSenseManager;
-            this.realSenseFactory = realSenseFactory;
             stopped = true;
         }
 
@@ -28,8 +20,6 @@ namespace IntelRealSenseStart.Code
         {
             get { return !stopped; }
         }
-
-        public event NewBitmapDelegate SegmentationImage;
 
         public void Start()
         {
@@ -52,11 +42,14 @@ namespace IntelRealSenseStart.Code
 
         private void TryToRunHandDetection()
         {
-            InitializeRealSenseManagerForHandData();
+            CreateRealSenseManager();
             Console.WriteLine(@"Created RealSense manager");
 
             ConfigureDevice();
             ConfigureHandDetection();
+
+            InitializeRealSenseManager();
+            Console.WriteLine(@"Initialized RealSense detection");
 
             StartHandDetection();
 
@@ -64,32 +57,32 @@ namespace IntelRealSenseStart.Code
             Console.WriteLine(@"Closed RealSense detection");
         }
 
-        private void InitializeRealSenseManagerForHandData()
+        private void CreateRealSenseManager()
         {
+            realSenseManager = PXCMSession.CreateInstance().CreateSenseManager();
             realSenseManager.EnableHand();
-            realSenseManager.Init();
         }
 
         private void ConfigureDevice()
         {
-            PXCMCapture.DeviceInfo deviceInfo;
-            realSenseManager.QueryCaptureManager().QueryDevice().QueryDeviceInfo(out deviceInfo);
+            PXCMCapture.DeviceInfo dinfo;
+            realSenseManager.QueryCaptureManager().QueryDevice().QueryDeviceInfo(out dinfo);
 
-            if (deviceInfo == null || deviceInfo.model != PXCMCapture.DeviceModel.DEVICE_MODEL_IVCAM)
+            if (dinfo == null || dinfo.model != PXCMCapture.DeviceModel.DEVICE_MODEL_IVCAM)
             {
                 throw new Exception("No device info found");
             }
 
             realSenseManager.captureManager.device.SetDepthConfidenceThreshold(1);
-            realSenseManager.captureManager.device.SetMirrorMode(PXCMCapture.Device.MirrorMode.MIRROR_MODE_HORIZONTAL);
+            realSenseManager.captureManager.device.SetMirrorMode(PXCMCapture.Device.MirrorMode.MIRROR_MODE_DISABLED);
             realSenseManager.captureManager.device.SetIVCAMFilterOption(6);
         }
 
         private void ConfigureHandDetection()
         {
             PXCMHandModule handModule = realSenseManager.QueryHand();
-            handData = handModule.CreateOutput();
             PXCMHandConfiguration handConfiguration = handModule.CreateActiveConfiguration();
+            handData = handModule.CreateOutput();
 
             ConfigureHandOptions(handConfiguration);
 
@@ -105,6 +98,10 @@ namespace IntelRealSenseStart.Code
             handConfiguration.EnableSegmentationImage(true);
         }
 
+        private void InitializeRealSenseManager()
+        {
+            realSenseManager.Init();
+        }
 
         private void StartHandDetection()
         {
@@ -120,36 +117,39 @@ namespace IntelRealSenseStart.Code
             PXCMCapture.Sample handSample = realSenseManager.QueryHandSample();
             if (handSample != null)
             {
-                handData.Update();
                 CreateAndProcessHandData(handSample);
             }
         }
 
         private void CreateAndProcessHandData(PXCMCapture.Sample handSample)
         {
-            HandBitmapBuilder handBitmapBuilder = realSenseFactory.CreateHandBitmapBuilder();
-
-            int numberOfHands = handData.QueryNumberOfHands();
-            for (int i = 0; i < numberOfHands; i++)
-            {
-                PXCMHandData.IHand oneHandData;
-                handData.QueryHandData(PXCMHandData.AccessOrderType.ACCESS_ORDER_BY_TIME, i, out oneHandData);
-
-                UpdateHandDataWith(oneHandData, handBitmapBuilder);
-            }
-
-            InvokeSegmentationImage(handBitmapBuilder.Build());
+            handData.Update();
+            ProcessHand();
         }
 
-        private void UpdateHandDataWith(PXCMHandData.IHand oneHandData, HandBitmapBuilder handBitmapBuilder)
+        private void ProcessHand()
+        {
+            int numberOfHands = handData.QueryNumberOfHands();
+
+            if (numberOfHands > 0)
+            {
+                int id;
+                handData.QueryHandId(PXCMHandData.AccessOrderType.ACCESS_ORDER_BY_TIME, 0, out id);
+
+                PXCMHandData.IHand oneHandData;
+                handData.QueryHandData(PXCMHandData.AccessOrderType.ACCESS_ORDER_BY_TIME, 0, out oneHandData);
+
+                CreateSegmentationImage(oneHandData);
+            }
+        }
+
+        private void CreateSegmentationImage(PXCMHandData.IHand oneHandData)
         {
             PXCMImage handImage;
             pxcmStatus handImageStatus = oneHandData.QuerySegmentationImage(out handImage);
-            var userId = (byte) oneHandData.QueryBodySide();
-
             if (handImageStatus >= pxcmStatus.PXCM_STATUS_NO_ERROR)
             {
-                handBitmapBuilder.addSegmentationImage(handImage, userId);
+                CopyDataToBitmap(handImage);
                 handImage.Dispose();
             }
             else
@@ -157,6 +157,11 @@ namespace IntelRealSenseStart.Code
                 Console.WriteLine(@"Error");
                 //throw new Exception("Could not determine segmentation image");
             }
+        }
+
+        private void CopyDataToBitmap(PXCMImage handImage)
+        {
+            Console.WriteLine(@"Copy");
         }
 
         public void Stop()
@@ -168,17 +173,6 @@ namespace IntelRealSenseStart.Code
 
             stopped = true;
             realSenseDeterminerThread.Join();
-        }
-
-        private void InvokeSegmentationImage(Bitmap bitmap)
-        {
-            if (bitmap == null)
-            {
-                return;
-            }
-
-            NewBitmapDelegate handler = SegmentationImage;
-            if (handler != null) handler(bitmap);
         }
     }
 }

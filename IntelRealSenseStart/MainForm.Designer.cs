@@ -30,6 +30,8 @@
         {
             this.buttonStart = new System.Windows.Forms.Button();
             this.buttonStop = new System.Windows.Forms.Button();
+            this.pictureBoxHand = new System.Windows.Forms.PictureBox();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxHand)).BeginInit();
             this.SuspendLayout();
             // 
             // buttonStart
@@ -52,15 +54,25 @@
             this.buttonStop.UseVisualStyleBackColor = true;
             this.buttonStop.Click += new System.EventHandler(this.buttonStop_Click);
             // 
+            // pictureBoxHand
+            // 
+            this.pictureBoxHand.Location = new System.Drawing.Point(21, 87);
+            this.pictureBoxHand.Name = "pictureBoxHand";
+            this.pictureBoxHand.Size = new System.Drawing.Size(472, 356);
+            this.pictureBoxHand.TabIndex = 2;
+            this.pictureBoxHand.TabStop = false;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(522, 510);
+            this.ClientSize = new System.Drawing.Size(522, 458);
+            this.Controls.Add(this.pictureBoxHand);
             this.Controls.Add(this.buttonStop);
             this.Controls.Add(this.buttonStart);
             this.Name = "MainForm";
             this.Text = "HandsDetection";
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxHand)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -69,6 +81,7 @@
 
         private System.Windows.Forms.Button buttonStart;
         private System.Windows.Forms.Button buttonStop;
+        private System.Windows.Forms.PictureBox pictureBoxHand;
     }
 }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 using IntelRealSenseStart.Code;
 
@@ -11,7 +12,9 @@ namespace IntelRealSenseStart
         public MainForm()
         {
             InitializeComponent();
-            realSenseHandsDeterminer = new RealSenseHandsDeterminer();
+            realSenseHandsDeterminer = RealSenseFactory.GetHandsDeterminer();
+
+            realSenseHandsDeterminer.SegmentationImage += realSenseHandsDeterminer_SegmentationImage;
         }
 
         private void buttonStart_Click(object sender, EventArgs e)
@@ -28,6 +31,18 @@ namespace IntelRealSenseStart
             {
                 realSenseHandsDeterminer.Stop();
             }
+        }
+
+        private void realSenseHandsDeterminer_SegmentationImage(Bitmap bitmap)
+        {
+            BeginInvoke(
+                new RealSenseHandsDeterminer.NewBitmapDelegate(realSenseHandsDeterminer_SegmentationImage_Synchronized),
+                bitmap);
+        }
+
+        private void realSenseHandsDeterminer_SegmentationImage_Synchronized(Bitmap bitmap)
+        {
+            pictureBoxHand.Image = bitmap;
         }
     }
 }
