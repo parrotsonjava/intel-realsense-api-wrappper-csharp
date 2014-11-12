@@ -2,14 +2,17 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace IntelRealSenseStart.Code
 {
     internal class HandBitmapBuilder
     {
+        private const int CONFIDENCE_THRESHOLD = 80;
+        private static readonly Pen BONE_PEN = new Pen(Color.SlateBlue, 3.0f);
+
         private static readonly byte[] LUT;
         private Bitmap bitmap;
-
 
         static HandBitmapBuilder()
         {
@@ -21,7 +24,19 @@ namespace IntelRealSenseStart.Code
         {
             return new HandBitmapBuilder();
         }
-        public HandBitmapBuilder addSegmentationImage(PXCMImage segmentationImage, byte userId)
+
+
+        public HandBitmapBuilder AddRGBImage(PXCMImage image)
+        {
+            if (image != null)
+            {
+                Bitmap bitmap = QueryForBitmap(image.info.width, image.info.height);
+                CopyImageDataToBitmap(bitmap, image);
+            }
+            return this;
+        }
+
+        public HandBitmapBuilder AddSegmentationImage(PXCMImage segmentationImage, byte userId)
         {
             Bitmap bitmap = QueryForBitmap(segmentationImage.info.width, segmentationImage.info.height);
             AddSegmentationInfoTo(bitmap, segmentationImage, userId);
@@ -43,7 +58,7 @@ namespace IntelRealSenseStart.Code
 
             return bitmap;
         }
-        
+
         private void AddSegmentationInfoTo(Bitmap bitmap, PXCMImage segmentationImage, byte userId)
         {
             PXCMImage.ImageData data;
@@ -58,7 +73,31 @@ namespace IntelRealSenseStart.Code
             CopySegmentationImageData(bitmap, segmentationImage, userId, data);
         }
 
-        private static unsafe void CopySegmentationImageData(Bitmap bitmap, PXCMImage segmentationImage, byte userId,
+
+        private void CopyImageDataToBitmap(Bitmap bitmap, PXCMImage sourceImage)
+        {
+            PXCMImage.ImageData imageData;
+            pxcmStatus status = sourceImage.AcquireAccess(PXCMImage.Access.ACCESS_READ,
+                PXCMImage.PixelFormat.PIXEL_FORMAT_RGB32, out imageData);
+
+            if (status < pxcmStatus.PXCM_STATUS_NO_ERROR)
+            {
+                throw new Exception("Error retrieving image data");
+            }
+
+            int width = sourceImage.info.width;
+            int height = sourceImage.info.height;
+            byte[] pixels = imageData.ToByteArray(0, imageData.pitches[0]*height);
+
+            sourceImage.ReleaseAccess(imageData);
+            BitmapData data = bitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly,
+                PixelFormat.Format32bppRgb);
+
+            Marshal.Copy(pixels, 0, data.Scan0, width*height*4);
+            bitmap.UnlockBits(data);
+        }
+
+        private unsafe void CopySegmentationImageData(Bitmap bitmap, PXCMImage segmentationImage, byte userId,
             PXCMImage.ImageData data)
         {
             var rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
@@ -79,6 +118,44 @@ namespace IntelRealSenseStart.Code
 
             bitmap.UnlockBits(bitmapData);
             segmentationImage.ReleaseAccess(data);
+        }
+
+        public HandBitmapBuilder AddJointData(PXCMHandData.JointData[] nodes)
+        {
+            Graphics graphics = Graphics.FromImage(bitmap);
+
+            DrawLines(graphics, nodes, 0.To(1).ToArray());
+            DrawLines(graphics, nodes, 0.AsRange().Add(2.To(5)).ToArray());
+            DrawLines(graphics, nodes, 0.AsRange().Add(6.To(9)).ToArray());
+            DrawLines(graphics, nodes, 0.AsRange().Add(10.To(13)).ToArray());
+            DrawLines(graphics, nodes, 0.AsRange().Add(14.To(17)).ToArray());
+            DrawLines(graphics, nodes, 0.AsRange().Add(18.To(21)).ToArray());
+
+            return this;
+        }
+
+        public void DrawLines(Graphics graphics, PXCMHandData.JointData[] nodes, int[] indexes, bool closed = false)
+        {
+            PXCMPoint3DF32[] detectedPositions = nodes.Select((node, index) => new {Node = node, Index = index})
+                .Where(node => node.Node.confidence > CONFIDENCE_THRESHOLD && indexes.Contains(node.Index))
+                .Select(node => node.Node.positionImage)
+                .ToArray();
+
+            0.To(detectedPositions.Length - (closed ? 1 : 2))
+                .ToArray()
+                .Select(
+                    startIndex => new
+                    {
+                        Start = detectedPositions[startIndex],
+                        End = detectedPositions[(startIndex + 1)%detectedPositions.Length]
+                    })
+                .Do(line => DrawLine(graphics, line.Start, line.End));
+        }
+
+        private void DrawLine(Graphics graphics, PXCMPoint3DF32 start, PXCMPoint3DF32 end)
+        {
+            graphics.DrawLine(BONE_PEN, new Point((int) start.x, (int) start.y), new Point((int) end.x, (int) end.y));
+            ;
         }
 
         public Bitmap Build()

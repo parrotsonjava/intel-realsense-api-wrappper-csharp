@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Linq;
 using System.Threading;
 
 namespace IntelRealSenseStart.Code
@@ -52,7 +53,7 @@ namespace IntelRealSenseStart.Code
 
         private void TryToRunHandDetection()
         {
-            InitializeRealSenseManagerForHandData();
+            InitializeRealSenseManager();
             Console.WriteLine(@"Created RealSense manager");
 
             ConfigureDevice();
@@ -64,9 +65,10 @@ namespace IntelRealSenseStart.Code
             Console.WriteLine(@"Closed RealSense detection");
         }
 
-        private void InitializeRealSenseManagerForHandData()
+        private void InitializeRealSenseManager()
         {
             realSenseManager.EnableHand();
+            realSenseManager.EnableStream(PXCMCapture.StreamType.STREAM_TYPE_COLOR, 640, 480);
             realSenseManager.Init();
         }
 
@@ -117,17 +119,20 @@ namespace IntelRealSenseStart.Code
 
         private void ProcessFrame()
         {
+            PXCMCapture.Sample realSenseSample = realSenseManager.QuerySample();
             PXCMCapture.Sample handSample = realSenseManager.QueryHandSample();
-            if (handSample != null)
+
+            if (realSenseSample != null && handSample != null)
             {
                 handData.Update();
-                CreateAndProcessHandData(handSample);
+                CreateAndProcessHandData(realSenseSample, handSample);
             }
         }
 
-        private void CreateAndProcessHandData(PXCMCapture.Sample handSample)
+        private void CreateAndProcessHandData(PXCMCapture.Sample realSenseSample, PXCMCapture.Sample handSample)
         {
             HandBitmapBuilder handBitmapBuilder = realSenseFactory.CreateHandBitmapBuilder();
+            handBitmapBuilder.AddRGBImage(realSenseSample.color);
 
             int numberOfHands = handData.QueryNumberOfHands();
             for (int i = 0; i < numberOfHands; i++)
@@ -149,7 +154,9 @@ namespace IntelRealSenseStart.Code
 
             if (handImageStatus >= pxcmStatus.PXCM_STATUS_NO_ERROR)
             {
-                handBitmapBuilder.addSegmentationImage(handImage, userId);
+                AddSegmentationImage(handBitmapBuilder, handImage, userId);
+                AddJointData(oneHandData, handBitmapBuilder);
+
                 handImage.Dispose();
             }
             else
@@ -157,6 +164,21 @@ namespace IntelRealSenseStart.Code
                 Console.WriteLine(@"Error");
                 //throw new Exception("Could not determine segmentation image");
             }
+        }
+
+        private static void AddSegmentationImage(HandBitmapBuilder handBitmapBuilder, PXCMImage handImage, byte userId)
+        {
+            handBitmapBuilder.AddSegmentationImage(handImage, userId);
+        }
+
+        private static void AddJointData(PXCMHandData.IHand oneHandData, HandBitmapBuilder handBitmapBuilder)
+        {
+            handBitmapBuilder.AddJointData(0.To(0x20 - 1).ToArray().Select(index =>
+            {
+                PXCMHandData.JointData jointData;
+                oneHandData.QueryTrackedJoint((PXCMHandData.JointType) index, out jointData);
+                return jointData;
+            }).ToArray());
         }
 
         public void Stop()

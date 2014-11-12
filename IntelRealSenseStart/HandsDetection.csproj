@@ -68,7 +68,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Code\EnumerableExtensions.cs" />
     <Compile Include="Code\HandBitmapBuilder.cs" />
+    <Compile Include="Code\Helper\Range.cs" />
+    <Compile Include="Code\Helper\RangeExtensions.cs" />
     <Compile Include="Code\RealSenseFactory.cs" />
     <Compile Include="Code\RealSenseHandsDeterminer.cs" />
     <Compile Include="MainForm.cs">
