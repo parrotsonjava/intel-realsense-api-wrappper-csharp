@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Threading;
-using IntelRealSenseStart.Code.RealSense.Component.Event;
 using IntelRealSenseStart.Code.RealSense.Config;
+using IntelRealSenseStart.Code.RealSense.Event;
 using IntelRealSenseStart.Code.RealSense.Exception;
 using IntelRealSenseStart.Code.RealSense.Factory;
 
@@ -16,6 +16,7 @@ namespace IntelRealSenseStart.Code.RealSense
 
         private readonly RealSenseFactory factory;
         private readonly PXCMSenseManager manager;
+        private readonly Configuration configuration;
 
         private Thread determinerThread;
         private volatile bool stopped = true;
@@ -24,6 +25,7 @@ namespace IntelRealSenseStart.Code.RealSense
         {
             this.factory = factory;
             this.manager = manager;
+            this.configuration = configuration;
 
             var handsComponent = factory.Components.HandsComponent().Build(factory, manager, configuration);
             var pictureComponent = factory.Components.ImageComponent().Build(factory, manager, configuration);
@@ -83,7 +85,7 @@ namespace IntelRealSenseStart.Code.RealSense
         {
             AcquireFrame();
 
-            FrameEventArgs.Builder frameEvent = factory.Events.FrameEvent();
+            FrameEventArgs.Builder frameEvent = factory.Events.FrameEvent(configuration);
             components.Do(component => component.Process(frameEvent));
 
             manager.ReleaseFrame();

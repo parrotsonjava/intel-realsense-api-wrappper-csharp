@@ -69,6 +69,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Code\RealSense\Component\Component.cs" />
+    <Compile Include="Code\RealSense\Config\HandsImage\HandsImageBackground.cs" />
+    <Compile Include="Code\RealSense\Config\HandsImage\HandsImageConfiguration.cs" />
+    <Compile Include="Code\RealSense\Config\HandsImage\HandsImageOverlay.cs" />
+    <Compile Include="Code\RealSense\Component\Hands\HandsImageCreator.cs" />
+    <Compile Include="Code\RealSense\Component\Hands\HandsImageBuilder.cs" />
     <Compile Include="Code\RealSense\Component\ImageComponent.cs" />
     <Compile Include="Code\RealSense\Data\HandData.cs" />
     <Compile Include="Code\RealSense\Data\HandsData.cs" />
@@ -78,7 +83,7 @@
     <Compile Include="Code\RealSense\Factory\EventsFactory.cs" />
     <Compile Include="Code\RealSense\Factory\RealSenseFactory.cs" />
     <Compile Include="Code\RealSense\Helper\EnumerableExtensions.cs" />
-    <Compile Include="Code\HandBitmapBuilder.cs" />
+    <Compile Include="Code\HandsBitmapBuilder.cs" />
     <Compile Include="Code\RealSense\Helper\Range.cs" />
     <Compile Include="Code\RealSense\Helper\RangeExtensions.cs" />
     <Compile Include="Code\RealSense\Factory\ConfigurationFactory.cs" />
@@ -88,7 +93,7 @@
     <Compile Include="Code\RealSense\Config\ConfigurationOption.cs" />
     <Compile Include="Code\RealSense\Exception\RealSenseException.cs" />
     <Compile Include="Code\RealSense\Event\FrameEventArgs.cs" />
-    <Compile Include="Code\RealSense\Component\HandsComponent.cs" />
+    <Compile Include="Code\RealSense\Component\Hands\HandsComponent.cs" />
     <Compile Include="Code\RealSense\RealSenseComponentsManager.cs" />
     <Compile Include="Code\RealSense\RealSenseManager.cs" />
     <Compile Include="MainForm.cs">
@@ -124,7 +129,10 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Code\RealSense\Image\Builder\" />
+    <Folder Include="Code\RealSense\Image\Hand\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if "$(Platform)" == "x86" ( copy /y "$(RSSDK_DIR)\bin\win32\libpxccpp2c.dll" "$(TargetDir)" ) else ( copy /y "$(RSSDK_DIR)\bin\x64\libpxccpp2c.dll" "$(TargetDir)" )

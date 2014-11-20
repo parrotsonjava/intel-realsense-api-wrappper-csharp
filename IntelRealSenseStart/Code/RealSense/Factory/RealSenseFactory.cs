@@ -1,6 +1,4 @@
-﻿using IntelRealSenseStart.Code.RealSense.Component.Event;
-using IntelRealSenseStart.Code.RealSense.Config;
-using IntelRealSenseStart.Code.RealSense.Data;
+﻿using IntelRealSenseStart.Code.RealSense.Config;
 
 namespace IntelRealSenseStart.Code.RealSense.Factory
 {
@@ -16,7 +14,7 @@ namespace IntelRealSenseStart.Code.RealSense.Factory
             configurationFactory = new ConfigurationFactory();
             componentsFactory = new ComponentsFactory();
             dataFactory = new DataFactory();
-            eventsFactory = new EventsFactory();
+            eventsFactory = new EventsFactory(this);
         }
 
         public ConfigurationFactory Configuration

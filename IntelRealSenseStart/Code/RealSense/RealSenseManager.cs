@@ -1,6 +1,6 @@
 ﻿using System;
-using IntelRealSenseStart.Code.RealSense.Component.Event;
 using IntelRealSenseStart.Code.RealSense.Config;
+using IntelRealSenseStart.Code.RealSense.Event;
 using IntelRealSenseStart.Code.RealSense.Exception;
 using IntelRealSenseStart.Code.RealSense.Factory;
 

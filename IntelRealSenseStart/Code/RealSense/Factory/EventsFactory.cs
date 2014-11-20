@@ -1,12 +1,26 @@
-﻿using IntelRealSenseStart.Code.RealSense.Component.Event;
+﻿using IntelRealSenseStart.Code.RealSense.Config;
+using IntelRealSenseStart.Code.RealSense.Config.HandsImage;
+using IntelRealSenseStart.Code.RealSense.Event;
 
 namespace IntelRealSenseStart.Code.RealSense.Factory
 {
     public class EventsFactory
     {
-        public FrameEventArgs.Builder FrameEvent()
+        private readonly RealSenseFactory factory;
+
+        public EventsFactory(RealSenseFactory factory)
         {
-            return new FrameEventArgs.Builder();
+            this.factory = factory;
+        }
+
+        public FrameEventArgs.Builder FrameEvent(Configuration configuration)
+        {
+            return new FrameEventArgs.Builder(factory, configuration);
+        }
+
+        public HandsImageConfiguration.Builder HandsImageConfiguration()
+        {
+            return new HandsImageConfiguration.Builder();
         }
     }
 }

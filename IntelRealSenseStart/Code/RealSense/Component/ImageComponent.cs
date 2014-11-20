@@ -1,5 +1,5 @@
-﻿using IntelRealSenseStart.Code.RealSense.Component.Event;
-using IntelRealSenseStart.Code.RealSense.Config;
+﻿using IntelRealSenseStart.Code.RealSense.Config;
+using IntelRealSenseStart.Code.RealSense.Event;
 using IntelRealSenseStart.Code.RealSense.Factory;
 
 namespace IntelRealSenseStart.Code.RealSense.Component

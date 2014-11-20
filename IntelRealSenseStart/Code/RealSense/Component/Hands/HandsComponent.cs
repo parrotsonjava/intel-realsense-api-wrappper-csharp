@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using IntelRealSenseStart.Code.RealSense.Component.Event;
 using IntelRealSenseStart.Code.RealSense.Config;
 using IntelRealSenseStart.Code.RealSense.Data;
+using IntelRealSenseStart.Code.RealSense.Event;
 using IntelRealSenseStart.Code.RealSense.Factory;
 
-namespace IntelRealSenseStart.Code.RealSense.Component
+namespace IntelRealSenseStart.Code.RealSense.Component.Hands
 {
     public class HandsComponent : Component
     {
@@ -22,8 +22,6 @@ namespace IntelRealSenseStart.Code.RealSense.Component
             this.manager = manager;
             this.configuration = configuration;
         }
-
-
 
         public bool ShouldBeStarted
         {

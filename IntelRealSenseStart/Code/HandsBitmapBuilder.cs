@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 
 namespace IntelRealSenseStart.Code
 {
-    internal class HandBitmapBuilder
+    public class HandsBitmapBuilder
     {
         private const int CONFIDENCE_THRESHOLD = 80;
         private static readonly Pen BONE_PEN = new Pen(Color.SlateBlue, 3.0f);
@@ -14,19 +14,19 @@ namespace IntelRealSenseStart.Code
         private static readonly byte[] LUT;
         private Bitmap bitmap;
 
-        static HandBitmapBuilder()
+        static HandsBitmapBuilder()
         {
             LUT = Enumerable.Repeat((byte) 0, 256).ToArray();
             LUT[255] = 1;
         }
 
-        public static HandBitmapBuilder Create()
+        public static HandsBitmapBuilder Create()
         {
-            return new HandBitmapBuilder();
+            return new HandsBitmapBuilder();
         }
 
 
-        public HandBitmapBuilder AddImage(PXCMImage colorImage, PXCMImage depthImage)
+        public HandsBitmapBuilder AddImage(PXCMImage colorImage, PXCMImage depthImage)
         {
             if (colorImage != null)
             {
@@ -50,7 +50,7 @@ namespace IntelRealSenseStart.Code
             throw new NotImplementedException();
         }
 
-        public HandBitmapBuilder AddSegmentationImage(PXCMImage segmentationImage, byte userId)
+        public HandsBitmapBuilder AddSegmentationImage(PXCMImage segmentationImage, byte userId)
         {
             Bitmap bitmap = QueryForBitmap(segmentationImage.info.width, segmentationImage.info.height);
             AddSegmentationInfoTo(bitmap, segmentationImage, userId);
@@ -134,7 +134,7 @@ namespace IntelRealSenseStart.Code
             segmentationImage.ReleaseAccess(data);
         }
 
-        public HandBitmapBuilder AddJointData(PXCMHandData.JointData[] nodes)
+        public HandsBitmapBuilder AddJointData(PXCMHandData.JointData[] nodes)
         {
             Graphics graphics = Graphics.FromImage(bitmap);
 

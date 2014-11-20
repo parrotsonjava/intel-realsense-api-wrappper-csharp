@@ -1,4 +1,5 @@
 ﻿using IntelRealSenseStart.Code.RealSense.Component;
+using IntelRealSenseStart.Code.RealSense.Component.Hands;
 
 namespace IntelRealSenseStart.Code.RealSense.Factory
 {
@@ -17,6 +18,16 @@ namespace IntelRealSenseStart.Code.RealSense.Factory
         public HandsComponent.Builder HandsComponent()
         {
             return new HandsComponent.Builder();
+        }
+
+        public HandsImageBuilder.Builder HandsImageBuilder()
+        {
+            return new HandsImageBuilder.Builder();
+        }
+
+        public HandsImageCreator.Builder HandsImageCreator()
+        {
+            return new HandsImageCreator.Builder();
         }
     }
 }

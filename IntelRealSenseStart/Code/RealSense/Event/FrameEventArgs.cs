@@ -1,19 +1,37 @@
-﻿using IntelRealSenseStart.Code.RealSense.Data;
+﻿using IntelRealSenseStart.Code.RealSense.Component.Hands;
+using IntelRealSenseStart.Code.RealSense.Config;
+using IntelRealSenseStart.Code.RealSense.Data;
+using IntelRealSenseStart.Code.RealSense.Factory;
 
-namespace IntelRealSenseStart.Code.RealSense.Component.Event
+namespace IntelRealSenseStart.Code.RealSense.Event
 {
     public class FrameEventArgs
     {
+        private HandsImageBuilder handsImageBuilder;
+
         private HandsData handsData;
         private ImageData imageData;
+
+        public HandsImageBuilder CreateImage()
+        {
+            return handsImageBuilder;
+        }
 
         public class Builder
         {
             private readonly FrameEventArgs frameEventArgs;
+            private readonly HandsImageBuilder.Builder handsImageBuilderBuilder;
 
-            public Builder()
+            private readonly RealSenseFactory factory;
+            private readonly Configuration realSenseConfiguration;
+
+            public Builder(RealSenseFactory factory, Configuration realSenseConfiguration)
             {
+                handsImageBuilderBuilder = factory.Components.HandsImageBuilder();
                 frameEventArgs = new FrameEventArgs();
+
+                this.factory = factory;
+                this.realSenseConfiguration = realSenseConfiguration;
             }
 
             public Builder WithImageData(ImageData.Builder imageData)
@@ -30,6 +48,8 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Event
 
             public FrameEventArgs Build()
             {
+                frameEventArgs.handsImageBuilder = handsImageBuilderBuilder.Build(
+                    factory, realSenseConfiguration, frameEventArgs.handsData, frameEventArgs.imageData);
                 return frameEventArgs;
             }
         }

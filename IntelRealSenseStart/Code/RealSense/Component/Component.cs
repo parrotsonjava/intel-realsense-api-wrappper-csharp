@@ -1,4 +1,4 @@
-﻿using IntelRealSenseStart.Code.RealSense.Component.Event;
+﻿using IntelRealSenseStart.Code.RealSense.Event;
 
 namespace IntelRealSenseStart.Code.RealSense.Component
 {

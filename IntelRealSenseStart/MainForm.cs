@@ -2,7 +2,8 @@
 using System.Drawing;
 using System.Windows.Forms;
 using IntelRealSenseStart.Code.RealSense;
-using IntelRealSenseStart.Code.RealSense.Component.Event;
+using IntelRealSenseStart.Code.RealSense.Config.HandsImage;
+using IntelRealSenseStart.Code.RealSense.Event;
 
 namespace IntelRealSenseStart
 {
@@ -40,6 +41,9 @@ namespace IntelRealSenseStart
 
         private void realSense_Hands_Frame(FrameEventArgs frameEventArgs)
         {
+            Bitmap bitmap = frameEventArgs.CreateImage()
+                .WithBackgroundImage(HandsImageBackground.ColorImage)
+                .WithOverlay(HandsImageOverlay.HandsSegmentationImage).Create();
             Console.WriteLine(frameEventArgs);
         }
     }
