@@ -83,7 +83,6 @@
     <Compile Include="Code\RealSense\Factory\EventsFactory.cs" />
     <Compile Include="Code\RealSense\Factory\RealSenseFactory.cs" />
     <Compile Include="Code\RealSense\Helper\EnumerableExtensions.cs" />
-    <Compile Include="Code\HandsBitmapBuilder.cs" />
     <Compile Include="Code\RealSense\Helper\Range.cs" />
     <Compile Include="Code\RealSense\Helper\RangeExtensions.cs" />
     <Compile Include="Code\RealSense\Factory\ConfigurationFactory.cs" />
@@ -129,10 +128,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Code\RealSense\Image\Builder\" />
-    <Folder Include="Code\RealSense\Image\Hand\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if "$(Platform)" == "x86" ( copy /y "$(RSSDK_DIR)\bin\win32\libpxccpp2c.dll" "$(TargetDir)" ) else ( copy /y "$(RSSDK_DIR)\bin\x64\libpxccpp2c.dll" "$(TargetDir)" )

@@ -34,6 +34,7 @@ namespace IntelRealSenseStart.Code.RealSense
                 throw new RealSenseException("RealSense manager is already running");
             }
 
+            stopped = false;
             manager = PXCMSession.CreateInstance().CreateSenseManager();
 
             CreateComponentsManager();

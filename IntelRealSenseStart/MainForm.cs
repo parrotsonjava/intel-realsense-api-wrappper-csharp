@@ -9,6 +9,8 @@ namespace IntelRealSenseStart
 {
     public partial class MainForm : Form
     {
+        public delegate void BitmapHandler(Bitmap bitmap);
+
         private readonly RealSenseManager manager;
 
         public MainForm()
@@ -43,8 +45,16 @@ namespace IntelRealSenseStart
         {
             Bitmap bitmap = frameEventArgs.CreateImage()
                 .WithBackgroundImage(HandsImageBackground.ColorImage)
-                .WithOverlay(HandsImageOverlay.HandsSegmentationImage).Create();
-            Console.WriteLine(frameEventArgs);
+                .WithOverlay(HandsImageOverlay.HandsSegmentationImage)
+                .WithOverlay(HandsImageOverlay.HandJoints)
+                .Create();
+
+            BeginInvoke(new BitmapHandler(SetImage), new object[] { bitmap });
+        }
+
+        private void SetImage(Bitmap bitmap)
+        {
+            pictureBoxHand.Image = bitmap;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading;
 using IntelRealSenseStart.Code.RealSense.Config;
 using IntelRealSenseStart.Code.RealSense.Event;
@@ -58,7 +59,7 @@ namespace IntelRealSenseStart.Code.RealSense
                 return;
             }
 
-            stopped = false;
+            stopped = true;
             determinerThread.Join();
         }
 
@@ -74,6 +75,8 @@ namespace IntelRealSenseStart.Code.RealSense
             {
                 ProcessFrame();
             }
+
+            Console.WriteLine("Finished");
         }
 
         public void ConfigureComponents()
