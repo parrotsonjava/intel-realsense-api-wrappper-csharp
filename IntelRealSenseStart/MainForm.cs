@@ -1,48 +1,46 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-using IntelRealSenseStart.Code;
+using IntelRealSenseStart.Code.RealSense;
+using IntelRealSenseStart.Code.RealSense.Component.Event;
 
 namespace IntelRealSenseStart
 {
     public partial class MainForm : Form
     {
-        private readonly RealSenseHandsDeterminer realSenseHandsDeterminer;
+        private readonly RealSenseManager manager;
 
         public MainForm()
         {
             InitializeComponent();
-            realSenseHandsDeterminer = RealSenseFactory.GetHandsDeterminer();
+            manager = RealSenseManager.Create().Configure(factory =>
+                factory.Configuration()
+                    .WithHandsDetection(factory.HandsDetection().WithSegmentationImage())
+                    .WithColorImage(factory.Image().WithResolution(new Size(640, 480)))
+                    .WithDepthImage(factory.Image().WithResolution(new Size(640, 480)))).Build();
 
-            realSenseHandsDeterminer.SegmentationImage += realSenseHandsDeterminer_SegmentationImage;
+            manager.Frame += realSense_Hands_Frame;
         }
 
         private void buttonStart_Click(object sender, EventArgs e)
         {
-            if (!realSenseHandsDeterminer.Started)
+            if (!manager.Started)
             {
-                realSenseHandsDeterminer.Start();
+                manager.Start();
             }
         }
 
         private void buttonStop_Click(object sender, EventArgs e)
         {
-            if (realSenseHandsDeterminer.Started)
+            if (manager.Started)
             {
-                realSenseHandsDeterminer.Stop();
+                manager.Stop();
             }
         }
 
-        private void realSenseHandsDeterminer_SegmentationImage(Bitmap bitmap)
+        private void realSense_Hands_Frame(FrameEventArgs frameEventArgs)
         {
-            BeginInvoke(
-                new RealSenseHandsDeterminer.NewBitmapDelegate(realSenseHandsDeterminer_SegmentationImage_Synchronized),
-                bitmap);
-        }
-
-        private void realSenseHandsDeterminer_SegmentationImage_Synchronized(Bitmap bitmap)
-        {
-            pictureBoxHand.Image = bitmap;
+            Console.WriteLine(frameEventArgs);
         }
     }
 }

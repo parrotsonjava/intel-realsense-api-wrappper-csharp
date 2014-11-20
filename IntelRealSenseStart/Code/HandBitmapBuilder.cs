@@ -26,14 +26,28 @@ namespace IntelRealSenseStart.Code
         }
 
 
-        public HandBitmapBuilder AddRGBImage(PXCMImage image)
+        public HandBitmapBuilder AddImage(PXCMImage colorImage, PXCMImage depthImage)
         {
-            if (image != null)
+            if (colorImage != null)
             {
-                Bitmap bitmap = QueryForBitmap(image.info.width, image.info.height);
-                CopyImageDataToBitmap(bitmap, image);
+                CopyImageDataToBitmap(colorImage);
+            }
+            if (colorImage != null && depthImage != null)
+            {
+                CreateProjectionFrom(colorImage, depthImage);
             }
             return this;
+        }
+
+        private void CopyImageDataToBitmap(PXCMImage colorImage)
+        {
+            Bitmap bitmap = QueryForBitmap(colorImage.info.width, colorImage.info.height);
+            CopyImageDataToBitmap(bitmap, colorImage);
+        }
+
+        private void CreateProjectionFrom(PXCMImage colorImage, PXCMImage depthImage)
+        {
+            throw new NotImplementedException();
         }
 
         public HandBitmapBuilder AddSegmentationImage(PXCMImage segmentationImage, byte userId)
@@ -53,7 +67,7 @@ namespace IntelRealSenseStart.Code
             }
             if (bitmap.Width != width || bitmap.Height != height)
             {
-                throw new Exception("Wrong image dimensions");
+                throw new Exception("Wrong colorImage dimensions");
             }
 
             return bitmap;
@@ -67,7 +81,7 @@ namespace IntelRealSenseStart.Code
 
             if (status < pxcmStatus.PXCM_STATUS_NO_ERROR)
             {
-                throw new Exception("Error acquiring the image data");
+                throw new Exception("Error acquiring the colorImage data");
             }
 
             CopySegmentationImageData(bitmap, segmentationImage, userId, data);
@@ -82,7 +96,7 @@ namespace IntelRealSenseStart.Code
 
             if (status < pxcmStatus.PXCM_STATUS_NO_ERROR)
             {
-                throw new Exception("Error retrieving image data");
+                throw new Exception("Error retrieving colorImage data");
             }
 
             int width = sourceImage.info.width;
@@ -155,7 +169,6 @@ namespace IntelRealSenseStart.Code
         private void DrawLine(Graphics graphics, PXCMPoint3DF32 start, PXCMPoint3DF32 end)
         {
             graphics.DrawLine(BONE_PEN, new Point((int) start.x, (int) start.y), new Point((int) end.x, (int) end.y));
-            ;
         }
 
         public Bitmap Build()

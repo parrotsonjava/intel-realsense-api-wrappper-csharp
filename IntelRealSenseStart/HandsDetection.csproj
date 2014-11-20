@@ -68,12 +68,29 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Code\EnumerableExtensions.cs" />
+    <Compile Include="Code\RealSense\Component\Component.cs" />
+    <Compile Include="Code\RealSense\Component\ImageComponent.cs" />
+    <Compile Include="Code\RealSense\Data\HandData.cs" />
+    <Compile Include="Code\RealSense\Data\HandsData.cs" />
+    <Compile Include="Code\RealSense\Data\ImageData.cs" />
+    <Compile Include="Code\RealSense\Factory\ComponentsFactory.cs" />
+    <Compile Include="Code\RealSense\Factory\DataFactory.cs" />
+    <Compile Include="Code\RealSense\Factory\EventsFactory.cs" />
+    <Compile Include="Code\RealSense\Factory\RealSenseFactory.cs" />
+    <Compile Include="Code\RealSense\Helper\EnumerableExtensions.cs" />
     <Compile Include="Code\HandBitmapBuilder.cs" />
-    <Compile Include="Code\Helper\Range.cs" />
-    <Compile Include="Code\Helper\RangeExtensions.cs" />
-    <Compile Include="Code\RealSenseFactory.cs" />
-    <Compile Include="Code\RealSenseHandsDeterminer.cs" />
+    <Compile Include="Code\RealSense\Helper\Range.cs" />
+    <Compile Include="Code\RealSense\Helper\RangeExtensions.cs" />
+    <Compile Include="Code\RealSense\Factory\ConfigurationFactory.cs" />
+    <Compile Include="Code\RealSense\Config\Configuration.cs" />
+    <Compile Include="Code\RealSense\Config\HandsConfiguration.cs" />
+    <Compile Include="Code\RealSense\Config\ImageConfiguration.cs" />
+    <Compile Include="Code\RealSense\Config\ConfigurationOption.cs" />
+    <Compile Include="Code\RealSense\Exception\RealSenseException.cs" />
+    <Compile Include="Code\RealSense\Event\FrameEventArgs.cs" />
+    <Compile Include="Code\RealSense\Component\HandsComponent.cs" />
+    <Compile Include="Code\RealSense\RealSenseComponentsManager.cs" />
+    <Compile Include="Code\RealSense\RealSenseManager.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
