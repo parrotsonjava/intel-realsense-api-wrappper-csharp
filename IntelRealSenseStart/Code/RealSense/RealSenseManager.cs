@@ -40,7 +40,7 @@ namespace IntelRealSenseStart.Code.RealSense
 
         private void StartRealSense()
         {
-            manager = PXCMSession.CreateInstance().CreateSenseManager();
+            manager = factory.Native.CreateSenseManager();
             CreateComponentsManager();
 
             InitializeManager();

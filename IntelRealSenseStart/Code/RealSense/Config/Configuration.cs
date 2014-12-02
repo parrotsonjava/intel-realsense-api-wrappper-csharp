@@ -4,92 +4,102 @@ namespace IntelRealSenseStart.Code.RealSense.Config
 {
     public class Configuration
     {
-        private ImageConfiguration colorImageFeature;
-        private ImageConfiguration depthImageFeature;
-        private HandsConfiguration handsFeature;
+        // TODO set default device configuration
+
+        private DeviceConfiguration deviceConfiguration;
+        private ImageConfiguration colorImageConfig;
+        private ImageConfiguration depthImageConfig;
+        private HandsConfiguration handsConfig;
 
         public bool HandsDetectionEnabled
         {
-            get { return handsFeature != null; }
+            get { return handsConfig != null; }
         }
 
         public HandsConfiguration HandsDetection
         {
             get
             {
-                if (handsFeature == null)
+                if (handsConfig == null)
                 {
                     throw new RealSenseException("Hands detection is not enabled, but tried to access it");
                 }
-                return handsFeature;
+                return handsConfig;
             }
         }
 
         public bool ColorImageEnabled
         {
-            get { return colorImageFeature != null; }
+            get { return colorImageConfig != null; }
         }
 
         public ImageConfiguration ColorImage
         {
             get
             {
-                if (colorImageFeature == null)
+                if (colorImageConfig == null)
                 {
                     throw new RealSenseException("Hands detection is not enabled, but tried to access it");
                 }
-                return colorImageFeature;
+                return colorImageConfig;
             }
         }
 
         public bool DepthImageEnabled
         {
-            get { return depthImageFeature != null; }
+            get { return depthImageConfig != null; }
         }
 
         public ImageConfiguration DepthImage
         {
             get
             {
-                if (depthImageFeature == null)
+                if (depthImageConfig == null)
                 {
                     throw new RealSenseException("Hands detection is not enabled, but tried to access it");
                 }
-                return depthImageFeature;
+                return depthImageConfig;
             }
         }
 
         public class Builder
         {
-            private readonly Configuration featureList;
+            private readonly Configuration configuration;
 
             public Builder()
             {
-                featureList = new Configuration();
+                configuration = new Configuration();
+            }
+
+            public Builder UsingDeviceConfiguration(DeviceConfiguration.Builder deviceConfiguration)
+            {
+                configuration.deviceConfiguration = deviceConfiguration.Build();
+                return this;
             }
 
             public Builder WithHandsDetection(HandsConfiguration.Builder handsFeature)
             {
-                featureList.handsFeature = handsFeature.Build();
+                configuration.handsConfig = handsFeature.Build();
                 return this;
             }
 
             public Builder WithColorImage(ImageConfiguration.Builder colorImageFeature)
             {
-                featureList.colorImageFeature = colorImageFeature.Build();
+                configuration.colorImageConfig = colorImageFeature.Build();
                 return this;
             }
 
             public Builder WithDepthImage(ImageConfiguration.Builder depthImageFeature)
             {
-                featureList.depthImageFeature = depthImageFeature.Build();
+                configuration.depthImageConfig = depthImageFeature.Build();
                 return this;
             }
 
             public Configuration Build()
             {
-                return featureList;
+                return configuration;
             }
         }
+
     }
 }

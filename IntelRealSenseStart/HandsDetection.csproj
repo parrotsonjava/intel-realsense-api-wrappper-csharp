@@ -70,18 +70,21 @@
   <ItemGroup>
     <Compile Include="Code\RealSense\Component\Component.cs" />
     <Compile Include="Code\RealSense\Component\DeviceComponent.cs" />
+    <Compile Include="Code\RealSense\Config\DeviceConfiguration.cs" />
     <Compile Include="Code\RealSense\Config\HandsImage\HandsImageBackground.cs" />
     <Compile Include="Code\RealSense\Config\HandsImage\HandsImageConfiguration.cs" />
     <Compile Include="Code\RealSense\Config\HandsImage\HandsImageOverlay.cs" />
     <Compile Include="Code\RealSense\Component\Hands\HandsImageCreator.cs" />
     <Compile Include="Code\RealSense\Component\Hands\HandsImageBuilder.cs" />
     <Compile Include="Code\RealSense\Component\ImageComponent.cs" />
+    <Compile Include="Code\RealSense\Config\VideoDeviceConfiguration.cs" />
     <Compile Include="Code\RealSense\Data\HandData.cs" />
     <Compile Include="Code\RealSense\Data\HandsData.cs" />
     <Compile Include="Code\RealSense\Data\ImageData.cs" />
     <Compile Include="Code\RealSense\Factory\ComponentsFactory.cs" />
     <Compile Include="Code\RealSense\Factory\DataFactory.cs" />
     <Compile Include="Code\RealSense\Factory\EventsFactory.cs" />
+    <Compile Include="Code\RealSense\Factory\NativeFactory.cs" />
     <Compile Include="Code\RealSense\Factory\RealSenseFactory.cs" />
     <Compile Include="Code\RealSense\Helper\ImageExtensions.cs" />
     <Compile Include="Code\RealSense\Helper\EnumerableExtensions.cs" />

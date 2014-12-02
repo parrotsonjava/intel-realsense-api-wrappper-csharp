@@ -7,6 +7,16 @@
             return new Configuration.Builder();
         }
 
+        public DeviceConfiguration.Builder DeviceConfiguration()
+        {
+            return new DeviceConfiguration.Builder();
+        }
+
+        public VideoDeviceConfiguration.Builder VideoDeviceConfiguration()
+        {
+            return new VideoDeviceConfiguration.Builder();
+        }
+
         public HandsConfiguration.Builder HandsDetection()
         {
             return new HandsConfiguration.Builder();

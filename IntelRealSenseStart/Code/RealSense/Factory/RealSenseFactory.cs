@@ -4,6 +4,7 @@ namespace IntelRealSenseStart.Code.RealSense.Factory
 {
     public class RealSenseFactory
     {
+        private readonly NativeFactory nativeFactory;
         private readonly ConfigurationFactory configurationFactory;
         private readonly ComponentsFactory componentsFactory;
         private readonly DataFactory dataFactory;
@@ -11,6 +12,7 @@ namespace IntelRealSenseStart.Code.RealSense.Factory
 
         public RealSenseFactory()
         {
+            nativeFactory = new NativeFactory();
             configurationFactory = new ConfigurationFactory();
             componentsFactory = new ComponentsFactory();
             dataFactory = new DataFactory();
@@ -24,7 +26,7 @@ namespace IntelRealSenseStart.Code.RealSense.Factory
 
         public ComponentsFactory Components
         {
-            get { return componentsFactory;  }
+            get { return componentsFactory; }
         }
 
         public DataFactory Data
@@ -35,6 +37,11 @@ namespace IntelRealSenseStart.Code.RealSense.Factory
         public EventsFactory Events
         {
             get { return eventsFactory; }
+        }
+
+        public NativeFactory Native
+        {
+            get { return nativeFactory; }
         }
     }
 }
