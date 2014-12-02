@@ -15,14 +15,15 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Hands
 
         private readonly ImageData imageData;
         private readonly Configuration realSenseConfiguration;
+        private readonly PXCMCapture.Device device;
 
-        private HandsImageBuilder(RealSenseFactory factory, Configuration realSenseConfiguration, HandsData handsData,
-            ImageData imageData)
+        private HandsImageBuilder(RealSenseFactory factory, Configuration realSenseConfiguration, PXCMCapture.Device device, HandsData handsData, ImageData imageData)
         {
             handsImageConfigurationBuilder = factory.Events.HandsImageConfiguration();
             handsImageCreator = factory.Components.HandsImageCreator();
 
             this.realSenseConfiguration = realSenseConfiguration;
+            this.device = device;
             this.handsData = handsData;
             this.imageData = imageData;
         }
@@ -58,16 +59,15 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Hands
         public Bitmap Create()
         {
             return
-                handsImageCreator.Build(handsData, imageData, realSenseConfiguration,
+                handsImageCreator.Build(device, handsData, imageData, realSenseConfiguration,
                     handsImageConfigurationBuilder.Build()).Create();
         }
 
         public class Builder
         {
-            public HandsImageBuilder Build(RealSenseFactory factory, Configuration realSenseConfiguration,
-                HandsData handsData, ImageData imageData)
+            public HandsImageBuilder Build(RealSenseFactory factory, Configuration realSenseConfiguration, PXCMCapture.Device device, HandsData handsData, ImageData imageData)
             {
-                return new HandsImageBuilder(factory, realSenseConfiguration, handsData, imageData);
+                return new HandsImageBuilder(factory, realSenseConfiguration, device, handsData, imageData);
             }
         }
     }

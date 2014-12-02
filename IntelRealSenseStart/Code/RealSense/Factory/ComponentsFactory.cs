@@ -29,5 +29,10 @@ namespace IntelRealSenseStart.Code.RealSense.Factory
         {
             return new HandsImageCreator.Builder();
         }
+
+        public DeviceComponent.Builder DeviceComponent()
+        {
+            return new DeviceComponent.Builder();
+        }
     }
 }

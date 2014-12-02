@@ -69,6 +69,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Code\RealSense\Component\Component.cs" />
+    <Compile Include="Code\RealSense\Component\DeviceComponent.cs" />
     <Compile Include="Code\RealSense\Config\HandsImage\HandsImageBackground.cs" />
     <Compile Include="Code\RealSense\Config\HandsImage\HandsImageConfiguration.cs" />
     <Compile Include="Code\RealSense\Config\HandsImage\HandsImageOverlay.cs" />

@@ -9,9 +9,11 @@ namespace IntelRealSenseStart.Code.RealSense.Event
     {
         private HandsImageBuilder handsImageBuilder;
 
+        private PXCMCapture.Device device;
+
         private HandsData handsData;
         private ImageData imageData;
-
+        
         public HandsImageBuilder CreateImage()
         {
             return handsImageBuilder;
@@ -25,6 +27,8 @@ namespace IntelRealSenseStart.Code.RealSense.Event
             private readonly RealSenseFactory factory;
             private readonly Configuration realSenseConfiguration;
 
+
+
             public Builder(RealSenseFactory factory, Configuration realSenseConfiguration)
             {
                 handsImageBuilderBuilder = factory.Components.HandsImageBuilder();
@@ -32,6 +36,12 @@ namespace IntelRealSenseStart.Code.RealSense.Event
 
                 this.factory = factory;
                 this.realSenseConfiguration = realSenseConfiguration;
+            }
+
+            public Builder WithDevice(PXCMCapture.Device device)
+            {
+                frameEventArgs.device = device;
+                return this;
             }
 
             public Builder WithImageData(ImageData.Builder imageData)
@@ -49,7 +59,7 @@ namespace IntelRealSenseStart.Code.RealSense.Event
             public FrameEventArgs Build()
             {
                 frameEventArgs.handsImageBuilder = handsImageBuilderBuilder.Build(
-                    factory, realSenseConfiguration, frameEventArgs.handsData, frameEventArgs.imageData);
+                    factory, realSenseConfiguration, frameEventArgs.device, frameEventArgs.handsData, frameEventArgs.imageData);
                 return frameEventArgs;
             }
         }

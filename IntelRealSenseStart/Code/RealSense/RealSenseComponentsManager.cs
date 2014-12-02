@@ -28,10 +28,11 @@ namespace IntelRealSenseStart.Code.RealSense
             this.manager = manager;
             this.configuration = configuration;
 
+            var deviceComponent = factory.Components.DeviceComponent().Build(manager);
             var handsComponent = factory.Components.HandsComponent().Build(factory, manager, configuration);
             var pictureComponent = factory.Components.ImageComponent().Build(factory, manager, configuration);
 
-            var allComponents = new Component.Component[] {handsComponent, pictureComponent};
+            var allComponents = new Component.Component[] {handsComponent, pictureComponent, deviceComponent};
             components = allComponents.Where(component => component.ShouldBeStarted).ToArray();
         }
 
@@ -76,7 +77,7 @@ namespace IntelRealSenseStart.Code.RealSense
                 ProcessFrame();
             }
 
-            Console.WriteLine("Finished");
+            Console.WriteLine(@"Finished");
         }
 
         public void ConfigureComponents()

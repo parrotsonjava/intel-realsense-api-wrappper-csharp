@@ -25,7 +25,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component
                 manager.EnableStream(PXCMCapture.StreamType.STREAM_TYPE_COLOR, configuration.ColorImage.Resolution.Width,
                     configuration.ColorImage.Resolution.Height);
             }
-            if (configuration.DepthImageEnabled)
+            if (configuration.DepthImageEnabled || configuration.HandsDetectionEnabled)
             {
                 manager.EnableStream(PXCMCapture.StreamType.STREAM_TYPE_DEPTH, configuration.DepthImage.Resolution.Width,
                     configuration.DepthImage.Resolution.Height);

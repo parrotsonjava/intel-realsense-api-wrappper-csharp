@@ -17,21 +17,26 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Hands
 
         private static readonly byte[] LUT;
 
+        private readonly PXCMCapture.Device device;
         private readonly HandsData handsData;
         private readonly HandsImageConfiguration imageConfiguration;
         private readonly ImageData imageData;
 
         private readonly Configuration realSenseConfiguration;
 
+        private PXCMProjection projection;
+        private PXCMPointF32[] uvMap;
+
         static HandsImageCreator()
         {
-            LUT = Enumerable.Repeat((byte)0, 256).ToArray();
+            LUT = Enumerable.Repeat((byte) 0, 256).ToArray();
             LUT[255] = 1;
         }
 
-        private HandsImageCreator(HandsData handsData, ImageData imageData,
+        private HandsImageCreator(PXCMCapture.Device device, HandsData handsData, ImageData imageData,
             Configuration realSenseConfiguration, HandsImageConfiguration imageConfiguration)
         {
+            this.device = device;
             this.handsData = handsData;
             this.imageData = imageData;
 
@@ -42,10 +47,20 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Hands
         public Bitmap Create()
         {
             Bitmap bitmap = CreateBitmap();
+            CreateProjection();
             SetBackground(bitmap);
             OverlayBitmap(bitmap);
 
+            CleanUp();
+
             return bitmap;
+        }
+
+        private void CreateProjection()
+        {
+            projection = device.CreateProjection();
+            uvMap = new PXCMPointF32[imageData.DepthImage.info.width*imageData.ColorImage.info.height];
+            projection.QueryUVMap(imageData.DepthImage, uvMap);
         }
 
         private Bitmap CreateBitmap()
@@ -100,16 +115,18 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Hands
 
         private void OverlayBitmapWithHandsSegmentationImages(Bitmap bitmap)
         {
-            foreach (var hand in handsData.Hands)
+            foreach (HandData hand in handsData.Hands)
             {
                 OverlayBitmapWithHandsSegmentationImage(bitmap, hand.SegmentationImage, (byte) hand.BodySide);
             }
         }
 
-        private unsafe void OverlayBitmapWithHandsSegmentationImage(Bitmap bitmap, PXCMImage segmentationImage, byte userId)
+        private unsafe void OverlayBitmapWithHandsSegmentationImage(Bitmap bitmap, PXCMImage segmentationImage,
+            byte userId)
         {
             PXCMImage.ImageData data;
-            var status = segmentationImage.AcquireAccess(PXCMImage.Access.ACCESS_READ, PXCMImage.PixelFormat.PIXEL_FORMAT_Y8, out data);
+            pxcmStatus status = segmentationImage.AcquireAccess(PXCMImage.Access.ACCESS_READ,
+                PXCMImage.PixelFormat.PIXEL_FORMAT_Y8, out data);
 
             if (status < pxcmStatus.PXCM_STATUS_NO_ERROR)
             {
@@ -138,7 +155,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Hands
 
         private void OverlayBitmapWithHandJoints(Bitmap bitmap)
         {
-            foreach (var hand in handsData.Hands)
+            foreach (HandData hand in handsData.Hands)
             {
                 AddJointData(bitmap, hand.Joints.Values.ToArray());
             }
@@ -158,9 +175,10 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Hands
 
         public void DrawLines(Graphics graphics, PXCMHandData.JointData[] nodes, int[] indexes, bool closed = false)
         {
-            PXCMPoint3DF32[] detectedPositions = nodes.Select((node, index) => new { Node = node, Index = index })
+            PXCMPoint3DF32[] detectedPositions = nodes.Select((node, index) => new {Node = node, Index = index})
                 .Where(node => node.Node.confidence > CONFIDENCE_THRESHOLD && indexes.Contains(node.Index))
-                .Select(node => node.Node.positionImage)
+                .Select(node => MapDepthPositionToBackgroundImage(node.Node.positionImage))
+                .Where(image => image.x > 0 && image.y > 0)
                 .ToArray();
 
             0.To(detectedPositions.Length - (closed ? 1 : 2))
@@ -169,22 +187,43 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Hands
                     startIndex => new
                     {
                         Start = detectedPositions[startIndex],
-                        End = detectedPositions[(startIndex + 1) % detectedPositions.Length]
+                        End = detectedPositions[(startIndex + 1)%detectedPositions.Length]
                     })
                 .Do(line => DrawLine(graphics, line.Start, line.End));
         }
 
+        private PXCMPoint3DF32 MapDepthPositionToBackgroundImage(PXCMPoint3DF32 positionImage)
+        {
+            if (imageConfiguration.BackgroundImage == HandsImageBackground.ColorImage)
+            {
+                return new PXCMPoint3DF32
+                {
+                    x = uvMap[(int) positionImage.y*imageData.ColorImage.info.width + (int) positionImage.x].x*
+                        imageData.ColorImage.info.width,
+                    y = uvMap[(int) positionImage.y*imageData.ColorImage.info.width + (int) positionImage.x].y*
+                        imageData.ColorImage.info.height
+                };
+            }
+
+            return positionImage;
+        }
+
         private void DrawLine(Graphics graphics, PXCMPoint3DF32 start, PXCMPoint3DF32 end)
         {
-            graphics.DrawLine(BONE_PEN, new Point((int)start.x, (int)start.y), new Point((int)end.x, (int)end.y));
+            graphics.DrawLine(BONE_PEN, new Point((int) start.x, (int) start.y), new Point((int) end.x, (int) end.y));
+        }
+
+        private void CleanUp()
+        {
+            projection.Dispose();
         }
 
         public class Builder
         {
-            public HandsImageCreator Build(HandsData handsData, ImageData imageData,
+            public HandsImageCreator Build(PXCMCapture.Device device, HandsData handsData, ImageData imageData,
                 Configuration realSenseConfiguration, HandsImageConfiguration imageConfiguration)
             {
-                return new HandsImageCreator(handsData, imageData, realSenseConfiguration, imageConfiguration);
+                return new HandsImageCreator(device, handsData, imageData, realSenseConfiguration, imageConfiguration);
             }
         }
     }
