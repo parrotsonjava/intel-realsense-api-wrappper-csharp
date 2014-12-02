@@ -4,7 +4,7 @@ namespace IntelRealSenseStart.Code.RealSense.Config
 {
     public class ImageConfiguration : ConfigurationOption
     {
-        public readonly Size DEFAULT_RESOLUTION = new Size(640, 480);
+        public static readonly Size DEFAULT_RESOLUTION = new Size(640, 480);
 
         private Size resolution;
 

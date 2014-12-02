@@ -2,7 +2,8 @@
 {
     public enum HandsImageOverlay
     {
-        HandsSegmentationImage,
-        HandJoints
+        DepthCoordinateHandsSegmentationImage,
+        DepthCoordinateHandJoints,
+        ColorCoordinateHandJoints
     }
 }

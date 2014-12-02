@@ -83,6 +83,7 @@
     <Compile Include="Code\RealSense\Factory\DataFactory.cs" />
     <Compile Include="Code\RealSense\Factory\EventsFactory.cs" />
     <Compile Include="Code\RealSense\Factory\RealSenseFactory.cs" />
+    <Compile Include="Code\RealSense\Helper\ImageExtensions.cs" />
     <Compile Include="Code\RealSense\Helper\EnumerableExtensions.cs" />
     <Compile Include="Code\RealSense\Helper\Range.cs" />
     <Compile Include="Code\RealSense\Helper\RangeExtensions.cs" />

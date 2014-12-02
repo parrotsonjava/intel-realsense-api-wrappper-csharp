@@ -2,20 +2,22 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using IntelRealSenseStart.Code.RealSense.Config;
 using IntelRealSenseStart.Code.RealSense.Config.HandsImage;
 using IntelRealSenseStart.Code.RealSense.Data;
 using IntelRealSenseStart.Code.RealSense.Exception;
+using IntelRealSenseStart.Code.RealSense.Helper;
 
 namespace IntelRealSenseStart.Code.RealSense.Component.Hands
 {
     public class HandsImageCreator
     {
         private const int CONFIDENCE_THRESHOLD = 80;
-        private static readonly Pen BONE_PEN = new Pen(Color.SlateBlue, 3.0f);
-
         private static readonly byte[] LUT;
+
+        private Pen bonePen;
 
         private readonly PXCMCapture.Device device;
         private readonly HandsData handsData;
@@ -29,6 +31,8 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Hands
 
         static HandsImageCreator()
         {
+
+
             LUT = Enumerable.Repeat((byte) 0, 256).ToArray();
             LUT[255] = 1;
         }
@@ -42,6 +46,14 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Hands
 
             this.realSenseConfiguration = realSenseConfiguration;
             this.imageConfiguration = imageConfiguration;
+
+            Configure();
+
+        }
+
+        private void Configure()
+        {
+            bonePen = new Pen(Color.SlateBlue, 3.0f * BackgroundImageResolution.Width / imageConfiguration.Resolution.Width);
         }
 
         public Bitmap Create()
@@ -53,21 +65,20 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Hands
 
             CleanUp();
 
-            return bitmap;
+            return (Bitmap) bitmap.ResizeImage(imageConfiguration.Resolution);
+        }
+
+        private Bitmap CreateBitmap()
+        {
+            var backgroundImageSize = BackgroundImageResolution;
+            return new Bitmap(backgroundImageSize.Width, backgroundImageSize.Height, PixelFormat.Format32bppRgb);
         }
 
         private void CreateProjection()
         {
             projection = device.CreateProjection();
-            uvMap = new PXCMPointF32[imageData.DepthImage.info.width*imageData.ColorImage.info.height];
+            uvMap = new PXCMPointF32[imageData.DepthImage.info.width * imageData.DepthImage.info.height];
             projection.QueryUVMap(imageData.DepthImage, uvMap);
-        }
-
-        private Bitmap CreateBitmap()
-        {
-            int width = realSenseConfiguration.ColorImage.Resolution.Width;
-            int height = realSenseConfiguration.ColorImage.Resolution.Height;
-            return new Bitmap(width, height, PixelFormat.Format32bppRgb);
         }
 
         private void SetBackground(Bitmap bitmap)
@@ -75,6 +86,10 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Hands
             if (imageConfiguration.BackgroundImage == HandsImageBackground.ColorImage)
             {
                 CopyImageDataToBitmap(bitmap, imageData.ColorImage);
+            }
+            else if (imageConfiguration.BackgroundImage == HandsImageBackground.DepthImage)
+            {
+                CopyImageDataToBitmap(bitmap, imageData.DepthImage);
             }
         }
 
@@ -103,13 +118,17 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Hands
 
         private void OverlayBitmap(Bitmap bitmap)
         {
-            if (imageConfiguration.Overlays.Contains(HandsImageOverlay.HandsSegmentationImage))
+            if (imageConfiguration.Overlays.Contains(HandsImageOverlay.DepthCoordinateHandsSegmentationImage))
             {
                 OverlayBitmapWithHandsSegmentationImages(bitmap);
             }
-            if (imageConfiguration.Overlays.Contains(HandsImageOverlay.HandJoints))
+            if (imageConfiguration.Overlays.Contains(HandsImageOverlay.DepthCoordinateHandJoints))
             {
-                OverlayBitmapWithHandJoints(bitmap);
+                OverlayBitmapWithHandJoints(bitmap, projectColorToDepthCoordinates: false);
+            }
+            if (imageConfiguration.Overlays.Contains(HandsImageOverlay.ColorCoordinateHandJoints))
+            {
+                OverlayBitmapWithHandJoints(bitmap, projectColorToDepthCoordinates: true);
             }
         }
 
@@ -153,38 +172,42 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Hands
             segmentationImage.ReleaseAccess(data);
         }
 
-        private void OverlayBitmapWithHandJoints(Bitmap bitmap)
+        private void OverlayBitmapWithHandJoints(Bitmap bitmap, bool projectColorToDepthCoordinates)
         {
             foreach (HandData hand in handsData.Hands)
             {
-                AddJointData(bitmap, hand.Joints.Values.ToArray());
+                AddJointData(bitmap, projectColorToDepthCoordinates, hand.Joints.Values.ToArray());
             }
         }
 
-        public void AddJointData(Bitmap bitmap, PXCMHandData.JointData[] nodes)
+        public void AddJointData(Bitmap bitmap, bool projectColorToDepthCoordinates, PXCMHandData.JointData[] nodes)
         {
             Graphics graphics = Graphics.FromImage(bitmap);
 
-            DrawLines(graphics, nodes, 0.To(1).ToArray());
-            DrawLines(graphics, nodes, 0.AsRange().Add(2.To(5)).ToArray());
-            DrawLines(graphics, nodes, 0.AsRange().Add(6.To(9)).ToArray());
-            DrawLines(graphics, nodes, 0.AsRange().Add(10.To(13)).ToArray());
-            DrawLines(graphics, nodes, 0.AsRange().Add(14.To(17)).ToArray());
-            DrawLines(graphics, nodes, 0.AsRange().Add(18.To(21)).ToArray());
+            DrawLines(graphics, nodes, projectColorToDepthCoordinates, 0.To(1).ToArray());
+            DrawLines(graphics, nodes, projectColorToDepthCoordinates, 0.AsRange().Add(2.To(5)).ToArray());
+            DrawLines(graphics, nodes, projectColorToDepthCoordinates, 0.AsRange().Add(6.To(9)).ToArray());
+            DrawLines(graphics, nodes, projectColorToDepthCoordinates, 0.AsRange().Add(10.To(13)).ToArray());
+            DrawLines(graphics, nodes, projectColorToDepthCoordinates, 0.AsRange().Add(14.To(17)).ToArray());
+            DrawLines(graphics, nodes, projectColorToDepthCoordinates, 0.AsRange().Add(18.To(21)).ToArray());
         }
 
-        public void DrawLines(Graphics graphics, PXCMHandData.JointData[] nodes, int[] indexes, bool closed = false)
+        public void DrawLines(Graphics graphics, PXCMHandData.JointData[] nodes, bool projectColorToDepthCoordinates,
+            int[] indexes, bool closed = false)
         {
-            PXCMPoint3DF32[] detectedPositions = nodes.Select((node, index) => new {Node = node, Index = index})
+            var detectedPositions = nodes.Select((node, index) => new {Node = node, Index = index})
                 .Where(node => node.Node.confidence > CONFIDENCE_THRESHOLD && indexes.Contains(node.Index))
-                .Select(node => MapDepthPositionToBackgroundImage(node.Node.positionImage))
+                .Select(node =>
+                    projectColorToDepthCoordinates
+                        ? MapDepthPositionToColorPositionInBackgroundImage(node.Node.positionImage)
+                        : MapDepthPositionToBackgroundImage(node.Node.positionImage))
                 .Where(image => image.x > 0 && image.y > 0)
                 .ToArray();
 
             0.To(detectedPositions.Length - (closed ? 1 : 2))
                 .ToArray()
-                .Select(
-                    startIndex => new
+                .Select(startIndex =>
+                    new
                     {
                         Start = detectedPositions[startIndex],
                         End = detectedPositions[(startIndex + 1)%detectedPositions.Length]
@@ -192,30 +215,72 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Hands
                 .Do(line => DrawLine(graphics, line.Start, line.End));
         }
 
-        private PXCMPoint3DF32 MapDepthPositionToBackgroundImage(PXCMPoint3DF32 positionImage)
+        private PXCMPoint3DF32 MapDepthPositionToColorPositionInBackgroundImage(PXCMPoint3DF32 depthPosition)
         {
             if (imageConfiguration.BackgroundImage == HandsImageBackground.ColorImage)
             {
                 return new PXCMPoint3DF32
                 {
-                    x = uvMap[(int) positionImage.y*imageData.ColorImage.info.width + (int) positionImage.x].x*
-                        imageData.ColorImage.info.width,
-                    y = uvMap[(int) positionImage.y*imageData.ColorImage.info.width + (int) positionImage.x].y*
-                        imageData.ColorImage.info.height
+                    x = uvMap[(int) depthPosition.y*imageData.DepthImage.info.width + (int) depthPosition.x].x*
+                        BackgroundImageResolution.Width,
+                    y = uvMap[(int)depthPosition.y * imageData.DepthImage.info.width + (int)depthPosition.x].y *
+                        BackgroundImageResolution.Height
                 };
             }
 
-            return positionImage;
+            return depthPosition;
+        }
+
+        private PXCMPoint3DF32 MapDepthPositionToBackgroundImage(PXCMPoint3DF32 depthPosition)
+        {
+            var depthResolution = realSenseConfiguration.DepthImage.Resolution;
+            if (depthResolution.Equals(BackgroundImageResolution))
+            {
+                return depthPosition;
+            }
+
+            return new PXCMPoint3DF32
+            {
+                x = (depthPosition.x / depthResolution.Width) * BackgroundImageResolution.Width,
+                y = (depthPosition.y / depthResolution.Height) * BackgroundImageResolution.Height
+            };
         }
 
         private void DrawLine(Graphics graphics, PXCMPoint3DF32 start, PXCMPoint3DF32 end)
         {
-            graphics.DrawLine(BONE_PEN, new Point((int) start.x, (int) start.y), new Point((int) end.x, (int) end.y));
+            graphics.DrawLine(bonePen, new Point((int) start.x, (int) start.y), new Point((int) end.x, (int) end.y));
         }
 
         private void CleanUp()
         {
             projection.Dispose();
+        }
+
+        private PXCMImage BackgroundImage
+        {
+            get
+            {
+                switch (imageConfiguration.BackgroundImage)
+                {
+                    case HandsImageBackground.ColorImage:
+                        return imageData.ColorImage;
+                    case HandsImageBackground.DepthImage:
+                        return imageData.DepthImage;
+                    default:
+                        return null;
+                }
+            }
+        }
+
+        private Size BackgroundImageResolution
+        {
+            get
+            {
+                var backgroundImage = BackgroundImage;
+                return backgroundImage != null
+                    ? new Size(backgroundImage.info.width, backgroundImage.info.height)
+                    : imageConfiguration.Resolution;
+            }
         }
 
         public class Builder

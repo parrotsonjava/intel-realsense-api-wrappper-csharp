@@ -44,9 +44,9 @@ namespace IntelRealSenseStart
         private void realSense_Hands_Frame(FrameEventArgs frameEventArgs)
         {
             Bitmap bitmap = frameEventArgs.CreateImage()
+                .WithResolution(new Size(640, 480))
                 .WithBackgroundImage(HandsImageBackground.ColorImage)
-                .WithOverlay(HandsImageOverlay.HandsSegmentationImage)
-                .WithOverlay(HandsImageOverlay.HandJoints)
+                .WithOverlay(HandsImageOverlay.ColorCoordinateHandJoints)
                 .Create();
 
             BeginInvoke(new BitmapHandler(SetImage), new object[] { bitmap });

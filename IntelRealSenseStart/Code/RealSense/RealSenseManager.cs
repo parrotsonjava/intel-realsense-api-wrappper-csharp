@@ -35,33 +35,18 @@ namespace IntelRealSenseStart.Code.RealSense
             }
 
             stopped = false;
-            manager = PXCMSession.CreateInstance().CreateSenseManager();
+            StartRealSense();
+        }
 
+        private void StartRealSense()
+        {
+            manager = PXCMSession.CreateInstance().CreateSenseManager();
             CreateComponentsManager();
 
-            componentsManager.EnableFeatures();
             InitializeManager();
             ConfigureDevice();
 
             componentsManager.Start();
-        }
-
-        public void Stop()
-        {
-            if (stopped)
-            {
-                return;
-            }
-
-            stopped = true;
-
-            componentsManager.Stop();
-            manager.Close();
-        }
-
-        public bool Started
-        {
-            get { return !stopped; }
         }
 
         public static Builder Create()
@@ -73,6 +58,8 @@ namespace IntelRealSenseStart.Code.RealSense
         {
             componentsManager = factory.Components.ComponentsManager().Build(factory, manager, configuration);
             componentsManager.Frame += componentsManager_Frame;
+            
+            componentsManager.EnableFeatures();
         }
         
         private void InitializeManager()
@@ -94,6 +81,22 @@ namespace IntelRealSenseStart.Code.RealSense
             manager.captureManager.device.SetMirrorMode(PXCMCapture.Device.MirrorMode.MIRROR_MODE_HORIZONTAL);
             manager.captureManager.device.SetIVCAMFilterOption(6);
         }
+        public void Stop()
+        {
+            if (stopped)
+            {
+                return;
+            }
+
+            stopped = true;
+            StopRealSense();
+        }
+
+        private void StopRealSense()
+        {
+            componentsManager.Stop();
+            manager.Close();
+        }
 
         private void componentsManager_Frame(FrameEventArgs frameEventArgs)
         {
@@ -101,6 +104,11 @@ namespace IntelRealSenseStart.Code.RealSense
             {
                 Frame.Invoke(frameEventArgs);
             }
+        }
+
+        public bool Started
+        {
+            get { return !stopped; }
         }
 
         public class Builder

@@ -98,7 +98,8 @@ namespace IntelRealSenseStart.Code.RealSense
 
         private void AcquireFrame()
         {
-            if (manager.AcquireFrame(true) < pxcmStatus.PXCM_STATUS_NO_ERROR)
+            pxcmStatus status;
+            if ((status = manager.AcquireFrame(true)) < pxcmStatus.PXCM_STATUS_NO_ERROR)
             {
                 throw new RealSenseException("Error while acquiring frame");
             }

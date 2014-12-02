@@ -3,6 +3,7 @@
     public enum HandsImageBackground
     {
         None,
-        ColorImage
+        ColorImage,
+        DepthImage
     }
 }
