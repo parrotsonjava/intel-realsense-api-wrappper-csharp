@@ -32,12 +32,11 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
             this.manager = manager;
             this.configuration = configuration;
 
-            var allComponents = GetComponents(factory, manager, configuration);
+            var allComponents = GetComponents();
             components = allComponents.Where(component => component.ShouldBeStarted).ToArray();
         }
 
-        private static DeterminerComponent[] GetComponents(RealSenseFactory factory, PXCMSenseManager manager,
-            Configuration configuration)
+        private DeterminerComponent[] GetComponents()
         {
             var deviceComponent = factory.Components.Determiner.Device()
                 .WithManager(manager)

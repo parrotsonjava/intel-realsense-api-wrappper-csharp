@@ -6,13 +6,13 @@ namespace IntelRealSenseStart.Code.RealSense.Factory.Component
     {
         private readonly CreatorComponentsFactory creatorComponentsFactory;
         private readonly DeterminerComponentsFactory determinerComponentsFactory;
-        private readonly PropertyComponentsFactory propertyComponentsFactory;
+        private readonly PropertiesComponentsFactory _propertiesComponentsFactory;
 
         public ComponentsFactory()
         {
             creatorComponentsFactory = new CreatorComponentsFactory();
             determinerComponentsFactory = new DeterminerComponentsFactory();
-            propertyComponentsFactory = new PropertyComponentsFactory();
+            _propertiesComponentsFactory = new PropertiesComponentsFactory();
         }
 
         public CreatorComponentsFactory Creator
@@ -25,9 +25,9 @@ namespace IntelRealSenseStart.Code.RealSense.Factory.Component
             get { return determinerComponentsFactory;  }
         }
 
-        public PropertyComponentsFactory Property
+        public PropertiesComponentsFactory Properties
         {
-            get { return propertyComponentsFactory; }
+            get { return _propertiesComponentsFactory; }
         }
     }
 }

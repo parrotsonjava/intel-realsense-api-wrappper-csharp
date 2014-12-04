@@ -70,7 +70,8 @@
   <ItemGroup>
     <Compile Include="Code\RealSense\Component\Determiner\DeterminerComponent.cs" />
     <Compile Include="Code\RealSense\Component\Determiner\DeviceDeterminerComponent.cs" />
-    <Compile Include="Code\RealSense\Component\Property\DevicePropertyDeterminer.cs" />
+    <Compile Include="Code\RealSense\Component\Property\DevicePropertiesDeterminer.cs" />
+    <Compile Include="Code\RealSense\Component\Property\PropertiesComponent.cs" />
     <Compile Include="Code\RealSense\Config\RealSense\DeviceConfiguration.cs" />
     <Compile Include="Code\RealSense\Config\HandsImage\HandsImageBackground.cs" />
     <Compile Include="Code\RealSense\Config\HandsImage\HandsImageConfiguration.cs" />
@@ -79,9 +80,9 @@
     <Compile Include="Code\RealSense\Component\Creator\HandsImageBuilder.cs" />
     <Compile Include="Code\RealSense\Component\Determiner\ImageDeterminerComponent.cs" />
     <Compile Include="Code\RealSense\Config\RealSense\VideoDeviceConfiguration.cs" />
-    <Compile Include="Code\RealSense\Data\HandData.cs" />
-    <Compile Include="Code\RealSense\Data\HandsData.cs" />
-    <Compile Include="Code\RealSense\Data\ImageData.cs" />
+    <Compile Include="Code\RealSense\Data\Determiner\HandData.cs" />
+    <Compile Include="Code\RealSense\Data\Determiner\HandsData.cs" />
+    <Compile Include="Code\RealSense\Data\Determiner\ImageData.cs" />
     <Compile Include="Code\RealSense\Exception\IllegalStateException.cs" />
     <Compile Include="Code\RealSense\Factory\Component\ComponentsFactory.cs" />
     <Compile Include="Code\RealSense\Factory\Component\CreatorComponentsFactory.cs" />
@@ -89,10 +90,11 @@
     <Compile Include="Code\RealSense\Factory\Data\DataFactory.cs" />
     <Compile Include="Code\RealSense\Factory\Component\DeterminerComponentsFactory.cs" />
     <Compile Include="Code\RealSense\Factory\Data\DeterminerDataFactory.cs" />
+    <Compile Include="Code\RealSense\Factory\Data\PropertiesDataFactory.cs" />
     <Compile Include="Code\RealSense\Factory\EventsFactory.cs" />
     <Compile Include="Code\RealSense\Factory\ManagerFactory.cs" />
     <Compile Include="Code\RealSense\Factory\NativeFactory.cs" />
-    <Compile Include="Code\RealSense\Factory\Component\PropertyComponentsFactory.cs" />
+    <Compile Include="Code\RealSense\Factory\Component\PropertiesComponentsFactory.cs" />
     <Compile Include="Code\RealSense\Factory\RealSenseFactory.cs" />
     <Compile Include="Code\RealSense\Helper\ImageExtensions.cs" />
     <Compile Include="Code\RealSense\Helper\EnumerableExtensions.cs" />
@@ -106,9 +108,9 @@
     <Compile Include="Code\RealSense\Exception\RealSenseException.cs" />
     <Compile Include="Code\RealSense\Event\FrameEventArgs.cs" />
     <Compile Include="Code\RealSense\Component\Determiner\HandsDeterminerComponent.cs" />
-    <Compile Include="Code\RealSense\Properties\DeviceProperties.cs" />
-    <Compile Include="Code\RealSense\Properties\RealSenseProperties.cs" />
-    <Compile Include="Code\RealSense\Properties\StreamProperties.cs" />
+    <Compile Include="Code\RealSense\Data\Properties\DeviceProperties.cs" />
+    <Compile Include="Code\RealSense\Data\Properties\RealSenseProperties.cs" />
+    <Compile Include="Code\RealSense\Data\Properties\StreamProperties.cs" />
     <Compile Include="Code\RealSense\Manager\RealSenseDeterminerManager.cs" />
     <Compile Include="Code\RealSense\RealSenseManager.cs" />
     <Compile Include="Code\RealSense\Manager\RealSensePropertiesManager.cs" />

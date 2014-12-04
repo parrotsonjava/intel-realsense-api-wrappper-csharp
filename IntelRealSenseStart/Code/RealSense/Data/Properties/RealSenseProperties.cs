@@ -1,10 +1,12 @@
-﻿namespace IntelRealSenseStart.Code.RealSense.Properties
+﻿using System.Collections.Generic;
+
+namespace IntelRealSenseStart.Code.RealSense.Data.Properties
 {
     public class RealSenseProperties
     {
         public static readonly RealSenseProperties DEFAULT_PROPERTIES;
 
-        private DeviceProperties deviceProperties;
+        private readonly List<DeviceProperties> deviceProperties;
 
         static RealSenseProperties()
         {
@@ -13,17 +15,17 @@
 
         private RealSenseProperties()
         {
-            deviceProperties = DeviceProperties.DEFAULT_PROPERTIES;
+            deviceProperties = new List<DeviceProperties>();
         }
 
-        public DeviceProperties Device
+        public List<DeviceProperties> Devices
         {
             get { return deviceProperties; }
         }
 
         public class Builder
         {
-            private RealSenseProperties realSenseProperties;
+            private readonly RealSenseProperties realSenseProperties;
             
             public Builder()
             {
@@ -32,7 +34,7 @@
 
             public Builder WithDeviceProperties(DeviceProperties.Builder deviceProperties)
             {
-                realSenseProperties.deviceProperties = deviceProperties.Build();
+                realSenseProperties.Devices.Add(deviceProperties.Build());
                 return this;
             }
 

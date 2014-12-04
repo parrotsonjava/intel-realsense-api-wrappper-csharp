@@ -1,12 +1,12 @@
 ﻿using System;
 using IntelRealSenseStart.Code.RealSense.Config.RealSense;
+using IntelRealSenseStart.Code.RealSense.Data.Properties;
 using IntelRealSenseStart.Code.RealSense.Event;
 using IntelRealSenseStart.Code.RealSense.Exception;
 using IntelRealSenseStart.Code.RealSense.Factory;
 using IntelRealSenseStart.Code.RealSense.Factory.Configuration;
 using IntelRealSenseStart.Code.RealSense.Helper;
 using IntelRealSenseStart.Code.RealSense.Manager;
-using IntelRealSenseStart.Code.RealSense.Properties;
 
 namespace IntelRealSenseStart.Code.RealSense
 {
@@ -25,7 +25,7 @@ namespace IntelRealSenseStart.Code.RealSense
         private Boolean stopped = true;
 
         private RealSenseDeterminerManager componentsManager;
-        private PXCMSenseManager manager;
+        private readonly PXCMSenseManager manager;
 
         public static Builder Create()
         {
@@ -36,6 +36,9 @@ namespace IntelRealSenseStart.Code.RealSense
         {
             this.factory = factory;
             this.configuration = configuration;
+
+            manager = factory.Native.CreateSenseManager();
+            DetermineProperties();
         }
 
         public void Start()
@@ -51,9 +54,6 @@ namespace IntelRealSenseStart.Code.RealSense
 
         private void StartRealSense()
         {
-            manager = factory.Native.CreateSenseManager();
-            DetermineProperties();
-
             CreateComponentsManager();
             InitializeManager();
 
@@ -109,6 +109,11 @@ namespace IntelRealSenseStart.Code.RealSense
             {
                 Frame.Invoke(frameEventArgs);
             }
+        }
+
+        public RealSenseProperties Properties
+        {
+            get { return properties; }
         }
 
         public bool Started
