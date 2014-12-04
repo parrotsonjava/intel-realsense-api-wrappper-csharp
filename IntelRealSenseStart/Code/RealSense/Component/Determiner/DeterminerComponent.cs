@@ -1,8 +1,8 @@
 ﻿using IntelRealSenseStart.Code.RealSense.Event;
 
-namespace IntelRealSenseStart.Code.RealSense.Component
+namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
 {
-    internal interface Component
+    internal interface DeterminerComponent
     {
         bool ShouldBeStarted { get; }
 

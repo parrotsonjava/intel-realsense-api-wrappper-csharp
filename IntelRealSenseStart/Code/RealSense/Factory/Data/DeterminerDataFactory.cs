@@ -1,8 +1,8 @@
 ﻿using IntelRealSenseStart.Code.RealSense.Data;
 
-namespace IntelRealSenseStart.Code.RealSense.Factory
+namespace IntelRealSenseStart.Code.RealSense.Factory.Data
 {
-    public class DataFactory
+    public class DeterminerDataFactory
     {
         public ImageData.Builder ImageData()
         {

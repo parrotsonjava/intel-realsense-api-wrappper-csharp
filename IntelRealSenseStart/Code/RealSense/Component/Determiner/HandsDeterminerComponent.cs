@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using IntelRealSenseStart.Code.RealSense.Config;
+using IntelRealSenseStart.Code.RealSense.Config.RealSense;
 using IntelRealSenseStart.Code.RealSense.Data;
 using IntelRealSenseStart.Code.RealSense.Event;
 using IntelRealSenseStart.Code.RealSense.Factory;
+using IntelRealSenseStart.Code.RealSense.Helper;
 
-namespace IntelRealSenseStart.Code.RealSense.Component.Hands
+namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
 {
-    public class HandsComponent : Component
+    public class HandsDeterminerComponent : DeterminerComponent
     {
         private readonly Configuration configuration;
 
@@ -16,7 +17,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Hands
 
         private PXCMHandData handData;
 
-        private HandsComponent(RealSenseFactory factory, PXCMSenseManager manager, Configuration configuration)
+        private HandsDeterminerComponent(RealSenseFactory factory, PXCMSenseManager manager, Configuration configuration)
         {
             this.factory = factory;
             this.manager = manager;
@@ -72,7 +73,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Hands
 
         private HandsData.Builder GetHandsData()
         {
-            return factory.Data.HandsData().WithHands(
+            return factory.Data.Determiner.HandsData().WithHands(
                 GetIndividualHandSamples().Select(GetIndividualHandData));
         }
 
@@ -88,7 +89,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Hands
 
         private HandData.Builder GetIndividualHandData(PXCMHandData.IHand individualHandSample)
         {
-            return factory.Data.HandData()
+            return factory.Data.Determiner.HandData()
                 .WithBodySide(GetUserId(individualHandSample))
                 .WithJoints(GetJointData(individualHandSample))
                 .WithSegmentationImage(GetSegmentationImage(individualHandSample));
@@ -121,10 +122,38 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Hands
 
         public class Builder
         {
-            public HandsComponent Build(RealSenseFactory factory, PXCMSenseManager pxcmSenseManager,
-                Configuration configuration)
+            private RealSenseFactory factory;
+            private PXCMSenseManager manager;
+            private Configuration configuration;
+
+            public Builder WithFactory(RealSenseFactory factory)
             {
-                return new HandsComponent(factory, pxcmSenseManager, configuration);
+                this.factory = factory;
+                return this;
+            }
+
+            public Builder WithManager(PXCMSenseManager manager)
+            {
+                this.manager = manager;
+                return this;
+            }
+
+            public Builder WithConfiguration(Configuration configuration)
+            {
+                this.configuration = configuration;
+                return this;
+            }
+
+            public HandsDeterminerComponent Build()
+            {
+                factory.CheckState(Preconditions.IsNotNull,
+                    "The factory must be set in order to create the hands determiner component");
+                manager.CheckState(Preconditions.IsNotNull,
+                    "The RealSense manager must be set in order to create the hands determiner component");
+                configuration.CheckState(Preconditions.IsNotNull,
+                    "The RealSense configuration must be set in order to create the hands determiner component");
+
+                return new HandsDeterminerComponent(factory, manager, configuration);
             }
         }
     }

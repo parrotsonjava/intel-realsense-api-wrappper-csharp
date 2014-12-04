@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace IntelRealSenseStart.Code
+namespace IntelRealSenseStart.Code.RealSense.Helper
 {
-    internal class Range
+    public class Range
     {
         private readonly List<int> values;
 

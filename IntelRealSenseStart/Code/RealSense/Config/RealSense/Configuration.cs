@@ -1,11 +1,9 @@
 ﻿using IntelRealSenseStart.Code.RealSense.Exception;
 
-namespace IntelRealSenseStart.Code.RealSense.Config
+namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
 {
     public class Configuration
     {
-        // TODO set default device configuration
-
         private DeviceConfiguration deviceConfiguration;
         private ImageConfiguration colorImageConfig;
         private ImageConfiguration depthImageConfig;
@@ -14,6 +12,11 @@ namespace IntelRealSenseStart.Code.RealSense.Config
         public bool HandsDetectionEnabled
         {
             get { return handsConfig != null; }
+        }
+
+        private Configuration()
+        {
+            deviceConfiguration = DeviceConfiguration.DEFAULT_CONFIGURATION;
         }
 
         public HandsConfiguration HandsDetection
@@ -26,6 +29,11 @@ namespace IntelRealSenseStart.Code.RealSense.Config
                 }
                 return handsConfig;
             }
+        }
+
+        public DeviceConfiguration Device
+        {
+            get { return deviceConfiguration; }
         }
 
         public bool ColorImageEnabled
@@ -100,6 +108,5 @@ namespace IntelRealSenseStart.Code.RealSense.Config
                 return configuration;
             }
         }
-
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using IntelRealSenseStart.Code.RealSense.Config.RealSense;
 
 namespace IntelRealSenseStart.Code.RealSense.Config.HandsImage
 {
@@ -9,7 +10,7 @@ namespace IntelRealSenseStart.Code.RealSense.Config.HandsImage
 
         private HandsImageBackground backgroundImage;
 
-        private List<HandsImageOverlay> overlays;
+        private readonly List<HandsImageOverlay> overlays;
         
         private HandsImageConfiguration()
         {
@@ -34,7 +35,7 @@ namespace IntelRealSenseStart.Code.RealSense.Config.HandsImage
 
         public class Builder
         {
-            private HandsImageConfiguration handImageConfiguration;
+            private readonly HandsImageConfiguration handImageConfiguration;
 
             public Builder()
             {

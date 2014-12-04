@@ -1,8 +1,8 @@
 ﻿using System.Drawing;
 
-namespace IntelRealSenseStart.Code.RealSense.Config
+namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
 {
-    public class ImageConfiguration : ConfigurationOption
+    public class ImageConfiguration
     {
         public static readonly Size DEFAULT_RESOLUTION = new Size(640, 480);
 

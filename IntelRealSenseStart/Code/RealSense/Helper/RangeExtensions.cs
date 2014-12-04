@@ -1,4 +1,4 @@
-﻿namespace IntelRealSenseStart.Code
+﻿namespace IntelRealSenseStart.Code.RealSense.Helper
 {
     internal static class RangeExtensions
     {

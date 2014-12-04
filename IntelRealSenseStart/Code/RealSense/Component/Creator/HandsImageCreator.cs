@@ -2,15 +2,14 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using IntelRealSenseStart.Code.RealSense.Config;
 using IntelRealSenseStart.Code.RealSense.Config.HandsImage;
+using IntelRealSenseStart.Code.RealSense.Config.RealSense;
 using IntelRealSenseStart.Code.RealSense.Data;
 using IntelRealSenseStart.Code.RealSense.Exception;
 using IntelRealSenseStart.Code.RealSense.Helper;
 
-namespace IntelRealSenseStart.Code.RealSense.Component.Hands
+namespace IntelRealSenseStart.Code.RealSense.Component.Creator
 {
     public class HandsImageCreator
     {
@@ -31,8 +30,6 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Hands
 
         static HandsImageCreator()
         {
-
-
             LUT = Enumerable.Repeat((byte) 0, 256).ToArray();
             LUT[255] = 1;
         }
@@ -48,7 +45,6 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Hands
             this.imageConfiguration = imageConfiguration;
 
             Configure();
-
         }
 
         private void Configure()
@@ -285,8 +281,43 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Hands
 
         public class Builder
         {
-            public HandsImageCreator Build(PXCMCapture.Device device, HandsData handsData, ImageData imageData,
-                Configuration realSenseConfiguration, HandsImageConfiguration imageConfiguration)
+            private PXCMCapture.Device device;
+            private HandsData handsData;
+            private ImageData imageData;
+            private Configuration realSenseConfiguration;
+            private HandsImageConfiguration imageConfiguration;
+
+            public Builder WithDevice(PXCMCapture.Device device)
+            {
+                this.device = device;
+                return this;
+            }
+
+            public Builder WithHandsData(HandsData handsData)
+            {
+                this.handsData = handsData;
+                return this;
+            }
+
+            public Builder WithImageData(ImageData imageData)
+            {
+                this.imageData = imageData;
+                return this;
+            }
+
+            public Builder WithRealSenseConfiguration(Configuration realSenseConfiguration)
+            {
+                this.realSenseConfiguration = realSenseConfiguration;
+                return this;
+            }
+
+            public Builder WithImageConfiguration(HandsImageConfiguration imageConfiguration)
+            {
+                this.imageConfiguration = imageConfiguration;
+                return this;
+            }
+
+            public HandsImageCreator Build()
             {
                 return new HandsImageCreator(device, handsData, imageData, realSenseConfiguration, imageConfiguration);
             }

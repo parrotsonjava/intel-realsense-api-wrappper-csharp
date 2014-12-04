@@ -1,25 +1,36 @@
 ﻿using System;
-using IntelRealSenseStart.Code.RealSense.Config;
+using IntelRealSenseStart.Code.RealSense.Config.RealSense;
 using IntelRealSenseStart.Code.RealSense.Event;
 using IntelRealSenseStart.Code.RealSense.Exception;
 using IntelRealSenseStart.Code.RealSense.Factory;
+using IntelRealSenseStart.Code.RealSense.Factory.Configuration;
+using IntelRealSenseStart.Code.RealSense.Helper;
+using IntelRealSenseStart.Code.RealSense.Manager;
+using IntelRealSenseStart.Code.RealSense.Properties;
 
 namespace IntelRealSenseStart.Code.RealSense
 {
     public class RealSenseManager
     {
         public delegate void FrameEventListener(FrameEventArgs frameEventArgs);
+
         public event FrameEventListener Frame;
 
-        public delegate Configuration.Builder FeatureConfigurer(ConfigurationFactory featureFactory);
+        public delegate Configuration.Builder FeatureConfigurer(DeterminerConfigurationFactory featureFactory);
 
         private readonly RealSenseFactory factory;
         private readonly Configuration configuration;
+        private RealSenseProperties properties;
 
         private Boolean stopped = true;
 
-        private RealSenseComponentsManager componentsManager;
+        private RealSenseDeterminerManager componentsManager;
         private PXCMSenseManager manager;
+
+        public static Builder Create()
+        {
+            return new Builder(new RealSenseFactory());
+        }
 
         private RealSenseManager(RealSenseFactory factory, Configuration configuration)
         {
@@ -41,46 +52,40 @@ namespace IntelRealSenseStart.Code.RealSense
         private void StartRealSense()
         {
             manager = factory.Native.CreateSenseManager();
-            CreateComponentsManager();
+            DetermineProperties();
 
+            CreateComponentsManager();
             InitializeManager();
-            ConfigureDevice();
 
             componentsManager.Start();
         }
 
-        public static Builder Create()
+        private void DetermineProperties()
         {
-            return new Builder(new RealSenseFactory());
+            var propertiesDeterminer = factory.Manager.PropertiesManager()
+                .WithFactory(factory)
+                .WithSession(factory.Native.CurrentSession)
+                .Build();
+            properties = propertiesDeterminer.GetProperties();
         }
 
         private void CreateComponentsManager()
         {
-            componentsManager = factory.Components.ComponentsManager().Build(factory, manager, configuration);
+            componentsManager = factory.Manager.ComponentsManager()
+                .WithFactory(factory)
+                .WithManager(manager)
+                .WithConfiguration(configuration)
+                .Build();
+
             componentsManager.Frame += componentsManager_Frame;
-            
             componentsManager.EnableFeatures();
         }
-        
+
         private void InitializeManager()
         {
             manager.Init();
         }
 
-        private void ConfigureDevice()
-        {
-            PXCMCapture.DeviceInfo deviceInfo;
-            manager.QueryCaptureManager().QueryDevice().QueryDeviceInfo(out deviceInfo);
-
-            if (deviceInfo == null || deviceInfo.model != PXCMCapture.DeviceModel.DEVICE_MODEL_IVCAM)
-            {
-                throw new RealSenseException("No device info found");
-            }
-
-            manager.captureManager.device.SetDepthConfidenceThreshold(1);
-            manager.captureManager.device.SetMirrorMode(PXCMCapture.Device.MirrorMode.MIRROR_MODE_HORIZONTAL);
-            manager.captureManager.device.SetIVCAMFilterOption(6);
-        }
         public void Stop()
         {
             if (stopped)
@@ -113,8 +118,7 @@ namespace IntelRealSenseStart.Code.RealSense
 
         public class Builder
         {
-            private RealSenseFactory factory;
-
+            private readonly RealSenseFactory factory;
             private Configuration configuration;
 
             public Builder(RealSenseFactory factory)
@@ -124,16 +128,15 @@ namespace IntelRealSenseStart.Code.RealSense
 
             public Builder Configure(FeatureConfigurer configurer)
             {
-                configuration = configurer.Invoke(factory.Configuration).Build();
+                configuration = configurer.Invoke(factory.Configuration.Determiner).Build();
                 return this;
             }
 
             public RealSenseManager Build()
             {
-                if (configuration == null)
-                {
-                    throw new RealSenseException("The RealSense manager must be configured before using it");
-                }
+                configuration.CheckState(Preconditions.IsNotNull,
+                    "The RealSense manager must be configured before using it");
+
                 return new RealSenseManager(factory, configuration);
             }
         }

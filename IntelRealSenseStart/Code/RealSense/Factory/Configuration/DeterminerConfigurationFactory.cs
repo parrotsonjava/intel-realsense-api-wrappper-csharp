@@ -1,10 +1,12 @@
-﻿namespace IntelRealSenseStart.Code.RealSense.Config
+﻿using IntelRealSenseStart.Code.RealSense.Config.RealSense;
+
+namespace IntelRealSenseStart.Code.RealSense.Factory.Configuration
 {
-    public class ConfigurationFactory
+    public class DeterminerConfigurationFactory
     {
-        public Configuration.Builder Configuration()
+        public Config.RealSense.Configuration.Builder Configuration()
         {
-            return new Configuration.Builder();
+            return new Config.RealSense.Configuration.Builder();
         }
 
         public DeviceConfiguration.Builder DeviceConfiguration()

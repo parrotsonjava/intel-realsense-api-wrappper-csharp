@@ -1,12 +1,19 @@
-﻿namespace IntelRealSenseStart.Code.RealSense.Config
+﻿namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
 {
     public class DeviceConfiguration
     {
+        public static readonly DeviceConfiguration DEFAULT_CONFIGURATION;
+
         private VideoDeviceConfiguration videoDeviceConfiguration;
+
+        static DeviceConfiguration()
+        {
+            DEFAULT_CONFIGURATION = new DeviceConfiguration();
+        }
 
         private DeviceConfiguration()
         {
-            // TODO set default video device config 
+            videoDeviceConfiguration = VideoDeviceConfiguration.DEFAULT_CONFIGURATION;
         }
 
         public VideoDeviceConfiguration VideoDeviceConfiguration

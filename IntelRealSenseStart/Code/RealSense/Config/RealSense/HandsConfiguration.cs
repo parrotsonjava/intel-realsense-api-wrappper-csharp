@@ -1,6 +1,6 @@
-﻿namespace IntelRealSenseStart.Code.RealSense.Config
+﻿namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
 {
-    public class HandsConfiguration : ConfigurationOption
+    public class HandsConfiguration
     {
         private bool segmentationImageEnabled;
 

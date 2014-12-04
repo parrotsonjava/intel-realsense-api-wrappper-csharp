@@ -1,13 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace IntelRealSenseStart.Code.RealSense.Config
+﻿namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
 {
     public class VideoDeviceConfiguration
     {
+        public static readonly VideoDeviceConfiguration DEFAULT_CONFIGURATION;
+
+        static VideoDeviceConfiguration()
+        {
+            DEFAULT_CONFIGURATION = new VideoDeviceConfiguration();
+        }
+
+        private VideoDeviceConfiguration()
+        {
+        }
+
         public class Builder
         {
             private readonly VideoDeviceConfiguration videoDeviceConfiguration;

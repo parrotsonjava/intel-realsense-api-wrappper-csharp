@@ -2,7 +2,7 @@
 {
     public class NativeFactory
     {
-        private PXCMSession session;
+        private readonly PXCMSession session;
 
         public NativeFactory()
         {
