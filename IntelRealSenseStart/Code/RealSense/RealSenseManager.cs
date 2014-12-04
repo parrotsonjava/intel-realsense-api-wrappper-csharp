@@ -20,7 +20,6 @@ namespace IntelRealSenseStart.Code.RealSense
 
         private readonly RealSenseFactory factory;
         private readonly Configuration configuration;
-        private RealSenseProperties properties;
 
         private Boolean stopped = true;
 
@@ -32,13 +31,11 @@ namespace IntelRealSenseStart.Code.RealSense
             return new Builder(new RealSenseFactory());
         }
 
-        private RealSenseManager(RealSenseFactory factory, Configuration configuration)
+        private RealSenseManager(RealSenseFactory factory, Configuration configuration, PXCMSenseManager manager)
         {
+            this.manager = manager;
             this.factory = factory;
             this.configuration = configuration;
-
-            manager = factory.Native.CreateSenseManager();
-            DetermineProperties();
         }
 
         public void Start()
@@ -58,15 +55,6 @@ namespace IntelRealSenseStart.Code.RealSense
             InitializeManager();
 
             componentsManager.Start();
-        }
-
-        private void DetermineProperties()
-        {
-            var propertiesDeterminer = factory.Manager.PropertiesManager()
-                .WithFactory(factory)
-                .WithSession(factory.Native.CurrentSession)
-                .Build();
-            properties = propertiesDeterminer.GetProperties();
         }
 
         private void CreateComponentsManager()
@@ -111,11 +99,6 @@ namespace IntelRealSenseStart.Code.RealSense
             }
         }
 
-        public RealSenseProperties Properties
-        {
-            get { return properties; }
-        }
-
         public bool Started
         {
             get { return !stopped; }
@@ -123,12 +106,26 @@ namespace IntelRealSenseStart.Code.RealSense
 
         public class Builder
         {
+            private readonly PXCMSenseManager manager;
+            private readonly RealSenseProperties properties;
+
             private readonly RealSenseFactory factory;
             private Configuration configuration;
 
             public Builder(RealSenseFactory factory)
             {
+                manager = factory.Native.CreateSenseManager();
                 this.factory = factory;
+                properties = DetermineProperties();
+            }
+
+            private RealSenseProperties DetermineProperties()
+            {
+                var propertiesDeterminer = factory.Manager.PropertiesManager()
+                    .WithFactory(factory)
+                    .WithSession(factory.Native.CurrentSession)
+                    .Build();
+                return propertiesDeterminer.GetProperties();
             }
 
             public Builder Configure(FeatureConfigurer configurer)
@@ -142,7 +139,12 @@ namespace IntelRealSenseStart.Code.RealSense
                 configuration.CheckState(Preconditions.IsNotNull,
                     "The RealSense manager must be configured before using it");
 
-                return new RealSenseManager(factory, configuration);
+                return new RealSenseManager(factory, configuration, manager);
+            }
+
+            public RealSenseProperties Properties
+            {
+                get { return properties; }
             }
         }
     }

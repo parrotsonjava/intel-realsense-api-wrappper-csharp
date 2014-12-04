@@ -16,7 +16,8 @@ namespace IntelRealSenseStart
         public MainForm()
         {
             InitializeComponent();
-            manager = RealSenseManager.Create().Configure(factory =>
+            var builder = RealSenseManager.Create();
+            manager = builder.Configure(factory =>
                 factory.Configuration()
                     .WithHandsDetection(factory.HandsDetection().WithSegmentationImage())
                     .WithColorImage(factory.Image().WithResolution(new Size(640, 480)))
