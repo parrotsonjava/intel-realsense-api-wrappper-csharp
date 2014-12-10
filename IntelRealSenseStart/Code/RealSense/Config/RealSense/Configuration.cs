@@ -7,28 +7,12 @@ namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
         private DeviceConfiguration deviceConfiguration;
         private ImageConfiguration colorImageConfig;
         private ImageConfiguration depthImageConfig;
-        private HandsConfiguration handsConfig;
-
-        public bool HandsDetectionEnabled
-        {
-            get { return handsConfig != null; }
-        }
+        private HandsConfiguration handsConfiguration;
+        private FaceConfiguration faceConfiguration;
 
         private Configuration()
         {
             deviceConfiguration = DeviceConfiguration.DEFAULT_CONFIGURATION;
-        }
-
-        public HandsConfiguration HandsDetection
-        {
-            get
-            {
-                if (handsConfig == null)
-                {
-                    throw new RealSenseException("Hands detection is not enabled, but tried to access it");
-                }
-                return handsConfig;
-            }
         }
 
         public DeviceConfiguration Device
@@ -70,6 +54,40 @@ namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
             }
         }
 
+        public bool HandsDetectionEnabled
+        {
+            get { return handsConfiguration != null; }
+        }
+
+        public HandsConfiguration HandsDetection
+        {
+            get
+            {
+                if (handsConfiguration == null)
+                {
+                    throw new RealSenseException("Hands detection is not enabled, but tried to access it");
+                }
+                return handsConfiguration;
+            }
+        }
+
+        public bool FaceDetectionEnabled
+        {
+            get { return faceConfiguration != null; }
+        }
+
+        public FaceConfiguration FaceDetection
+        {
+            get
+            {
+                if (faceConfiguration == null)
+                {
+                    throw new RealSenseException("Face detection is not enabled, but tried to access it");
+                }
+                return faceConfiguration;
+            }
+        }
+
         public class Builder
         {
             private readonly Configuration configuration;
@@ -85,9 +103,15 @@ namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
                 return this;
             }
 
-            public Builder WithHandsDetection(HandsConfiguration.Builder handsFeature)
+            public Builder WithHandsDetection(HandsConfiguration.Builder handsConfiguration)
             {
-                configuration.handsConfig = handsFeature.Build();
+                configuration.handsConfiguration = handsConfiguration.Build();
+                return this;
+            }
+
+            public Builder WithFaceDetection(FaceConfiguration.Builder faceConfiguration)
+            {
+                configuration.faceConfiguration = faceConfiguration.Build();
                 return this;
             }
 

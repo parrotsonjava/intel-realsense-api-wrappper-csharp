@@ -16,22 +16,22 @@
 
         public class Builder
         {
-            private readonly HandsConfiguration handsFeature;
+            private readonly HandsConfiguration configuration;
 
             public Builder()
             {
-                handsFeature = new HandsConfiguration();
+                configuration = new HandsConfiguration();
             }
 
             public Builder WithSegmentationImage()
             {
-                handsFeature.segmentationImageEnabled = true;
+                configuration.segmentationImageEnabled = true;
                 return this;
             }
 
             public HandsConfiguration Build()
             {
-                return handsFeature;
+                return configuration;
             }
         }
     }

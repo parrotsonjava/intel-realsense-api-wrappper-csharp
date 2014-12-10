@@ -20,6 +20,7 @@ namespace IntelRealSenseStart
             manager = builder.Configure(factory =>
                 factory.Configuration()
                     .WithHandsDetection(factory.HandsDetection().WithSegmentationImage())
+                    .WithFaceDetection(factory.FaceDetection().UsingLandmarks())
                     .WithColorImage(factory.Image().WithResolution(new Size(640, 480)))
                     .WithDepthImage(factory.Image().WithResolution(new Size(640, 480)))).Build();
 

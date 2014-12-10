@@ -24,6 +24,11 @@ namespace IntelRealSenseStart.Code.RealSense.Factory.Configuration
             return new HandsConfiguration.Builder();
         }
 
+        public FaceConfiguration.Builder FaceDetection()
+        {
+            return new FaceConfiguration.Builder();
+        }
+
         public ImageConfiguration.Builder Image()
         {
             return new ImageConfiguration.Builder();

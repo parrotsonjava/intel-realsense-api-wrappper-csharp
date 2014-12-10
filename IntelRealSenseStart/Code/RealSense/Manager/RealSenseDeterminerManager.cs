@@ -46,13 +46,18 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
                 .WithManager(manager)
                 .WithConfiguration(configuration)
                 .Build();
+            var faceComponent = factory.Components.Determiner.Face()
+                .WithFactory(factory)
+                .WithManager(manager)
+                .WithConfiguration(configuration)
+                .Build();
             var pictureComponent = factory.Components.Determiner.Image()
                 .WithFactory(factory)
                 .WithManager(manager)
                 .WithConfiguration(configuration)
                 .Build();
 
-            return new DeterminerComponent[] {handsComponent, pictureComponent, deviceComponent};
+            return new DeterminerComponent[] {handsComponent, faceComponent, pictureComponent, deviceComponent};
         }
 
         public bool Started

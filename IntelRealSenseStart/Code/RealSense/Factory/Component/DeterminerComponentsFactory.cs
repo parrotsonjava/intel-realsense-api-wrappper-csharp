@@ -14,6 +14,11 @@ namespace IntelRealSenseStart.Code.RealSense.Factory.Component
             return new HandsDeterminerComponent.Builder();
         }
 
+        public FaceDeterminerComponent.Builder Face()
+        {
+            return new FaceDeterminerComponent.Builder();
+        }
+
         public DeviceDeterminerComponent.Builder Device()
         {
             return new DeviceDeterminerComponent.Builder();

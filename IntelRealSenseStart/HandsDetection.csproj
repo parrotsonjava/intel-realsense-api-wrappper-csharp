@@ -70,6 +70,7 @@
   <ItemGroup>
     <Compile Include="Code\RealSense\Component\Determiner\DeterminerComponent.cs" />
     <Compile Include="Code\RealSense\Component\Determiner\DeviceDeterminerComponent.cs" />
+    <Compile Include="Code\RealSense\Component\Determiner\FaceDeterminerComponent.cs" />
     <Compile Include="Code\RealSense\Component\Property\DevicePropertiesDeterminer.cs" />
     <Compile Include="Code\RealSense\Component\Property\PropertiesComponent.cs" />
     <Compile Include="Code\RealSense\Config\RealSense\DeviceConfiguration.cs" />
@@ -79,6 +80,7 @@
     <Compile Include="Code\RealSense\Component\Creator\HandsImageCreator.cs" />
     <Compile Include="Code\RealSense\Component\Creator\HandsImageBuilder.cs" />
     <Compile Include="Code\RealSense\Component\Determiner\ImageDeterminerComponent.cs" />
+    <Compile Include="Code\RealSense\Config\RealSense\FaceConfiguration.cs" />
     <Compile Include="Code\RealSense\Config\RealSense\VideoDeviceConfiguration.cs" />
     <Compile Include="Code\RealSense\Data\Determiner\HandData.cs" />
     <Compile Include="Code\RealSense\Data\Determiner\HandsData.cs" />
