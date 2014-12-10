@@ -1,4 +1,5 @@
 ﻿using IntelRealSenseStart.Code.RealSense.Data;
+using IntelRealSenseStart.Code.RealSense.Data.Determiner;
 
 namespace IntelRealSenseStart.Code.RealSense.Factory.Data
 {

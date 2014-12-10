@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using IntelRealSenseStart.Code.RealSense.Config.HandsImage;
 using IntelRealSenseStart.Code.RealSense.Config.RealSense;
 using IntelRealSenseStart.Code.RealSense.Data;
+using IntelRealSenseStart.Code.RealSense.Data.Determiner;
 using IntelRealSenseStart.Code.RealSense.Exception;
 using IntelRealSenseStart.Code.RealSense.Helper;
 

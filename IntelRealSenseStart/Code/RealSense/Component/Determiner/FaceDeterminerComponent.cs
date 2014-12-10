@@ -1,5 +1,6 @@
 ﻿using System;
 using IntelRealSenseStart.Code.RealSense.Config.RealSense;
+using IntelRealSenseStart.Code.RealSense.Data.Determiner;
 using IntelRealSenseStart.Code.RealSense.Event;
 using IntelRealSenseStart.Code.RealSense.Factory;
 using IntelRealSenseStart.Code.RealSense.Helper;
@@ -49,7 +50,29 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
         public void Process(FrameEventArgs.Builder frameEvent)
         {
             faceData.Update();
-            // TODO create face data with this information
+
+            frameEvent.WithFacesData(GetFacesData());
+
+            for (int i = 0; i < faceData.QueryNumberOfDetectedFaces(); i++)
+            {
+                PXCMFaceData.Face face = faceData.QueryFaceByIndex(i);
+
+                if (face == null)
+                {
+                    break;
+                }
+
+                var landmarks = face.QueryLandmarks();
+                PXCMFaceData.LandmarkPoint[] points;
+                bool res = landmarks.QueryPoints(out points);
+
+                Console.WriteLine(@"foo");
+            }
+        }
+
+        private FacesData.Builder GetFacesData()
+        {
+            
         }
 
         public class Builder

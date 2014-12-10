@@ -1,6 +1,7 @@
 ﻿using IntelRealSenseStart.Code.RealSense.Component.Creator;
 using IntelRealSenseStart.Code.RealSense.Config.RealSense;
 using IntelRealSenseStart.Code.RealSense.Data;
+using IntelRealSenseStart.Code.RealSense.Data.Determiner;
 using IntelRealSenseStart.Code.RealSense.Factory;
 
 namespace IntelRealSenseStart.Code.RealSense.Event
@@ -12,8 +13,9 @@ namespace IntelRealSenseStart.Code.RealSense.Event
         private PXCMCapture.Device device;
 
         private HandsData handsData;
+        private FacesData facesData;
         private ImageData imageData;
-        
+
         public HandsImageBuilder CreateImage()
         {
             return handsImageBuilder;
@@ -51,6 +53,12 @@ namespace IntelRealSenseStart.Code.RealSense.Event
             public Builder WithHandsData(HandsData.Builder handsData)
             {
                 frameEventArgs.handsData = handsData.Build();
+                return this;
+            }
+
+            public Builder WithFacesData(FacesData.Builder facesData)
+            {
+                frameEventArgs.facesData = facesData.Build();
                 return this;
             }
 

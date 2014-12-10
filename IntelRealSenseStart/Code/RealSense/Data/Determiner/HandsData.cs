@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace IntelRealSenseStart.Code.RealSense.Data
+namespace IntelRealSenseStart.Code.RealSense.Data.Determiner
 {
     public class HandsData
     {

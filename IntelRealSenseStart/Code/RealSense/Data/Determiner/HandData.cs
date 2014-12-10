@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace IntelRealSenseStart.Code.RealSense.Data
+namespace IntelRealSenseStart.Code.RealSense.Data.Determiner
 {
     public class HandData
     {
