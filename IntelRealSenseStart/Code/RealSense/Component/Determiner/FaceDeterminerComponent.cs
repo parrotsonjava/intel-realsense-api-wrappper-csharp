@@ -1,4 +1,5 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using System.Linq;
 using IntelRealSenseStart.Code.RealSense.Config.RealSense;
 using IntelRealSenseStart.Code.RealSense.Data.Determiner;
 using IntelRealSenseStart.Code.RealSense.Event;
@@ -50,29 +51,38 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
         public void Process(FrameEventArgs.Builder frameEvent)
         {
             faceData.Update();
-
             frameEvent.WithFacesData(GetFacesData());
-
-            for (int i = 0; i < faceData.QueryNumberOfDetectedFaces(); i++)
-            {
-                PXCMFaceData.Face face = faceData.QueryFaceByIndex(i);
-
-                if (face == null)
-                {
-                    break;
-                }
-
-                var landmarks = face.QueryLandmarks();
-                PXCMFaceData.LandmarkPoint[] points;
-                bool res = landmarks.QueryPoints(out points);
-
-                Console.WriteLine(@"foo");
-            }
         }
 
         private FacesData.Builder GetFacesData()
         {
-            
+            return factory.Data.Determiner.Faces().WithFaces(
+                GetIndividualFaces().Select(GetIndividualFaceData));
+        }
+        
+        private IEnumerable<PXCMFaceData.Face> GetIndividualFaces()
+        {
+            return 0.To(faceData.QueryNumberOfDetectedFaces()).ToArray()
+                .Select(index => faceData.QueryFaceByIndex(index))
+                .Where(face => face != null);
+        }
+
+        private FaceData.Builder GetIndividualFaceData(PXCMFaceData.Face face)
+        {
+            return factory.Data.Determiner.Face()
+                .WithLandmarks(GetLandmarkData(face));
+        }
+
+        private PXCMFaceData.LandmarkPoint[] GetLandmarkData(PXCMFaceData.Face face)
+        {
+            if (configuration.FaceDetection.UseLandmarks)
+            {
+                var landMarks = face.QueryLandmarks();
+                PXCMFaceData.LandmarkPoint[] points;
+                landMarks.QueryPoints(out points);
+                return points;
+            }
+            return null;
         }
 
         public class Builder

@@ -73,7 +73,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
 
         private HandsData.Builder GetHandsData()
         {
-            return factory.Data.Determiner.HandsData().WithHands(
+            return factory.Data.Determiner.Hands().WithHands(
                 GetIndividualHandSamples().Select(GetIndividualHandData));
         }
 
@@ -89,7 +89,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
 
         private HandData.Builder GetIndividualHandData(PXCMHandData.IHand individualHandSample)
         {
-            return factory.Data.Determiner.HandData()
+            return factory.Data.Determiner.Hand()
                 .WithBodySide(GetUserId(individualHandSample))
                 .WithJoints(GetJointData(individualHandSample))
                 .WithSegmentationImage(GetSegmentationImage(individualHandSample));
@@ -115,9 +115,14 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
 
         private PXCMImage GetSegmentationImage(PXCMHandData.IHand individualHandSample)
         {
-            PXCMImage segmentationImage;
-            individualHandSample.QuerySegmentationImage(out segmentationImage);
-            return segmentationImage;
+            if (configuration.HandsDetection.SegmentationImageEnabled)
+            {
+                PXCMImage segmentationImage;
+                individualHandSample.QuerySegmentationImage(out segmentationImage);
+                return segmentationImage;
+            }
+
+            return null;
         }
 
         public class Builder

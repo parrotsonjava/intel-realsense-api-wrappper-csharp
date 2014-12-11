@@ -48,7 +48,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
             PXCMCapture.Sample realSenseSample = manager.QuerySample();
 
             frameEvent.WithImageData(
-                factory.Data.Determiner.ImageData()
+                factory.Data.Determiner.Image()
                     .WithColorImage(realSenseSample.color)
                     .WithDepthImage(realSenseSample.depth));
         }

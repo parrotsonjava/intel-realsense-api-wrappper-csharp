@@ -82,6 +82,8 @@
     <Compile Include="Code\RealSense\Component\Determiner\ImageDeterminerComponent.cs" />
     <Compile Include="Code\RealSense\Config\RealSense\FaceConfiguration.cs" />
     <Compile Include="Code\RealSense\Config\RealSense\VideoDeviceConfiguration.cs" />
+    <Compile Include="Code\RealSense\Data\Determiner\FaceData.cs" />
+    <Compile Include="Code\RealSense\Data\Determiner\FacesData.cs" />
     <Compile Include="Code\RealSense\Data\Determiner\HandData.cs" />
     <Compile Include="Code\RealSense\Data\Determiner\HandsData.cs" />
     <Compile Include="Code\RealSense\Data\Determiner\ImageData.cs" />

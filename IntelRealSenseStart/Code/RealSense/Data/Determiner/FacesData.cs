@@ -32,9 +32,9 @@ namespace IntelRealSenseStart.Code.RealSense.Data.Determiner
                 return this;
             }
 
-            public Builder WithHands(IEnumerable<FaceData.Builder> faceData)
+            public Builder WithFaces(IEnumerable<FaceData.Builder> faceData)
             {
-                facesData.Faces.AddRange(faceData.Select(faceDataBuilder => faceDataBuilder.Build()));
+                facesData.Faces.AddRange(faceData.Select(faceBuilder => faceBuilder.Build()));
                 return this;
             }
 
