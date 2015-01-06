@@ -48,6 +48,9 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Creator
                 case ImageOverlay.DepthCoordinateHandJoints:
                     AddDepthCoordinateHandJoints();
                     break;
+                case ImageOverlay.ColorCoordinateFaceLandmarks:
+                    AddColorCoordinateFaceLandmarks();
+                    break;
                 case ImageOverlay.DepthCoordinateHandsSegmentationImage:
                     AddDepthCoordinateHandsSegmentationImage();
                     break;
@@ -60,7 +63,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Creator
             if (!(realSenseConfiguration.HandsDetectionEnabled && realSenseConfiguration.Image.ProjectionEnabled))
             {
                 throw new RealSenseException(
-                    "Cannot use projected hand joints since hands detection or color image or depth image is not configured");
+                    "Cannot use projected hand joints since hands detection or image projection is not configured");
             }
 
             imageConfigurationBuilder.WithOverlay(ImageOverlay.ColorCoordinateHandJoints);
@@ -73,6 +76,18 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Creator
                 throw new RealSenseException("Cannot use hand joints since hands detection is not configured");
             }
             imageConfigurationBuilder.WithOverlay(ImageOverlay.DepthCoordinateHandJoints);
+        }
+
+        private void AddColorCoordinateFaceLandmarks()
+        {
+            if (!(realSenseConfiguration.FaceDetectionEnabled && realSenseConfiguration.FaceDetection.UseLandmarks 
+                && realSenseConfiguration.Image.ProjectionEnabled))
+            {
+                throw new RealSenseException(
+                    "Cannot use projected face landmarks since landmark detection or image projection is not configured");
+            }
+
+            imageConfigurationBuilder.WithOverlay(ImageOverlay.ColorCoordinateFaceLandmarks);
         }
 
         private void AddDepthCoordinateHandsSegmentationImage()

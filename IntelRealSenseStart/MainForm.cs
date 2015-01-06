@@ -53,6 +53,7 @@ namespace IntelRealSenseStart
                 .WithResolution(new Size(640, 480))
                 .WithBackgroundImage(ImageBackground.ColorImage)
                 .WithOverlay(ImageOverlay.ColorCoordinateHandJoints)
+                .WithOverlay(ImageOverlay.ColorCoordinateFaceLandmarks)
                 .Create();
 
             BeginInvoke(new BitmapHandler(SetImage), new object[] {bitmap});
