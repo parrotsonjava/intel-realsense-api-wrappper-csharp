@@ -2,7 +2,6 @@
 using System.Linq;
 using IntelRealSenseStart.Code.RealSense.Config.RealSense;
 using IntelRealSenseStart.Code.RealSense.Data.Determiner;
-using IntelRealSenseStart.Code.RealSense.Event;
 using IntelRealSenseStart.Code.RealSense.Factory;
 using IntelRealSenseStart.Code.RealSense.Helper;
 
@@ -10,14 +9,14 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
 {
     public class FaceDeterminerComponent : DeterminerComponent
     {
-        private readonly Configuration configuration;
+        private readonly RealSenseConfiguration configuration;
 
         private readonly RealSenseFactory factory;
         private readonly PXCMSenseManager manager;
 
         private PXCMFaceData faceData;
 
-        private FaceDeterminerComponent(RealSenseFactory factory, PXCMSenseManager manager, Configuration configuration)
+        private FaceDeterminerComponent(RealSenseFactory factory, PXCMSenseManager manager, RealSenseConfiguration configuration)
         {
             this.factory = factory;
             this.manager = manager;
@@ -48,10 +47,10 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
             faceData = faceModule.CreateOutput();
         }
 
-        public void Process(FrameEventArgs.Builder frameEvent)
+        public void Process(DeterminerData.Builder determinerData)
         {
             faceData.Update();
-            frameEvent.WithFacesData(GetFacesData());
+            determinerData.WithFacesData(GetFacesData());
         }
 
         private FacesData.Builder GetFacesData()
@@ -78,18 +77,28 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
             if (configuration.FaceDetection.UseLandmarks)
             {
                 var landMarks = face.QueryLandmarks();
-                PXCMFaceData.LandmarkPoint[] points;
-                landMarks.QueryPoints(out points);
-                return points;
+                return GetLandmarkPoints(landMarks);
             }
             return null;
+        }
+
+        private static PXCMFaceData.LandmarkPoint[] GetLandmarkPoints(PXCMFaceData.LandmarksData landMarks)
+        {
+            if (landMarks == null)
+            {
+                return null;
+            }
+
+            PXCMFaceData.LandmarkPoint[] points;
+            landMarks.QueryPoints(out points);
+            return points;
         }
 
         public class Builder
         {
             private RealSenseFactory factory;
             private PXCMSenseManager manager;
-            private Configuration configuration;
+            private RealSenseConfiguration configuration;
 
             public Builder WithFactory(RealSenseFactory factory)
             {
@@ -103,7 +112,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
                 return this;
             }
 
-            public Builder WithConfiguration(Configuration configuration)
+            public Builder WithConfiguration(RealSenseConfiguration configuration)
             {
                 this.configuration = configuration;
                 return this;

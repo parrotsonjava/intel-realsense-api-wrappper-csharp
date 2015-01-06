@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace IntelRealSenseStart.Code
+namespace IntelRealSenseStart.Code.RealSense.Helper
 {
     internal static class EnumerableExtensions
     {

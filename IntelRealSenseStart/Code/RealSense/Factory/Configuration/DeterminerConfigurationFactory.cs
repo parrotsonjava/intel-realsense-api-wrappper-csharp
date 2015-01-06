@@ -4,9 +4,9 @@ namespace IntelRealSenseStart.Code.RealSense.Factory.Configuration
 {
     public class DeterminerConfigurationFactory
     {
-        public Config.RealSense.Configuration.Builder Configuration()
+        public Config.RealSense.RealSenseConfiguration.Builder Configuration()
         {
-            return new Config.RealSense.Configuration.Builder();
+            return new Config.RealSense.RealSenseConfiguration.Builder();
         }
 
         public DeviceConfiguration.Builder DeviceConfiguration()

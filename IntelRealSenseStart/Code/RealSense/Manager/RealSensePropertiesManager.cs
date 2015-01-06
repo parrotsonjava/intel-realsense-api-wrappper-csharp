@@ -1,6 +1,7 @@
 ﻿using IntelRealSenseStart.Code.RealSense.Component.Property;
 using IntelRealSenseStart.Code.RealSense.Data.Properties;
 using IntelRealSenseStart.Code.RealSense.Factory;
+using IntelRealSenseStart.Code.RealSense.Helper;
 
 namespace IntelRealSenseStart.Code.RealSense.Manager
 {

@@ -2,20 +2,20 @@
 using System.Drawing;
 using IntelRealSenseStart.Code.RealSense.Config.RealSense;
 
-namespace IntelRealSenseStart.Code.RealSense.Config.HandsImage
+namespace IntelRealSenseStart.Code.RealSense.Config.Image
 {
-    public class HandsImageConfiguration
+    public class ImageCreatorConfiguration
     {
         private Size resolution;
 
-        private HandsImageBackground backgroundImage;
+        private ImageBackground backgroundImage;
 
-        private readonly List<HandsImageOverlay> overlays;
+        private readonly List<ImageOverlay> overlays;
         
-        private HandsImageConfiguration()
+        private ImageCreatorConfiguration()
         {
             resolution = ImageConfiguration.DEFAULT_RESOLUTION;
-            overlays = new List<HandsImageOverlay>();
+            overlays = new List<ImageOverlay>();
         }
 
         public Size Resolution
@@ -23,32 +23,32 @@ namespace IntelRealSenseStart.Code.RealSense.Config.HandsImage
             get { return resolution;  }
         }
 
-        public HandsImageBackground BackgroundImage
+        public ImageBackground BackgroundImage
         {
             get { return backgroundImage; }
         }
 
-        public List<HandsImageOverlay> Overlays
+        public List<ImageOverlay> Overlays
         {
             get { return overlays; }
         } 
 
         public class Builder
         {
-            private readonly HandsImageConfiguration handImageConfiguration;
+            private readonly ImageCreatorConfiguration handImageConfiguration;
 
             public Builder()
             {
-                handImageConfiguration = new HandsImageConfiguration();
+                handImageConfiguration = new ImageCreatorConfiguration();
             }
 
-            public Builder WithBackgroundImage(HandsImageBackground backgroundImage)
+            public Builder WithBackgroundImage(ImageBackground backgroundImage)
             {
                 handImageConfiguration.backgroundImage = backgroundImage;
                 return this;
             }
 
-            public Builder WithOverlay(HandsImageOverlay overlay)
+            public Builder WithOverlay(ImageOverlay overlay)
             {
                 handImageConfiguration.overlays.Add(overlay);
                 return this;
@@ -60,7 +60,7 @@ namespace IntelRealSenseStart.Code.RealSense.Config.HandsImage
                 return this;
             }
 
-            public HandsImageConfiguration Build()
+            public ImageCreatorConfiguration Build()
             {
                 return handImageConfiguration;
             }

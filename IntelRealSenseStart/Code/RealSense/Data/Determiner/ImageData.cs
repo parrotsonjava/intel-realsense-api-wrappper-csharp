@@ -1,4 +1,4 @@
-﻿namespace IntelRealSenseStart.Code.RealSense.Data
+﻿namespace IntelRealSenseStart.Code.RealSense.Data.Determiner
 {
     public class ImageData
     {

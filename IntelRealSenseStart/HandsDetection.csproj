@@ -68,20 +68,25 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Code\RealSense\Component\Creator\BasicImageCreator.cs" />
+    <Compile Include="Code\RealSense\Component\Creator\FaceImageCreator.cs" />
+    <Compile Include="Code\RealSense\Component\Creator\ImageBuilder.cs" />
+    <Compile Include="Code\RealSense\Component\Creator\ImageCreator.cs" />
+    <Compile Include="Code\RealSense\Component\Creator\OverallImageCreator.cs" />
     <Compile Include="Code\RealSense\Component\Determiner\DeterminerComponent.cs" />
     <Compile Include="Code\RealSense\Component\Determiner\DeviceDeterminerComponent.cs" />
     <Compile Include="Code\RealSense\Component\Determiner\FaceDeterminerComponent.cs" />
     <Compile Include="Code\RealSense\Component\Property\DevicePropertiesDeterminer.cs" />
     <Compile Include="Code\RealSense\Component\Property\PropertiesComponent.cs" />
+    <Compile Include="Code\RealSense\Config\Image\ImageBackground.cs" />
+    <Compile Include="Code\RealSense\Config\Image\ImageCreatorConfiguration.cs" />
+    <Compile Include="Code\RealSense\Config\Image\ImageOverlay.cs" />
     <Compile Include="Code\RealSense\Config\RealSense\DeviceConfiguration.cs" />
-    <Compile Include="Code\RealSense\Config\HandsImage\HandsImageBackground.cs" />
-    <Compile Include="Code\RealSense\Config\HandsImage\HandsImageConfiguration.cs" />
-    <Compile Include="Code\RealSense\Config\HandsImage\HandsImageOverlay.cs" />
     <Compile Include="Code\RealSense\Component\Creator\HandsImageCreator.cs" />
-    <Compile Include="Code\RealSense\Component\Creator\HandsImageBuilder.cs" />
     <Compile Include="Code\RealSense\Component\Determiner\ImageDeterminerComponent.cs" />
     <Compile Include="Code\RealSense\Config\RealSense\FaceConfiguration.cs" />
     <Compile Include="Code\RealSense\Config\RealSense\VideoDeviceConfiguration.cs" />
+    <Compile Include="Code\RealSense\Data\Determiner\DeterminerData.cs" />
     <Compile Include="Code\RealSense\Data\Determiner\FaceData.cs" />
     <Compile Include="Code\RealSense\Data\Determiner\FacesData.cs" />
     <Compile Include="Code\RealSense\Data\Determiner\HandData.cs" />
@@ -106,7 +111,7 @@
     <Compile Include="Code\RealSense\Helper\Range.cs" />
     <Compile Include="Code\RealSense\Helper\RangeExtensions.cs" />
     <Compile Include="Code\RealSense\Factory\Configuration\ConfigurationFactory.cs" />
-    <Compile Include="Code\RealSense\Config\RealSense\Configuration.cs" />
+    <Compile Include="Code\RealSense\Config\RealSense\RealSenseConfiguration.cs" />
     <Compile Include="Code\RealSense\Config\RealSense\HandsConfiguration.cs" />
     <Compile Include="Code\RealSense\Config\RealSense\ImageConfiguration.cs" />
     <Compile Include="Code\RealSense\Exception\RealSenseException.cs" />

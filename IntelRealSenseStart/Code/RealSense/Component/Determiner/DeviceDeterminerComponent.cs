@@ -1,4 +1,4 @@
-﻿using IntelRealSenseStart.Code.RealSense.Event;
+﻿using IntelRealSenseStart.Code.RealSense.Data.Determiner;
 using IntelRealSenseStart.Code.RealSense.Exception;
 using IntelRealSenseStart.Code.RealSense.Helper;
 
@@ -35,9 +35,9 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
             manager.captureManager.device.SetIVCAMFilterOption(6);
         }
 
-        public void Process(FrameEventArgs.Builder frameEvent)
+        public void Process(DeterminerData.Builder determinerData)
         {
-            frameEvent.WithDevice(device);
+            determinerData.WithDevice(device);
         }
 
         public bool ShouldBeStarted

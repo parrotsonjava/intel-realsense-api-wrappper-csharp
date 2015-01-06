@@ -70,8 +70,6 @@ namespace IntelRealSenseStart.Code.RealSense.Data.Properties
             {
                 return streamProperties;
             }
-
-   
         }
     }
 }

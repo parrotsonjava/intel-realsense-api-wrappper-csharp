@@ -5,6 +5,11 @@ namespace IntelRealSenseStart.Code.RealSense.Factory.Data
 {
     public class DeterminerDataFactory
     {
+        public DeterminerData.Builder DeterminerData()
+        {
+            return new DeterminerData.Builder();
+        }
+
         public ImageData.Builder Image()
         {
             return new ImageData.Builder();

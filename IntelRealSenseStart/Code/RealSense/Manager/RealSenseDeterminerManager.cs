@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Threading;
+using IntelRealSenseStart.Code.RealSense.Component.Creator;
 using IntelRealSenseStart.Code.RealSense.Component.Determiner;
 using IntelRealSenseStart.Code.RealSense.Config.RealSense;
+using IntelRealSenseStart.Code.RealSense.Data.Determiner;
 using IntelRealSenseStart.Code.RealSense.Event;
 using IntelRealSenseStart.Code.RealSense.Exception;
 using IntelRealSenseStart.Code.RealSense.Factory;
@@ -17,23 +19,26 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
         public event FrameEventListener Frame;
 
         private readonly DeterminerComponent[] components;
+        private readonly OverallImageCreator overallImageCreator;
 
         private readonly RealSenseFactory factory;
         private readonly PXCMSenseManager manager;
-        private readonly Configuration configuration;
+        private readonly RealSenseConfiguration realSenseConfiguration;
 
         private Thread determinerThread;
         private volatile bool stopped = true;
 
+
         private RealSenseDeterminerManager(RealSenseFactory factory, PXCMSenseManager manager,
-            Configuration configuration)
+            RealSenseConfiguration realSenseConfiguration)
         {
             this.factory = factory;
             this.manager = manager;
-            this.configuration = configuration;
+            this.realSenseConfiguration = realSenseConfiguration;
 
             var allComponents = GetComponents();
             components = allComponents.Where(component => component.ShouldBeStarted).ToArray();
+            overallImageCreator = GetImageCreator(realSenseConfiguration);
         }
 
         private DeterminerComponent[] GetComponents()
@@ -44,20 +49,37 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
             var handsComponent = factory.Components.Determiner.Hands()
                 .WithFactory(factory)
                 .WithManager(manager)
-                .WithConfiguration(configuration)
+                .WithConfiguration(realSenseConfiguration)
                 .Build();
             var faceComponent = factory.Components.Determiner.Face()
                 .WithFactory(factory)
                 .WithManager(manager)
-                .WithConfiguration(configuration)
+                .WithConfiguration(realSenseConfiguration)
                 .Build();
             var pictureComponent = factory.Components.Determiner.Image()
                 .WithFactory(factory)
                 .WithManager(manager)
-                .WithConfiguration(configuration)
+                .WithConfiguration(realSenseConfiguration)
                 .Build();
 
             return new DeterminerComponent[] {handsComponent, faceComponent, pictureComponent, deviceComponent};
+        }
+
+        private OverallImageCreator GetImageCreator(RealSenseConfiguration realSenseConfiguration)
+        {
+            var basicImageCreator = factory.Components.Creator.BasicImageCreator()
+                .WithRealSenseConfiguration(realSenseConfiguration)
+                .Build();
+            var handsImageCreator = factory.Components.Creator.HandsImageCreator()
+                .WithRealSenseConfiguration(realSenseConfiguration)
+                .Build();
+            var faceImageCreator = factory.Components.Creator.FaceImageCreator()
+                .WithRealSenseConfiguration(realSenseConfiguration)
+                .Build();
+
+            return factory.Components.Creator.OverallImageCreator()
+                .WithImageCreators(new ImageCreator[] {basicImageCreator, handsImageCreator, faceImageCreator})
+                .Build();
         }
 
         public bool Started
@@ -128,9 +150,10 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
 
         private FrameEventArgs.Builder ProcessComponents()
         {
-            FrameEventArgs.Builder frameEvent = factory.Events.FrameEvent(configuration);
-            components.Do(component => component.Process(frameEvent));
-            return frameEvent;
+            DeterminerData.Builder determinerDataBuilder = factory.Data.Determiner.DeterminerData();
+            components.Do(component => component.Process(determinerDataBuilder));
+            return factory.Events.FrameEvent(overallImageCreator, realSenseConfiguration)
+                .WithDeterminerData(determinerDataBuilder);
         }
 
         private void ReleaseFrame()
@@ -150,7 +173,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
         {
             private RealSenseFactory factory;
             private PXCMSenseManager manager;
-            private Configuration configuration;
+            private RealSenseConfiguration configuration;
 
             public Builder WithFactory(RealSenseFactory factory)
             {
@@ -164,7 +187,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
                 return this;
             }
 
-            public Builder WithConfiguration(Configuration configuration)
+            public Builder WithConfiguration(RealSenseConfiguration configuration)
             {
                 this.configuration = configuration;
                 return this;

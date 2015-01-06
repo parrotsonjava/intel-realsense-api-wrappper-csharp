@@ -2,7 +2,7 @@
 
 namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
 {
-    public class Configuration
+    public class RealSenseConfiguration
     {
         private DeviceConfiguration deviceConfiguration;
         private ImageConfiguration colorImageConfig;
@@ -10,7 +10,7 @@ namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
         private HandsConfiguration handsConfiguration;
         private FaceConfiguration faceConfiguration;
 
-        private Configuration()
+        private RealSenseConfiguration()
         {
             deviceConfiguration = DeviceConfiguration.DEFAULT_CONFIGURATION;
         }
@@ -90,11 +90,11 @@ namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
 
         public class Builder
         {
-            private readonly Configuration configuration;
+            private readonly RealSenseConfiguration configuration;
 
             public Builder()
             {
-                configuration = new Configuration();
+                configuration = new RealSenseConfiguration();
             }
 
             public Builder UsingDeviceConfiguration(DeviceConfiguration.Builder deviceConfiguration)
@@ -127,7 +127,7 @@ namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
                 return this;
             }
 
-            public Configuration Build()
+            public RealSenseConfiguration Build()
             {
                 return configuration;
             }

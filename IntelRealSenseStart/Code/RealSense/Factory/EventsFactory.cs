@@ -1,5 +1,5 @@
-﻿
-using IntelRealSenseStart.Code.RealSense.Config.HandsImage;
+﻿using IntelRealSenseStart.Code.RealSense.Component.Creator;
+using IntelRealSenseStart.Code.RealSense.Config.RealSense;
 using IntelRealSenseStart.Code.RealSense.Event;
 
 namespace IntelRealSenseStart.Code.RealSense.Factory
@@ -13,14 +13,9 @@ namespace IntelRealSenseStart.Code.RealSense.Factory
             this.factory = factory;
         }
 
-        public FrameEventArgs.Builder FrameEvent(Config.RealSense.Configuration configuration)
+        public FrameEventArgs.Builder FrameEvent(OverallImageCreator overallImageCreator, RealSenseConfiguration configuration)
         {
-            return new FrameEventArgs.Builder(factory, configuration);
-        }
-
-        public HandsImageConfiguration.Builder HandsImageConfiguration()
-        {
-            return new HandsImageConfiguration.Builder();
+            return new FrameEventArgs.Builder(factory, overallImageCreator, configuration);
         }
     }
 }

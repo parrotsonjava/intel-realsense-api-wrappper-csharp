@@ -1,18 +1,16 @@
-﻿using IntelRealSenseStart.Code.RealSense.Config;
-
-namespace IntelRealSenseStart.Code.RealSense.Factory.Component
+﻿namespace IntelRealSenseStart.Code.RealSense.Factory.Component
 {
     public class ComponentsFactory
     {
         private readonly CreatorComponentsFactory creatorComponentsFactory;
         private readonly DeterminerComponentsFactory determinerComponentsFactory;
-        private readonly PropertiesComponentsFactory _propertiesComponentsFactory;
+        private readonly PropertiesComponentsFactory propertiesComponentsFactory;
 
-        public ComponentsFactory()
+        public ComponentsFactory(RealSenseFactory realSenseFactory)
         {
-            creatorComponentsFactory = new CreatorComponentsFactory();
+            creatorComponentsFactory = new CreatorComponentsFactory(realSenseFactory);
             determinerComponentsFactory = new DeterminerComponentsFactory();
-            _propertiesComponentsFactory = new PropertiesComponentsFactory();
+            propertiesComponentsFactory = new PropertiesComponentsFactory();
         }
 
         public CreatorComponentsFactory Creator
@@ -27,7 +25,7 @@ namespace IntelRealSenseStart.Code.RealSense.Factory.Component
 
         public PropertiesComponentsFactory Properties
         {
-            get { return _propertiesComponentsFactory; }
+            get { return propertiesComponentsFactory; }
         }
     }
 }

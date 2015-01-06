@@ -2,7 +2,6 @@
 using System.Linq;
 using IntelRealSenseStart.Code.RealSense.Config.RealSense;
 using IntelRealSenseStart.Code.RealSense.Data.Determiner;
-using IntelRealSenseStart.Code.RealSense.Event;
 using IntelRealSenseStart.Code.RealSense.Factory;
 using IntelRealSenseStart.Code.RealSense.Helper;
 
@@ -10,14 +9,14 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
 {
     public class HandsDeterminerComponent : DeterminerComponent
     {
-        private readonly Configuration configuration;
+        private readonly RealSenseConfiguration configuration;
 
         private readonly RealSenseFactory factory;
         private readonly PXCMSenseManager manager;
 
         private PXCMHandData handData;
 
-        private HandsDeterminerComponent(RealSenseFactory factory, PXCMSenseManager manager, Configuration configuration)
+        private HandsDeterminerComponent(RealSenseFactory factory, PXCMSenseManager manager, RealSenseConfiguration configuration)
         {
             this.factory = factory;
             this.manager = manager;
@@ -59,7 +58,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
             }
         }
 
-        public void Process(FrameEventArgs.Builder frameEvent)
+        public void Process(DeterminerData.Builder determinerData)
         {
             PXCMCapture.Sample realSenseSample = manager.QuerySample();
             PXCMCapture.Sample handSample = manager.QueryHandSample();
@@ -67,7 +66,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
             if (realSenseSample != null && handSample != null)
             {
                 handData.Update();
-                frameEvent.WithHandsData(GetHandsData());
+                determinerData.WithHandsData(GetHandsData());
             }
         }
 
@@ -129,7 +128,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
         {
             private RealSenseFactory factory;
             private PXCMSenseManager manager;
-            private Configuration configuration;
+            private RealSenseConfiguration configuration;
 
             public Builder WithFactory(RealSenseFactory factory)
             {
@@ -143,7 +142,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
                 return this;
             }
 
-            public Builder WithConfiguration(Configuration configuration)
+            public Builder WithConfiguration(RealSenseConfiguration configuration)
             {
                 this.configuration = configuration;
                 return this;

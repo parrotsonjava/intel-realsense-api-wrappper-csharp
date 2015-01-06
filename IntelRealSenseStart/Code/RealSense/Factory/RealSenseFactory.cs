@@ -17,7 +17,7 @@ namespace IntelRealSenseStart.Code.RealSense.Factory
         {
             nativeFactory = new NativeFactory();
             managerFactory = new ManagerFactory();
-            componentsFactory = new ComponentsFactory();
+            componentsFactory = new ComponentsFactory(this);
             configurationFactory = new ConfigurationFactory();
             dataFactory = new DataFactory();
             eventsFactory = new EventsFactory(this);

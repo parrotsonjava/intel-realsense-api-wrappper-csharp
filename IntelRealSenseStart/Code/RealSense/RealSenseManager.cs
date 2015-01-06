@@ -16,10 +16,10 @@ namespace IntelRealSenseStart.Code.RealSense
 
         public event FrameEventListener Frame;
 
-        public delegate Configuration.Builder FeatureConfigurer(DeterminerConfigurationFactory featureFactory);
+        public delegate RealSenseConfiguration.Builder FeatureConfigurer(DeterminerConfigurationFactory featureFactory);
 
         private readonly RealSenseFactory factory;
-        private readonly Configuration configuration;
+        private readonly RealSenseConfiguration configuration;
 
         private Boolean stopped = true;
 
@@ -31,7 +31,7 @@ namespace IntelRealSenseStart.Code.RealSense
             return new Builder(new RealSenseFactory());
         }
 
-        private RealSenseManager(RealSenseFactory factory, Configuration configuration, PXCMSenseManager manager)
+        private RealSenseManager(RealSenseFactory factory, RealSenseConfiguration configuration, PXCMSenseManager manager)
         {
             this.manager = manager;
             this.factory = factory;
@@ -52,8 +52,8 @@ namespace IntelRealSenseStart.Code.RealSense
         private void StartRealSense()
         {
             CreateComponentsManager();
-            InitializeManager();
 
+            manager.Init();
             componentsManager.Start();
         }
 
@@ -67,11 +67,6 @@ namespace IntelRealSenseStart.Code.RealSense
 
             componentsManager.Frame += componentsManager_Frame;
             componentsManager.EnableFeatures();
-        }
-
-        private void InitializeManager()
-        {
-            manager.Init();
         }
 
         public void Stop()
@@ -110,7 +105,7 @@ namespace IntelRealSenseStart.Code.RealSense
             private readonly RealSenseProperties properties;
 
             private readonly RealSenseFactory factory;
-            private Configuration configuration;
+            private RealSenseConfiguration configuration;
 
             public Builder(RealSenseFactory factory)
             {

@@ -4,14 +4,36 @@ namespace IntelRealSenseStart.Code.RealSense.Factory.Component
 {
     public class CreatorComponentsFactory
     {
-        public HandsImageBuilder.Builder HandsImageBuilder()
+        private readonly RealSenseFactory realSenseFactory;
+
+        public CreatorComponentsFactory(RealSenseFactory realSenseFactory)
         {
-            return new HandsImageBuilder.Builder();
+            this.realSenseFactory = realSenseFactory;
+        }
+
+        public ImageBuilder.Builder HandsImageBuilder()
+        {
+            return new ImageBuilder.Builder(realSenseFactory);
+        }
+
+        public BasicImageCreator.Builder BasicImageCreator()
+        {
+            return new BasicImageCreator.Builder();
         }
 
         public HandsImageCreator.Builder HandsImageCreator()
         {
             return new HandsImageCreator.Builder();
+        }
+
+        public FaceImageCreator.Builder FaceImageCreator()
+        {
+            return new FaceImageCreator.Builder();
+        }
+
+        public OverallImageCreator.Builder OverallImageCreator()
+        {
+            return new OverallImageCreator.Builder();
         }
     }
 }

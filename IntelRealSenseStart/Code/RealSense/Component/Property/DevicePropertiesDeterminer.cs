@@ -28,9 +28,9 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Property
             for (int i = 0;; i++)
             {
                 PXCMSession.ImplDesc deviceDescription;
+                PXCMCapture deviceCapture;
                 PXCMCapture.DeviceInfo deviceInfo;
                 PXCMCapture.Device device;
-                PXCMCapture deviceCapture;
 
                 if (!GetDeviceData(videoDeviceDescription, i, out deviceDescription, out deviceCapture,
                     out deviceInfo, out device))
@@ -47,7 +47,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Property
         private PXCMSession.ImplDesc CreateVideoDeviceDescription()
         {
             var videoDeviceDescription = new PXCMSession.ImplDesc();
-            videoDeviceDescription.@group = PXCMSession.ImplGroup.IMPL_GROUP_SENSOR;
+            videoDeviceDescription.group = PXCMSession.ImplGroup.IMPL_GROUP_SENSOR;
             videoDeviceDescription.subgroup = PXCMSession.ImplSubgroup.IMPL_SUBGROUP_VIDEO_CAPTURE;
             return videoDeviceDescription;
         }

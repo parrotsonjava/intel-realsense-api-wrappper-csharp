@@ -1,6 +1,5 @@
 ﻿using IntelRealSenseStart.Code.RealSense.Component.Creator;
 using IntelRealSenseStart.Code.RealSense.Config.RealSense;
-using IntelRealSenseStart.Code.RealSense.Data;
 using IntelRealSenseStart.Code.RealSense.Data.Determiner;
 using IntelRealSenseStart.Code.RealSense.Factory;
 
@@ -8,68 +7,46 @@ namespace IntelRealSenseStart.Code.RealSense.Event
 {
     public class FrameEventArgs
     {
-        private HandsImageBuilder handsImageBuilder;
+        private ImageBuilder imageBuilder;
 
-        private PXCMCapture.Device device;
+        private DeterminerData determinerData;
 
-        private HandsData handsData;
-        private FacesData facesData;
-        private ImageData imageData;
-
-        public HandsImageBuilder CreateImage()
+        public ImageBuilder CreateImage()
         {
-            return handsImageBuilder;
+            return imageBuilder;
         }
 
         public class Builder
         {
             private readonly FrameEventArgs frameEventArgs;
-            private readonly HandsImageBuilder.Builder handsImageBuilderBuilder;
+            
+            private readonly ImageBuilder.Builder handsImageBuilderBuilder;
+            private readonly OverallImageCreator overallImageCreator;
 
-            private readonly RealSenseFactory factory;
-            private readonly Configuration realSenseConfiguration;
+            private readonly RealSenseConfiguration realSenseConfiguration;
 
-            public Builder(RealSenseFactory factory, Configuration realSenseConfiguration)
+            public Builder(RealSenseFactory factory, OverallImageCreator overallImageCreator, RealSenseConfiguration realSenseConfiguration)
             {
-                handsImageBuilderBuilder = factory.Components.Creator.HandsImageBuilder();
                 frameEventArgs = new FrameEventArgs();
+                
+                handsImageBuilderBuilder = factory.Components.Creator.HandsImageBuilder();
+                this.overallImageCreator = overallImageCreator;
 
-                this.factory = factory;
                 this.realSenseConfiguration = realSenseConfiguration;
             }
 
-            public Builder WithDevice(PXCMCapture.Device device)
+            public Builder WithDeterminerData(DeterminerData.Builder determinerData)
             {
-                frameEventArgs.device = device;
-                return this;
-            }
-
-            public Builder WithImageData(ImageData.Builder imageData)
-            {
-                frameEventArgs.imageData = imageData.Build();
-                return this;
-            }
-
-            public Builder WithHandsData(HandsData.Builder handsData)
-            {
-                frameEventArgs.handsData = handsData.Build();
-                return this;
-            }
-
-            public Builder WithFacesData(FacesData.Builder facesData)
-            {
-                frameEventArgs.facesData = facesData.Build();
+                frameEventArgs.determinerData = determinerData.Build();
                 return this;
             }
 
             public FrameEventArgs Build()
             {
-                frameEventArgs.handsImageBuilder = handsImageBuilderBuilder
-                    .WithFactory(factory)
-                    .WithDevice(frameEventArgs.device)
+                frameEventArgs.imageBuilder = handsImageBuilderBuilder
                     .WithConfiguration(realSenseConfiguration)
-                    .WithHandsData(frameEventArgs.handsData)
-                    .WithImageData(frameEventArgs.imageData)
+                    .WithImageCreator(overallImageCreator)
+                    .WithDeterminerData(frameEventArgs.determinerData)
                     .Build();
                 return frameEventArgs;
             }

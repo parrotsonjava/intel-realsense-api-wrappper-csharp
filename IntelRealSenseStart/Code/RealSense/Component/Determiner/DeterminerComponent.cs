@@ -1,4 +1,4 @@
-﻿using IntelRealSenseStart.Code.RealSense.Event;
+﻿using IntelRealSenseStart.Code.RealSense.Data.Determiner;
 
 namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
 {
@@ -10,6 +10,6 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
 
         void Configure();
 
-        void Process(FrameEventArgs.Builder frameEvent);
+        void Process(DeterminerData.Builder determinerData);
     }
 }
