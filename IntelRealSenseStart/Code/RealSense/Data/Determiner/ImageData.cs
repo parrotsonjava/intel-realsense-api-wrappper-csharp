@@ -5,10 +5,13 @@
         private PXCMImage colorImage;
         private PXCMImage depthImage;
 
+        private PXCMPointF32[] uvMap;
+
         private ImageData()
         {
             colorImage = null;
             depthImage = null;
+            uvMap = null;
         }
 
         public PXCMImage ColorImage
@@ -31,6 +34,11 @@
             get { return depthImage != null; }
         }
 
+        public PXCMPointF32[] UVMap
+        {
+            get { return uvMap; }
+        }
+
         public class Builder
         {
             private readonly ImageData imageData;
@@ -49,6 +57,12 @@
             public Builder WithDepthImage(PXCMImage depthImage)
             {
                 imageData.depthImage = depthImage;
+                return this;
+            }
+
+            public Builder WithUvMap(PXCMPointF32[] uvMap)
+            {
+                imageData.uvMap = uvMap;
                 return this;
             }
 

@@ -5,14 +5,14 @@ namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
     public class RealSenseConfiguration
     {
         private DeviceConfiguration deviceConfiguration;
-        private ImageConfiguration colorImageConfig;
-        private ImageConfiguration depthImageConfig;
+        private ImageConfiguration imageConfiguration;
         private HandsConfiguration handsConfiguration;
         private FaceConfiguration faceConfiguration;
 
         private RealSenseConfiguration()
         {
             deviceConfiguration = DeviceConfiguration.DEFAULT_CONFIGURATION;
+            imageConfiguration = ImageConfiguration.DEFAULT_CONFIGURATION;
         }
 
         public DeviceConfiguration Device
@@ -20,38 +20,9 @@ namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
             get { return deviceConfiguration; }
         }
 
-        public bool ColorImageEnabled
+        public ImageConfiguration Image
         {
-            get { return colorImageConfig != null; }
-        }
-
-        public ImageConfiguration ColorImage
-        {
-            get
-            {
-                if (colorImageConfig == null)
-                {
-                    throw new RealSenseException("Hands detection is not enabled, but tried to access it");
-                }
-                return colorImageConfig;
-            }
-        }
-
-        public bool DepthImageEnabled
-        {
-            get { return depthImageConfig != null; }
-        }
-
-        public ImageConfiguration DepthImage
-        {
-            get
-            {
-                if (depthImageConfig == null)
-                {
-                    throw new RealSenseException("Hands detection is not enabled, but tried to access it");
-                }
-                return depthImageConfig;
-            }
+            get { return imageConfiguration; }
         }
 
         public bool HandsDetectionEnabled
@@ -115,15 +86,9 @@ namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
                 return this;
             }
 
-            public Builder WithColorImage(ImageConfiguration.Builder colorImageFeature)
+            public Builder WithImage(ImageConfiguration.Builder imageConfiguration)
             {
-                configuration.colorImageConfig = colorImageFeature.Build();
-                return this;
-            }
-
-            public Builder WithDepthImage(ImageConfiguration.Builder depthImageFeature)
-            {
-                configuration.depthImageConfig = depthImageFeature.Build();
+                configuration.imageConfiguration = imageConfiguration.Build();
                 return this;
             }
 

@@ -108,6 +108,7 @@
     <Compile Include="Code\RealSense\Helper\ImageExtensions.cs" />
     <Compile Include="Code\RealSense\Helper\EnumerableExtensions.cs" />
     <Compile Include="Code\RealSense\Helper\Preconditions.cs" />
+    <Compile Include="Code\RealSense\Helper\ProjectionExtensions.cs" />
     <Compile Include="Code\RealSense\Helper\Range.cs" />
     <Compile Include="Code\RealSense\Helper\RangeExtensions.cs" />
     <Compile Include="Code\RealSense\Factory\Configuration\ConfigurationFactory.cs" />

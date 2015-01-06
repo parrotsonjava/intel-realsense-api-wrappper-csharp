@@ -29,7 +29,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Creator
 
         public ImageBuilder WithBackgroundImage(ImageBackground backgroundImage)
         {
-            if (backgroundImage == ImageBackground.ColorImage && !realSenseConfiguration.ColorImageEnabled)
+            if (backgroundImage == ImageBackground.ColorImage && !realSenseConfiguration.Image.ColorEnabled)
             {
                 throw new RealSenseException("Cannot use background image since it is not configured");
             }
@@ -57,9 +57,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Creator
 
         private void AddColorCoordinateHandJoints()
         {
-            if (
-                !(realSenseConfiguration.HandsDetectionEnabled && realSenseConfiguration.ColorImageEnabled &&
-                  realSenseConfiguration.DepthImageEnabled))
+            if (!(realSenseConfiguration.HandsDetectionEnabled && realSenseConfiguration.Image.ProjectionEnabled))
             {
                 throw new RealSenseException(
                     "Cannot use projected hand joints since hands detection or color image or depth image is not configured");
@@ -98,7 +96,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Creator
         private void CheckConfiguration(ImageCreatorConfiguration configuration)
         {
             if (configuration.Overlays.Contains(ImageOverlay.DepthCoordinateHandsSegmentationImage) &&
-                !realSenseConfiguration.ColorImage.Resolution.Equals(realSenseConfiguration.DepthImage.Resolution))
+                !realSenseConfiguration.Image.ColorResolution.Equals(realSenseConfiguration.Image.DepthResolution))
             {
                 throw new RealSenseException(
                     "The hand segmentation image can only be rendered when color and depth resolution are the same");

@@ -15,6 +15,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Creator
         private const int CONFIDENCE_THRESHOLD = 80;
         private static readonly byte[] LUT;
 
+        // ReSharper disable once NotAccessedField.Local
         private readonly RealSenseConfiguration realSenseConfiguration;
 
         static HandsImageCreator()
@@ -31,7 +32,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Creator
         public Bitmap Create(Bitmap bitmap, DeterminerData determinerData,
             ImageCreatorConfiguration imageCreatorConfiguration)
         {
-            return new HandsImageCreatorRun(bitmap, determinerData, realSenseConfiguration, imageCreatorConfiguration)
+            return new HandsImageCreatorRun(bitmap, determinerData, imageCreatorConfiguration)
                 .Create();
         }
 
@@ -42,19 +43,13 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Creator
             private readonly Bitmap bitmap;
             private readonly DeterminerData determinerData;
 
-            private readonly RealSenseConfiguration realSenseConfiguration;
             private readonly ImageCreatorConfiguration imageCreatorConfiguration;
 
-            private PXCMProjection projection;
-            private PXCMPointF32[] uvMap;
-
-            public HandsImageCreatorRun(Bitmap bitmap, DeterminerData determinerData,
-                RealSenseConfiguration realSenseConfiguration, ImageCreatorConfiguration imageCreatorConfiguration)
+            public HandsImageCreatorRun(Bitmap bitmap, DeterminerData determinerData, ImageCreatorConfiguration imageCreatorConfiguration)
             {
                 this.bitmap = bitmap;
                 this.determinerData = determinerData;
 
-                this.realSenseConfiguration = realSenseConfiguration;
                 this.imageCreatorConfiguration = imageCreatorConfiguration;
 
                 bonePen = new Pen(Color.SlateBlue, 3.0f*bitmap.Width/imageCreatorConfiguration.Resolution.Width);
@@ -62,20 +57,9 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Creator
 
             public Bitmap Create()
             {
-                CreateProjection();
                 OverlayBitmap();
-                CleanUp();
 
                 return bitmap;
-            }
-
-            private void CreateProjection()
-            {
-                projection = determinerData.Device.CreateProjection();
-                uvMap =
-                    new PXCMPointF32[
-                        determinerData.ImageData.DepthImage.info.width*determinerData.ImageData.DepthImage.info.height];
-                projection.QueryUVMap(determinerData.ImageData.DepthImage, uvMap);
             }
 
             private void OverlayBitmap()
@@ -160,8 +144,8 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Creator
                     .Where(node => node.Node.confidence > CONFIDENCE_THRESHOLD && indexes.Contains(node.Index))
                     .Select(node =>
                         projectColorToDepthCoordinates
-                            ? MapDepthPositionToColorPositionInBackgroundImage(node.Node.positionImage)
-                            : MapDepthPositionToBackgroundImage(node.Node.positionImage))
+                            ? node.Node.positionImage.MapToColorPositionIn(bitmap, determinerData.ImageData)
+                            : node.Node.positionImage.MapToDepthPositionIn(bitmap, determinerData.ImageData))
                     .Where(image => image.x > 0 && image.y > 0)
                     .ToArray();
 
@@ -176,54 +160,9 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Creator
                     .Do(line => DrawLine(graphics, line.Start, line.End));
             }
 
-            private PXCMPoint3DF32 MapDepthPositionToColorPositionInBackgroundImage(PXCMPoint3DF32 depthPosition)
-            {
-                if (imageCreatorConfiguration.BackgroundImage == ImageBackground.ColorImage)
-                {
-                    Size backgroundImageResolution = bitmap.Size;
-                    return new PXCMPoint3DF32
-                    {
-                        x =
-                            uvMap[
-                                (int) depthPosition.y*determinerData.ImageData.DepthImage.info.width +
-                                (int) depthPosition.x
-                                ].x*backgroundImageResolution.Width,
-                        y =
-                            uvMap[
-                                (int) depthPosition.y*determinerData.ImageData.DepthImage.info.width +
-                                (int) depthPosition.x
-                                ].y*backgroundImageResolution.Height
-                    };
-                }
-
-                return depthPosition;
-            }
-
-            private PXCMPoint3DF32 MapDepthPositionToBackgroundImage(PXCMPoint3DF32 depthPosition)
-            {
-                Size backgroundImageResolution = bitmap.Size;
-                var depthResolution = realSenseConfiguration.DepthImage.Resolution;
-
-                if (depthResolution.Equals(backgroundImageResolution))
-                {
-                    return depthPosition;
-                }
-
-                return new PXCMPoint3DF32
-                {
-                    x = (depthPosition.x/depthResolution.Width)*backgroundImageResolution.Width,
-                    y = (depthPosition.y/depthResolution.Height)*backgroundImageResolution.Height
-                };
-            }
-
             private void DrawLine(Graphics graphics, PXCMPoint3DF32 start, PXCMPoint3DF32 end)
             {
                 graphics.DrawLine(bonePen, new Point((int) start.x, (int) start.y), new Point((int) end.x, (int) end.y));
-            }
-
-            private void CleanUp()
-            {
-                projection.Dispose();
             }
         }
 

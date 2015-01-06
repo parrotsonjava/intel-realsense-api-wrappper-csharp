@@ -21,8 +21,12 @@ namespace IntelRealSenseStart
                 factory.Configuration()
                     .WithHandsDetection(factory.HandsDetection().WithSegmentationImage())
                     .WithFaceDetection(factory.FaceDetection().UsingLandmarks())
-                    .WithColorImage(factory.Image().WithResolution(new Size(640, 480)))
-                    .WithDepthImage(factory.Image().WithResolution(new Size(640, 480)))).Build();
+                    .WithImage(
+                        factory.Image()
+                        .WithColorResolution(new Size(640, 480))
+                        .WithDepthResolution(new Size(640, 480))
+                        .WithProjectionEnabled()))
+                .Build();
 
             manager.Frame += realSense_Hands_Frame;
         }
@@ -51,7 +55,7 @@ namespace IntelRealSenseStart
                 .WithOverlay(ImageOverlay.ColorCoordinateHandJoints)
                 .Create();
 
-            BeginInvoke(new BitmapHandler(SetImage), new object[] { bitmap });
+            BeginInvoke(new BitmapHandler(SetImage), new object[] {bitmap});
         }
 
         private void SetImage(Bitmap bitmap)

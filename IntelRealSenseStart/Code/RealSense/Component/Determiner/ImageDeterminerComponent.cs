@@ -12,6 +12,8 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
         private readonly RealSenseFactory factory;
         private readonly PXCMSenseManager manager;
 
+        private PXCMCapture.Device device;
+
         private ImageDeterminerComponent(RealSenseFactory factory, PXCMSenseManager manager, RealSenseConfiguration configuration)
         {
             this.factory = factory;
@@ -21,21 +23,21 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
 
         public void EnableFeatures()
         {
-            if (configuration.ColorImageEnabled)
+            if (configuration.Image.ColorEnabled)
             {
-                manager.EnableStream(PXCMCapture.StreamType.STREAM_TYPE_COLOR, configuration.ColorImage.Resolution.Width,
-                    configuration.ColorImage.Resolution.Height);
+                manager.EnableStream(PXCMCapture.StreamType.STREAM_TYPE_COLOR, configuration.Image.ColorResolution.Width,
+                    configuration.Image.ColorResolution.Height);
             }
-            if (configuration.DepthImageEnabled || configuration.HandsDetectionEnabled)
+            if (configuration.Image.DepthEnabled || configuration.HandsDetectionEnabled)
             {
-                manager.EnableStream(PXCMCapture.StreamType.STREAM_TYPE_DEPTH, configuration.DepthImage.Resolution.Width,
-                    configuration.DepthImage.Resolution.Height);
+                manager.EnableStream(PXCMCapture.StreamType.STREAM_TYPE_DEPTH, configuration.Image.DepthResolution.Width,
+                    configuration.Image.DepthResolution.Height);
             }
         }
 
         public void Configure()
         {
-            // Nothing to do
+            device = manager.QueryCaptureManager().QueryDevice();
         }
 
         public bool ShouldBeStarted
@@ -50,7 +52,23 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
             determinerData.WithImageData(
                 factory.Data.Determiner.Image()
                     .WithColorImage(realSenseSample.color)
-                    .WithDepthImage(realSenseSample.depth));
+                    .WithDepthImage(realSenseSample.depth)
+                    .WithUvMap(CreateUvMapFrom(realSenseSample)));
+        }
+
+        private PXCMPointF32[] CreateUvMapFrom(PXCMCapture.Sample realSenseSample)
+        {
+            if (!configuration.Image.ProjectionEnabled)
+            {
+                return null;
+            }
+
+            var projection = device.CreateProjection();
+            var uvMap = new PXCMPointF32[realSenseSample.depth.info.width * realSenseSample.depth.info.height];
+            projection.QueryUVMap(realSenseSample.depth, uvMap);
+            projection.Dispose();
+
+            return uvMap;
         }
 
         public class Builder
