@@ -45,6 +45,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
         {
             var deviceComponent = factory.Components.Determiner.Device()
                 .WithManager(manager)
+                .WithConfiguration(realSenseConfiguration)
                 .Build();
             var handsComponent = factory.Components.Determiner.Hands()
                 .WithFactory(factory)

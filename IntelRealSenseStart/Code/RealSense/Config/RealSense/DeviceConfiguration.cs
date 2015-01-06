@@ -16,7 +16,7 @@
             videoDeviceConfiguration = VideoDeviceConfiguration.DEFAULT_CONFIGURATION;
         }
 
-        public VideoDeviceConfiguration VideoDeviceConfiguration
+        public VideoDeviceConfiguration VideoDevice
         {
             get { return videoDeviceConfiguration; }
         }

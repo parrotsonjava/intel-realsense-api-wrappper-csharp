@@ -7,6 +7,7 @@ namespace IntelRealSenseStart.Code.RealSense.Data.Properties
     public class DeviceProperties
     {
         private String deviceName;
+        private PXCMCapture.DeviceInfo deviceInfo;
 
         private readonly List<StreamProperties> supportedColorStreamProperties; 
         private readonly List<StreamProperties> supportedDepthStreamProperties;
@@ -20,6 +21,11 @@ namespace IntelRealSenseStart.Code.RealSense.Data.Properties
         public String DeviceName
         {
             get { return deviceName; }
+        }
+
+        public PXCMCapture.DeviceInfo DeviceInfo
+        {
+            get { return deviceInfo; }
         }
 
         public List<StreamProperties> SupportedColorStreamProperties
@@ -44,6 +50,12 @@ namespace IntelRealSenseStart.Code.RealSense.Data.Properties
             public Builder WithDeviceName(String deviceName)
             {
                 deviceProperties.deviceName = deviceName;
+                return this;
+            }
+
+            public Builder WithDeviceInfo(PXCMCapture.DeviceInfo deviceInfo)
+            {
+                deviceProperties.deviceInfo = deviceInfo;
                 return this;
             }
 

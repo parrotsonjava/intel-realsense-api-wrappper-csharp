@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using IntelRealSenseStart.Code.RealSense;
 using IntelRealSenseStart.Code.RealSense.Config.Image;
+using IntelRealSenseStart.Code.RealSense.Data.Properties;
 using IntelRealSenseStart.Code.RealSense.Event;
 
 namespace IntelRealSenseStart
@@ -17,12 +18,16 @@ namespace IntelRealSenseStart
         {
             InitializeComponent();
             var builder = RealSenseManager.Create();
+
+            DeviceProperties deviceProperties = null; // TODO builder.Properties.Devices.FindByName("foo");
             manager = builder.Configure(factory =>
                 factory.Configuration()
+                    .UsingDeviceConfiguration(factory.DeviceConfiguration()
+                        .WithVideoDeviceConfiguration(factory.VideoDeviceConfiguration()
+                            .WithVideoDevice(deviceProperties)))
                     .WithHandsDetection(factory.HandsDetection().WithSegmentationImage())
                     .WithFaceDetection(factory.FaceDetection().UsingLandmarks())
-                    .WithImage(
-                        factory.Image()
+                    .WithImage(factory.Image()
                         .WithColorResolution(new Size(640, 480))
                         .WithDepthResolution(new Size(640, 480))
                         .WithProjectionEnabled()))

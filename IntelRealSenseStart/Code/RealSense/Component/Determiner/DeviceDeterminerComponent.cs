@@ -1,4 +1,5 @@
-﻿using IntelRealSenseStart.Code.RealSense.Data.Determiner;
+﻿using IntelRealSenseStart.Code.RealSense.Config.RealSense;
+using IntelRealSenseStart.Code.RealSense.Data.Determiner;
 using IntelRealSenseStart.Code.RealSense.Exception;
 using IntelRealSenseStart.Code.RealSense.Helper;
 
@@ -7,16 +8,23 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
     public class DeviceDeterminerComponent : DeterminerComponent
     {
         private readonly PXCMSenseManager manager;
+        private readonly RealSenseConfiguration configuration;
+
         private PXCMCapture.Device device;
 
-        private DeviceDeterminerComponent(PXCMSenseManager manager)
+        private DeviceDeterminerComponent(PXCMSenseManager manager, RealSenseConfiguration configuration)
         {
             this.manager = manager;
+            this.configuration = configuration;
         }
 
         public void EnableFeatures()
         {
-            // Nothing to do
+            var deviceProperties = configuration.Device.VideoDevice.Device;
+            if (deviceProperties != null)
+            {
+                manager.captureManager.FilterByDeviceInfo(deviceProperties.DeviceInfo);
+            }
         }
 
         public void Configure()
@@ -48,6 +56,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
         public class Builder
         {
             private PXCMSenseManager manager;
+            private RealSenseConfiguration configuration;
 
             public Builder WithManager(PXCMSenseManager manager)
             {
@@ -55,10 +64,18 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
                 return this;
             }
 
+            public Builder WithConfiguration(RealSenseConfiguration configuration)
+            {
+                this.configuration = configuration;
+                return this;
+            }
+
             public DeviceDeterminerComponent Build()
             {
                 manager.CheckState(Preconditions.IsNotNull, "The RealSense manager must be set to create the device component");
-                return new DeviceDeterminerComponent(manager);
+                configuration.CheckState(Preconditions.IsNotNull, "The RealSense configuration must be set to create the device component");
+
+                return new DeviceDeterminerComponent(manager, configuration);
             }
         }
     }

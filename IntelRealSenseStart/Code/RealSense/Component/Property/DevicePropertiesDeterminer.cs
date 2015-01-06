@@ -79,6 +79,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Property
         {
             return factory.Data.Properties.Device()
                 .WithDeviceName(deviceInfo.name)
+                .WithDeviceInfo(deviceInfo)
                 .WithSupportedColorStreams(GetStreamsFor(device, deviceInfo, PXCMCapture.StreamType.STREAM_TYPE_COLOR))
                 .WithSupportedDepthStreams(GetStreamsFor(device, deviceInfo, PXCMCapture.StreamType.STREAM_TYPE_DEPTH));
         }
