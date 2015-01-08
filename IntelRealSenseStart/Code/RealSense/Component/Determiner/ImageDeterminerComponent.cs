@@ -1,5 +1,6 @@
 ﻿using IntelRealSenseStart.Code.RealSense.Config.RealSense;
 using IntelRealSenseStart.Code.RealSense.Data.Determiner;
+using IntelRealSenseStart.Code.RealSense.Data.Properties;
 using IntelRealSenseStart.Code.RealSense.Factory;
 using IntelRealSenseStart.Code.RealSense.Helper;
 
@@ -25,13 +26,15 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
         {
             if (configuration.Image.ColorEnabled)
             {
-                manager.EnableStream(PXCMCapture.StreamType.STREAM_TYPE_COLOR, configuration.Image.ColorResolution.Width,
-                    configuration.Image.ColorResolution.Height);
+                StreamProperties streamProperties = configuration.Image.ColorStreamProperties;
+                manager.EnableStream(PXCMCapture.StreamType.STREAM_TYPE_COLOR, streamProperties.Resolution.Width,
+                    streamProperties.Resolution.Height, streamProperties.FrameRate);
             }
             if (configuration.Image.DepthEnabled || configuration.HandsDetectionEnabled)
             {
-                manager.EnableStream(PXCMCapture.StreamType.STREAM_TYPE_DEPTH, configuration.Image.DepthResolution.Width,
-                    configuration.Image.DepthResolution.Height);
+                StreamProperties streamProperties = configuration.Image.DepthStreamProperties;
+                manager.EnableStream(PXCMCapture.StreamType.STREAM_TYPE_DEPTH, streamProperties.Resolution.Width,
+                    streamProperties.Resolution.Height, streamProperties.FrameRate);
             }
         }
 
@@ -42,7 +45,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
 
         public bool ShouldBeStarted
         {
-            get { return configuration.HandsDetectionEnabled; }
+            get { return configuration.Image.ColorEnabled || configuration.Image.DepthEnabled; }
         }
 
         public void Process(DeterminerData.Builder determinerData)
@@ -97,11 +100,11 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
 
             public ImageDeterminerComponent Build()
             {
-                factory.CheckState(Preconditions.IsNotNull,
+                factory.Check(Preconditions.IsNotNull,
                     "The factory must be set in order to create the hands determiner component");
-                manager.CheckState(Preconditions.IsNotNull,
+                manager.Check(Preconditions.IsNotNull,
                     "The RealSense manager must be set in order to create the hands determiner component");
-                configuration.CheckState(Preconditions.IsNotNull,
+                configuration.Check(Preconditions.IsNotNull,
                     "The RealSense configuration must be set in order to create the hands determiner component");
 
                 return new ImageDeterminerComponent(factory, manager, configuration);

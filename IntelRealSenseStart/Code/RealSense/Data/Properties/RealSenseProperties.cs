@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using IntelRealSenseStart.Code.RealSense.Exception;
 
 namespace IntelRealSenseStart.Code.RealSense.Data.Properties
 {
@@ -21,6 +23,16 @@ namespace IntelRealSenseStart.Code.RealSense.Data.Properties
         public List<DeviceProperties> Devices
         {
             get { return deviceProperties; }
+        }
+
+        public DeviceProperties FindDeviceByName(String deviceName)
+        {
+            DeviceProperties properties = Devices.Find((deviceProperties) => deviceProperties.DeviceName == deviceName);
+            if (properties == null)
+            {
+                throw new RealSenseException(String.Format("No camera named '{0}' is attached", deviceName));
+            }
+            return properties;
         }
 
         public class Builder

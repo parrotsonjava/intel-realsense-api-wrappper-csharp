@@ -131,7 +131,7 @@ namespace IntelRealSenseStart.Code.RealSense
 
             public RealSenseManager Build()
             {
-                configuration.CheckState(Preconditions.IsNotNull,
+                configuration.Check(Preconditions.IsNotNull,
                     "The RealSense manager must be configured before using it");
 
                 return new RealSenseManager(factory, configuration, manager);

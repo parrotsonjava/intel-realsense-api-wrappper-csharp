@@ -1,4 +1,6 @@
 ﻿using System.Drawing;
+using IntelRealSenseStart.Code.RealSense.Data.Properties;
+using IntelRealSenseStart.Code.RealSense.Helper;
 
 namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
 {
@@ -6,22 +8,19 @@ namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
     {
         public static readonly ImageConfiguration DEFAULT_CONFIGURATION = new ImageConfiguration();
         public static readonly Size DEFAULT_RESOLUTION = new Size(640, 480);
-        
+
         public bool ColorEnabled { get; private set; }
         public bool DepthEnabled { get; private set; }
         public bool ProjectionEnabled { get; private set; }
 
-        public Size ColorResolution { get; private set; }
-        public Size DepthResolution { get; private set; }
+        public StreamProperties ColorStreamProperties { get; private set; }
+        public StreamProperties DepthStreamProperties { get; private set; }
 
         protected ImageConfiguration()
         {
             ColorEnabled = true;
             DepthEnabled = true;
             ProjectionEnabled = true;
-
-            ColorResolution = DEFAULT_RESOLUTION;
-            DepthResolution = DEFAULT_RESOLUTION;
         }
 
         public class Builder
@@ -38,7 +37,6 @@ namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
                 if (!imageFeature.ColorEnabled)
                 {
                     imageFeature.ColorEnabled = true;
-                    imageFeature.ColorResolution = DEFAULT_RESOLUTION;
                 }
                 return this;
             }
@@ -54,7 +52,6 @@ namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
                 if (!imageFeature.ColorEnabled)
                 {
                     imageFeature.DepthEnabled = true;
-                    imageFeature.DepthResolution = DEFAULT_RESOLUTION;
                 }
                 return this;
             }
@@ -65,17 +62,23 @@ namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
                 return this;
             }
 
-            public Builder WithColorResolution(Size resolution)
+            public Builder WithColorStreamProperties(StreamProperties streamProperties)
             {
+                (streamProperties.StreamType == PXCMCapture.StreamType.STREAM_TYPE_COLOR)
+                    .Check("Can only set color stream properties for the color stream");
+
                 imageFeature.ColorEnabled = true;
-                imageFeature.ColorResolution = resolution;
+                imageFeature.ColorStreamProperties = streamProperties;
                 return this;
             }
 
-            public Builder WithDepthResolution(Size resolution)
+            public Builder WithDepthStreamProperties(StreamProperties streamProperties)
             {
+                (streamProperties.StreamType == PXCMCapture.StreamType.STREAM_TYPE_DEPTH)
+                    .Check("Can only set depth stream properties for the depth stream");
+
                 imageFeature.DepthEnabled = true;
-                imageFeature.DepthResolution = resolution;
+                imageFeature.DepthStreamProperties = streamProperties;
                 return this;
             }
 
@@ -96,6 +99,11 @@ namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
 
             public ImageConfiguration Build()
             {
+                (!imageFeature.ColorEnabled || imageFeature.ColorStreamProperties != null).Check(
+                    "When enabling color images, a color stream profile must be set");
+                (!imageFeature.DepthEnabled || imageFeature.DepthStreamProperties != null).Check(
+                    "When enabling depth images, a depth stream profile must be set");
+
                 return imageFeature;
             }
         }

@@ -10,6 +10,8 @@ namespace IntelRealSenseStart
 {
     public partial class MainForm : Form
     {
+        public const String CAMERA_NAME = "Intel(R) RealSense(TM) 3D Camera"; // or "Lenovo EasyCamera"
+
         public delegate void BitmapHandler(Bitmap bitmap);
 
         private readonly RealSenseManager manager;
@@ -18,8 +20,8 @@ namespace IntelRealSenseStart
         {
             InitializeComponent();
             var builder = RealSenseManager.Create();
+            DeviceProperties deviceProperties = builder.Properties.FindDeviceByName(CAMERA_NAME);
 
-            DeviceProperties deviceProperties = null; // TODO builder.Properties.Devices.FindByName("foo");
             manager = builder.Configure(factory =>
                 factory.Configuration()
                     .UsingDeviceConfiguration(factory.DeviceConfiguration()
@@ -28,8 +30,8 @@ namespace IntelRealSenseStart
                     .WithHandsDetection(factory.HandsDetection().WithSegmentationImage())
                     .WithFaceDetection(factory.FaceDetection().UsingLandmarks())
                     .WithImage(factory.Image()
-                        .WithColorResolution(new Size(640, 480))
-                        .WithDepthResolution(new Size(640, 480))
+                        .WithColorStreamProperties(deviceProperties.ColorStreamPropertyWithResolution(new Size(640, 480)))
+                        .WithDepthStreamProperties(deviceProperties.DepthStreamPropertyWithResolution(new Size(640, 480)))
                         .WithProjectionEnabled()))
                 .Build();
 

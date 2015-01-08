@@ -150,11 +150,11 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
 
             public HandsDeterminerComponent Build()
             {
-                factory.CheckState(Preconditions.IsNotNull,
+                factory.Check(Preconditions.IsNotNull,
                     "The factory must be set in order to create the hands determiner component");
-                manager.CheckState(Preconditions.IsNotNull,
+                manager.Check(Preconditions.IsNotNull,
                     "The RealSense manager must be set in order to create the hands determiner component");
-                configuration.CheckState(Preconditions.IsNotNull,
+                configuration.Check(Preconditions.IsNotNull,
                     "The RealSense configuration must be set in order to create the hands determiner component");
 
                 return new HandsDeterminerComponent(factory, manager, configuration);

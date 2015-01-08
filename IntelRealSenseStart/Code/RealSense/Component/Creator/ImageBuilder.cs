@@ -80,8 +80,8 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Creator
 
         private void AddColorCoordinateFaceLandmarks()
         {
-            if (!(realSenseConfiguration.FaceDetectionEnabled && realSenseConfiguration.FaceDetection.UseLandmarks 
-                && realSenseConfiguration.Image.ProjectionEnabled))
+            if (!(realSenseConfiguration.FaceDetectionEnabled && realSenseConfiguration.FaceDetection.UseLandmarks
+                  && realSenseConfiguration.Image.ProjectionEnabled))
             {
                 throw new RealSenseException(
                     "Cannot use projected face landmarks since landmark detection or image projection is not configured");
@@ -111,7 +111,8 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Creator
         private void CheckConfiguration(ImageCreatorConfiguration configuration)
         {
             if (configuration.Overlays.Contains(ImageOverlay.DepthCoordinateHandsSegmentationImage) &&
-                !realSenseConfiguration.Image.ColorResolution.Equals(realSenseConfiguration.Image.DepthResolution))
+                !realSenseConfiguration.Image.ColorStreamProperties.Resolution.Equals(
+                    realSenseConfiguration.Image.DepthStreamProperties.Resolution))
             {
                 throw new RealSenseException(
                     "The hand segmentation image can only be rendered when color and depth resolution are the same");
@@ -147,7 +148,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Creator
 
             public ImageBuilder Build()
             {
-                imageBuilder.realSenseConfiguration.CheckState(Preconditions.IsNotNull,
+                imageBuilder.realSenseConfiguration.Check(Preconditions.IsNotNull,
                     "The RealSense configuration must be set in order to create the hands image builder");
 
                 return imageBuilder;

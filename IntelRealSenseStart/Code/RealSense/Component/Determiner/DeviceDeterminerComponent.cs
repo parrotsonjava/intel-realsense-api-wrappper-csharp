@@ -30,12 +30,19 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
         public void Configure()
         {
             PXCMCapture.DeviceInfo deviceInfo;
-            device = manager.QueryCaptureManager().QueryDevice();
+            var queryCaptureManager = manager.QueryCaptureManager();
+            device = queryCaptureManager.QueryDevice();
+
+            if (device == null)
+            {
+                throw new RealSenseException("No device found for the selected device");
+            }
+
             device.QueryDeviceInfo(out deviceInfo);
 
-            if (deviceInfo == null || deviceInfo.model != PXCMCapture.DeviceModel.DEVICE_MODEL_IVCAM)
+            if (deviceInfo == null)
             {
-                throw new RealSenseException("No device info found");
+                throw new RealSenseException("No device info found for the selected device");
             }
 
             manager.captureManager.device.SetDepthConfidenceThreshold(1);
@@ -72,8 +79,8 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
 
             public DeviceDeterminerComponent Build()
             {
-                manager.CheckState(Preconditions.IsNotNull, "The RealSense manager must be set to create the device component");
-                configuration.CheckState(Preconditions.IsNotNull, "The RealSense configuration must be set to create the device component");
+                manager.Check(Preconditions.IsNotNull, "The RealSense manager must be set to create the device component");
+                configuration.Check(Preconditions.IsNotNull, "The RealSense configuration must be set to create the device component");
 
                 return new DeviceDeterminerComponent(manager, configuration);
             }

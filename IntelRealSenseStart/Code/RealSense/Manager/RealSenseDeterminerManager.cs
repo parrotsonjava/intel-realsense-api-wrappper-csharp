@@ -196,11 +196,11 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
 
             public RealSenseDeterminerManager Build()
             {
-                factory.CheckState(Preconditions.IsNotNull,
+                factory.Check(Preconditions.IsNotNull,
                     "The factory must be set in order to create the determiner manager");
-                manager.CheckState(Preconditions.IsNotNull,
+                manager.Check(Preconditions.IsNotNull,
                     "The RealSense manager must be set in order to create the determiner manager");
-                configuration.CheckState(Preconditions.IsNotNull,
+                configuration.Check(Preconditions.IsNotNull,
                     "The RealSense configuration must be set in order to create the determiner manager");
 
                 return new RealSenseDeterminerManager(factory, manager, configuration);
