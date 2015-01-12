@@ -1,4 +1,4 @@
-﻿using IntelRealSenseStart.Code.RealSense.Data.Properties;
+﻿using System;
 
 namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
 {
@@ -6,7 +6,7 @@ namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
     {
         public static readonly VideoDeviceConfiguration DEFAULT_CONFIGURATION;
 
-        private DeviceProperties deviceProperties;
+        private String deviceName;
 
         static VideoDeviceConfiguration()
         {
@@ -17,9 +17,9 @@ namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
         {
         }
 
-        public DeviceProperties Device
+        public String DeviceName
         {
-            get { return deviceProperties; }
+            get { return deviceName; }
         }
 
         public class Builder
@@ -31,9 +31,9 @@ namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
                 videoDeviceConfiguration = new VideoDeviceConfiguration();
             }
 
-            public Builder WithVideoDevice(DeviceProperties deviceProperties)
+            public Builder WithVideoDeviceName(String deviceName)
             {
-                videoDeviceConfiguration.deviceProperties = deviceProperties;
+                videoDeviceConfiguration.deviceName = deviceName;
                 return this;
             }
 

@@ -67,7 +67,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Property
             }
 
             session.CreateImpl(deviceDescription, out deviceCapture);
-            if (deviceCapture.QueryDeviceInfo(0, out deviceInfo) < pxcmStatus.PXCM_STATUS_NO_ERROR)
+            if (deviceCapture == null || deviceCapture.QueryDeviceInfo(0, out deviceInfo) < pxcmStatus.PXCM_STATUS_NO_ERROR)
             {
                 return false;
             }

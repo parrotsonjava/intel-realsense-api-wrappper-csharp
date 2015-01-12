@@ -1,6 +1,5 @@
 ﻿using IntelRealSenseStart.Code.RealSense.Config.RealSense;
 using IntelRealSenseStart.Code.RealSense.Data.Determiner;
-using IntelRealSenseStart.Code.RealSense.Data.Properties;
 using IntelRealSenseStart.Code.RealSense.Factory;
 using IntelRealSenseStart.Code.RealSense.Helper;
 
@@ -26,15 +25,15 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
         {
             if (configuration.Image.ColorEnabled)
             {
-                StreamProperties streamProperties = configuration.Image.ColorStreamProperties;
-                manager.EnableStream(PXCMCapture.StreamType.STREAM_TYPE_COLOR, streamProperties.Resolution.Width,
-                    streamProperties.Resolution.Height, streamProperties.FrameRate);
+                StreamConfiguration streamConfiguration = configuration.Image.ColorStreamConfiguration;
+                manager.EnableStream(PXCMCapture.StreamType.STREAM_TYPE_COLOR, streamConfiguration.Resolution.Width,
+                    streamConfiguration.Resolution.Height, streamConfiguration.FrameRate);
             }
             if (configuration.Image.DepthEnabled || configuration.HandsDetectionEnabled)
             {
-                StreamProperties streamProperties = configuration.Image.DepthStreamProperties;
-                manager.EnableStream(PXCMCapture.StreamType.STREAM_TYPE_DEPTH, streamProperties.Resolution.Width,
-                    streamProperties.Resolution.Height, streamProperties.FrameRate);
+                StreamConfiguration streamConfiguration = configuration.Image.DepthStreamConfiguration;
+                manager.EnableStream(PXCMCapture.StreamType.STREAM_TYPE_DEPTH, streamConfiguration.Resolution.Width,
+                    streamConfiguration.Resolution.Height, streamConfiguration.FrameRate);
             }
         }
 

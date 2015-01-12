@@ -81,6 +81,7 @@
     <Compile Include="Code\RealSense\Config\Image\ImageBackground.cs" />
     <Compile Include="Code\RealSense\Config\Image\ImageCreatorConfiguration.cs" />
     <Compile Include="Code\RealSense\Config\Image\ImageOverlay.cs" />
+    <Compile Include="Code\RealSense\Config\RealSense\StreamConfiguration.cs" />
     <Compile Include="Code\RealSense\Config\RealSense\DeviceConfiguration.cs" />
     <Compile Include="Code\RealSense\Component\Creator\HandsImageCreator.cs" />
     <Compile Include="Code\RealSense\Component\Determiner\ImageDeterminerComponent.cs" />

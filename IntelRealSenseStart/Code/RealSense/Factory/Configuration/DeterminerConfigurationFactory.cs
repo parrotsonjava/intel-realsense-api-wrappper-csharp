@@ -4,9 +4,9 @@ namespace IntelRealSenseStart.Code.RealSense.Factory.Configuration
 {
     public class DeterminerConfigurationFactory
     {
-        public Config.RealSense.RealSenseConfiguration.Builder Configuration()
+        public RealSenseConfiguration.Builder Configuration()
         {
-            return new Config.RealSense.RealSenseConfiguration.Builder();
+            return new RealSenseConfiguration.Builder();
         }
 
         public DeviceConfiguration.Builder DeviceConfiguration()
@@ -32,6 +32,11 @@ namespace IntelRealSenseStart.Code.RealSense.Factory.Configuration
         public ImageConfiguration.Builder Image()
         {
             return new ImageConfiguration.Builder();
+        }
+
+        public StreamConfiguration.Builder ColorStream()
+        {
+            return new StreamConfiguration.Builder();
         }
     }
 }

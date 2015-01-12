@@ -111,8 +111,8 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Creator
         private void CheckConfiguration(ImageCreatorConfiguration configuration)
         {
             if (configuration.Overlays.Contains(ImageOverlay.DepthCoordinateHandsSegmentationImage) &&
-                !realSenseConfiguration.Image.ColorStreamProperties.Resolution.Equals(
-                    realSenseConfiguration.Image.DepthStreamProperties.Resolution))
+                !realSenseConfiguration.Image.ColorStreamConfiguration.Resolution.Equals(
+                    realSenseConfiguration.Image.DepthStreamConfiguration.Resolution))
             {
                 throw new RealSenseException(
                     "The hand segmentation image can only be rendered when color and depth resolution are the same");

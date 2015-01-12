@@ -23,6 +23,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
 
         private readonly RealSenseFactory factory;
         private readonly PXCMSenseManager manager;
+        private readonly RealSensePropertiesManager propertiesManager;
         private readonly RealSenseConfiguration realSenseConfiguration;
 
         private Thread determinerThread;
@@ -30,10 +31,11 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
 
 
         private RealSenseDeterminerManager(RealSenseFactory factory, PXCMSenseManager manager,
-            RealSenseConfiguration realSenseConfiguration)
+            RealSensePropertiesManager propertiesManager, RealSenseConfiguration realSenseConfiguration)
         {
             this.factory = factory;
             this.manager = manager;
+            this.propertiesManager = propertiesManager;
             this.realSenseConfiguration = realSenseConfiguration;
 
             var allComponents = GetComponents();
@@ -44,6 +46,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
         private DeterminerComponent[] GetComponents()
         {
             var deviceComponent = factory.Components.Determiner.Device()
+                .WithPropertiesManager(propertiesManager)
                 .WithManager(manager)
                 .WithConfiguration(realSenseConfiguration)
                 .Build();
@@ -174,6 +177,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
         {
             private RealSenseFactory factory;
             private PXCMSenseManager manager;
+            private RealSensePropertiesManager propertiesManager;
             private RealSenseConfiguration configuration;
 
             public Builder WithFactory(RealSenseFactory factory)
@@ -185,6 +189,12 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
             public Builder WithManager(PXCMSenseManager manager)
             {
                 this.manager = manager;
+                return this;
+            }
+
+            public Builder WithPropertiesManager(RealSensePropertiesManager propertiesManager)
+            {
+                this.propertiesManager = propertiesManager;
                 return this;
             }
 
@@ -200,10 +210,12 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
                     "The factory must be set in order to create the determiner manager");
                 manager.Check(Preconditions.IsNotNull,
                     "The RealSense manager must be set in order to create the determiner manager");
+                propertiesManager.Check(Preconditions.IsNotNull,
+                    "The properties manager must be set in order to create the determiner manager");
                 configuration.Check(Preconditions.IsNotNull,
                     "The RealSense configuration must be set in order to create the determiner manager");
 
-                return new RealSenseDeterminerManager(factory, manager, configuration);
+                return new RealSenseDeterminerManager(factory, manager, propertiesManager, configuration);
             }
         }
     }

@@ -20,22 +20,28 @@ namespace IntelRealSenseStart
         {
             InitializeComponent();
             var builder = RealSenseManager.Create();
-            DeviceProperties deviceProperties = builder.Properties.FindDeviceByName(CAMERA_NAME);
-
             manager = builder.Configure(factory =>
-                factory.Configuration()
+            {
+                DeviceProperties deviceProperties = builder.Properties.FindDeviceByName(CAMERA_NAME);
+                var colorStreamConfig = factory.ColorStream()
+                    .FromStreamProperties(deviceProperties.ColorStreamPropertyWithResolution(new Size(640, 480)));
+                var depthStreamConfig = factory.ColorStream()
+                    .FromStreamProperties(deviceProperties.ColorStreamPropertyWithResolution(new Size(640, 480)));
+
+                return factory.Configuration()
                     .UsingDeviceConfiguration(factory.DeviceConfiguration()
                         .WithVideoDeviceConfiguration(factory.VideoDeviceConfiguration()
-                            .WithVideoDevice(deviceProperties)))
+                            .WithVideoDeviceName(deviceProperties.DeviceName)))
                     .WithHandsDetection(factory.HandsDetection().WithSegmentationImage())
                     .WithFaceDetection(factory.FaceDetection().UsingLandmarks())
                     .WithImage(factory.Image()
-                        .WithColorStreamProperties(deviceProperties.ColorStreamPropertyWithResolution(new Size(640, 480)))
-                        .WithDepthStreamProperties(deviceProperties.DepthStreamPropertyWithResolution(new Size(640, 480)))
-                        .WithProjectionEnabled()))
-                .Build();
+                        .WithColorStream(colorStreamConfig)
+                        .WithDepthStream(depthStreamConfig)
+                        .WithProjectionEnabled());
+            }).Build();
 
             manager.Frame += realSense_Hands_Frame;
+
         }
 
         private void buttonStart_Click(object sender, EventArgs e)

@@ -2,27 +2,33 @@
 using IntelRealSenseStart.Code.RealSense.Data.Determiner;
 using IntelRealSenseStart.Code.RealSense.Exception;
 using IntelRealSenseStart.Code.RealSense.Helper;
+using IntelRealSenseStart.Code.RealSense.Manager;
 
 namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
 {
     public class DeviceDeterminerComponent : DeterminerComponent
     {
         private readonly PXCMSenseManager manager;
+        private readonly RealSensePropertiesManager propertiesManager;
         private readonly RealSenseConfiguration configuration;
 
         private PXCMCapture.Device device;
 
-        private DeviceDeterminerComponent(PXCMSenseManager manager, RealSenseConfiguration configuration)
+        private DeviceDeterminerComponent(PXCMSenseManager manager, RealSensePropertiesManager propertiesManager, RealSenseConfiguration configuration)
         {
             this.manager = manager;
+            this.propertiesManager = propertiesManager;
             this.configuration = configuration;
         }
 
         public void EnableFeatures()
         {
-            var deviceProperties = configuration.Device.VideoDevice.Device;
-            if (deviceProperties != null)
+            var deviceName = configuration.Device.VideoDevice.DeviceName;
+            if (deviceName != null)
             {
+                var properties = propertiesManager.GetProperties();
+                var deviceProperties = properties.FindDeviceByName(deviceName);
+
                 manager.captureManager.FilterByDeviceInfo(deviceProperties.DeviceInfo);
             }
         }
@@ -63,11 +69,18 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
         public class Builder
         {
             private PXCMSenseManager manager;
+            private RealSensePropertiesManager propertiesManager;
             private RealSenseConfiguration configuration;
 
             public Builder WithManager(PXCMSenseManager manager)
             {
                 this.manager = manager;
+                return this;
+            }
+
+            public Builder WithPropertiesManager(RealSensePropertiesManager propertiesManager)
+            {
+                this.propertiesManager = propertiesManager;
                 return this;
             }
 
@@ -79,10 +92,11 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
 
             public DeviceDeterminerComponent Build()
             {
+                propertiesManager.Check(Preconditions.IsNotNull, "The properties determiner must be set to create the device component");
                 manager.Check(Preconditions.IsNotNull, "The RealSense manager must be set to create the device component");
                 configuration.Check(Preconditions.IsNotNull, "The RealSense configuration must be set to create the device component");
 
-                return new DeviceDeterminerComponent(manager, configuration);
+                return new DeviceDeterminerComponent(manager, propertiesManager, configuration);
             }
         }
     }
