@@ -5,6 +5,7 @@ using IntelRealSenseStart.Code.RealSense.Component.Creator;
 using IntelRealSenseStart.Code.RealSense.Component.Determiner;
 using IntelRealSenseStart.Code.RealSense.Config.RealSense;
 using IntelRealSenseStart.Code.RealSense.Data.Determiner;
+using IntelRealSenseStart.Code.RealSense.Data.Status;
 using IntelRealSenseStart.Code.RealSense.Event;
 using IntelRealSenseStart.Code.RealSense.Exception;
 using IntelRealSenseStart.Code.RealSense.Factory;
@@ -27,8 +28,9 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
         private readonly RealSenseConfiguration realSenseConfiguration;
 
         private Thread determinerThread;
-        private volatile bool stopped = true;
+        private Thread reconnectThread;
 
+        private volatile DeterminerStatus determinerStatus = DeterminerStatus.STOPPED;
 
         private RealSenseDeterminerManager(RealSenseFactory factory, PXCMSenseManager manager,
             RealSensePropertiesManager propertiesManager, RealSenseConfiguration realSenseConfiguration)
@@ -37,6 +39,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
             this.manager = manager;
             this.propertiesManager = propertiesManager;
             this.realSenseConfiguration = realSenseConfiguration;
+            reconnectThread = new Thread(StartReconnect);
 
             var allComponents = GetComponents();
             components = allComponents.Where(component => component.ShouldBeStarted).ToArray();
@@ -86,48 +89,83 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
                 .Build();
         }
 
-        public bool Started
+        public DeterminerStatus Status
         {
-            get { return !stopped; }
+            get { return determinerStatus; }
         }
 
         public void Start()
         {
-            if (!stopped)
+            if (determinerStatus != DeterminerStatus.STOPPED)
             {
                 throw new RealSenseException("Components cannot be started because it is already running");
             }
 
-            stopped = false;
-            determinerThread = new Thread(StartDetection);
-            determinerThread.Start();
+            StartDeterminer();
+            StartReconnecting();
         }
 
-        public void Stop()
+        private void StartDeterminer()
         {
-            if (stopped)
+            try
             {
-                return;
-            }
+                determinerStatus = DeterminerStatus.STARTING;
 
-            stopped = true;
-            determinerThread.Join();
+                EnableFeatures();
+                InitializeManager();
+                StartDeterminerThread();
+            }
+            catch (RealSenseException e)
+            {
+                determinerStatus = DeterminerStatus.RECONNECTING;
+                Console.WriteLine(e.Message);
+            }
         }
 
-        public void EnableFeatures()
+        private void StartReconnecting()
+        {
+            reconnectThread.Start();
+        }
+        
+        private void EnableFeatures()
         {
             components.Do(component => component.EnableFeatures());
         }
 
-        public void StartDetection()
+        private void InitializeManager()
+        {
+            manager.Init();
+        }
+
+        private void StartDeterminerThread()
+        {
+            determinerThread = new Thread(StartDetection);
+            determinerThread.Start();
+        }
+
+        private void StartDetection()
+        {
+            try
+            {
+                TryToStartDetection();
+            }
+            catch (RealSenseException e)
+            {
+                // TODO In this case, the PXCMManager must be rebuilt
+                determinerStatus = DeterminerStatus.RECONNECTING;
+                Console.WriteLine(e.Message);
+            }
+        }
+
+        private void TryToStartDetection()
         {
             ConfigureComponents();
-            while (!stopped)
+
+            determinerStatus = DeterminerStatus.STARTED;
+            while (determinerStatus == DeterminerStatus.STARTED)
             {
                 ProcessFrame();
             }
-
-            Console.WriteLine(@"Finished");
         }
 
         public void ConfigureComponents()
@@ -170,6 +208,38 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
             if (Frame != null)
             {
                 Frame.Invoke(eventArgs.Build());
+            }
+        }
+
+        public void Stop()
+        {
+            if (determinerStatus != DeterminerStatus.STARTED)
+            {
+                return;
+            }
+
+            determinerStatus = DeterminerStatus.STOPPING;
+            StopDeterminer();
+            determinerStatus = DeterminerStatus.STOPPED;
+        }
+
+        private void StopDeterminer()
+        {
+            determinerThread.Join();
+            reconnectThread.Join();
+            manager.Close();
+        }
+
+        
+        private void StartReconnect()
+        {
+            while (determinerStatus != DeterminerStatus.STOPPED && determinerStatus != DeterminerStatus.STOPPING)
+            {
+                if (determinerStatus == DeterminerStatus.RECONNECTING)
+                {
+                    StartDeterminer();
+                }
+                Thread.Sleep(5000);
             }
         }
 

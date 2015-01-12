@@ -3,7 +3,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using IntelRealSenseStart.Code.RealSense;
 using IntelRealSenseStart.Code.RealSense.Config.Image;
-using IntelRealSenseStart.Code.RealSense.Data.Properties;
+using IntelRealSenseStart.Code.RealSense.Data.Status;
 using IntelRealSenseStart.Code.RealSense.Event;
 
 namespace IntelRealSenseStart
@@ -20,25 +20,16 @@ namespace IntelRealSenseStart
         {
             InitializeComponent();
             var builder = RealSenseManager.Create();
-            manager = builder.Configure(factory =>
-            {
-                DeviceProperties deviceProperties = builder.Properties.FindDeviceByName(CAMERA_NAME);
-                var colorStreamConfig = factory.ColorStream()
-                    .FromStreamProperties(deviceProperties.ColorStreamPropertyWithResolution(new Size(640, 480)));
-                var depthStreamConfig = factory.ColorStream()
-                    .FromStreamProperties(deviceProperties.ColorStreamPropertyWithResolution(new Size(640, 480)));
-
-                return factory.Configuration()
-                    .UsingDeviceConfiguration(factory.DeviceConfiguration()
-                        .WithVideoDeviceConfiguration(factory.VideoDeviceConfiguration()
-                            .WithVideoDeviceName(deviceProperties.DeviceName)))
-                    .WithHandsDetection(factory.HandsDetection().WithSegmentationImage())
-                    .WithFaceDetection(factory.FaceDetection().UsingLandmarks())
-                    .WithImage(factory.Image()
-                        .WithColorStream(colorStreamConfig)
-                        .WithDepthStream(depthStreamConfig)
-                        .WithProjectionEnabled());
-            }).Build();
+            manager = builder.Configure(factory => factory.Configuration()
+                .UsingDeviceConfiguration(factory.DeviceConfiguration()
+                    .WithVideoDeviceConfiguration(factory.VideoDeviceConfiguration()
+                        .WithVideoDeviceName(CAMERA_NAME)))
+                .WithHandsDetection(factory.HandsDetection().WithSegmentationImage())
+                .WithFaceDetection(factory.FaceDetection().UsingLandmarks())
+                .WithImage(factory.Image()
+                    .WithColorStream(factory.ColorStream().From(new Size(640, 480), 30))
+                    .WithDepthStream(factory.ColorStream().From(new Size(640, 480), 30))
+                    .WithProjectionEnabled())).Build();
 
             manager.Frame += realSense_Hands_Frame;
 
@@ -46,7 +37,7 @@ namespace IntelRealSenseStart
 
         private void buttonStart_Click(object sender, EventArgs e)
         {
-            if (!manager.Started)
+            if (manager.Status == DeterminerStatus.STOPPED)
             {
                 manager.Start();
             }
@@ -54,7 +45,7 @@ namespace IntelRealSenseStart
 
         private void buttonStop_Click(object sender, EventArgs e)
         {
-            if (manager.Started)
+            if (manager.Status == DeterminerStatus.STARTED)
             {
                 manager.Stop();
             }

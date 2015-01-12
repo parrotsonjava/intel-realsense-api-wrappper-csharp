@@ -93,6 +93,7 @@
     <Compile Include="Code\RealSense\Data\Determiner\HandData.cs" />
     <Compile Include="Code\RealSense\Data\Determiner\HandsData.cs" />
     <Compile Include="Code\RealSense\Data\Determiner\ImageData.cs" />
+    <Compile Include="Code\RealSense\Data\Status\DeterminerStatus.cs" />
     <Compile Include="Code\RealSense\Exception\IllegalStateException.cs" />
     <Compile Include="Code\RealSense\Factory\Component\ComponentsFactory.cs" />
     <Compile Include="Code\RealSense\Factory\Component\CreatorComponentsFactory.cs" />

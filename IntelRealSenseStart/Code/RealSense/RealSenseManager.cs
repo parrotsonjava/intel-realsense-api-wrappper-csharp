@@ -1,8 +1,7 @@
-﻿using System;
-using IntelRealSenseStart.Code.RealSense.Config.RealSense;
+﻿using IntelRealSenseStart.Code.RealSense.Config.RealSense;
 using IntelRealSenseStart.Code.RealSense.Data.Properties;
+using IntelRealSenseStart.Code.RealSense.Data.Status;
 using IntelRealSenseStart.Code.RealSense.Event;
-using IntelRealSenseStart.Code.RealSense.Exception;
 using IntelRealSenseStart.Code.RealSense.Factory;
 using IntelRealSenseStart.Code.RealSense.Factory.Configuration;
 using IntelRealSenseStart.Code.RealSense.Helper;
@@ -21,9 +20,7 @@ namespace IntelRealSenseStart.Code.RealSense
         private readonly RealSenseFactory factory;
         private readonly RealSenseConfiguration configuration;
 
-        private Boolean stopped = true;
-
-        private RealSenseDeterminerManager componentsManager;
+        private readonly RealSenseDeterminerManager componentsManager;
         private readonly PXCMSenseManager manager;
         private readonly RealSensePropertiesManager propertiesManager;
 
@@ -39,55 +36,28 @@ namespace IntelRealSenseStart.Code.RealSense
             this.configuration = configuration;
             this.manager = manager;
             this.propertiesManager = propertiesManager;
+
+            componentsManager = CreateComponentsManager();
+            componentsManager.Frame += componentsManager_Frame;
         }
-
-        public void Start()
+        private RealSenseDeterminerManager CreateComponentsManager()
         {
-            if (!stopped)
-            {
-                throw new RealSenseException("RealSense manager is already running");
-            }
-
-            stopped = false;
-            StartRealSense();
-        }
-
-        private void StartRealSense()
-        {
-            CreateComponentsManager();
-
-            manager.Init();
-            componentsManager.Start();
-        }
-
-        private void CreateComponentsManager()
-        {
-            componentsManager = factory.Manager.ComponentsManager()
+            return factory.Manager.ComponentsManager()
                 .WithFactory(factory)
                 .WithManager(manager)
                 .WithPropertiesManager(propertiesManager)
                 .WithConfiguration(configuration)
                 .Build();
+        }
 
-            componentsManager.Frame += componentsManager_Frame;
-            componentsManager.EnableFeatures();
+        public void Start()
+        {
+            componentsManager.Start();
         }
 
         public void Stop()
         {
-            if (stopped)
-            {
-                return;
-            }
-
-            stopped = true;
-            StopRealSense();
-        }
-
-        private void StopRealSense()
-        {
             componentsManager.Stop();
-            manager.Close();
         }
 
         private void componentsManager_Frame(FrameEventArgs frameEventArgs)
@@ -98,9 +68,9 @@ namespace IntelRealSenseStart.Code.RealSense
             }
         }
 
-        public bool Started
+        public DeterminerStatus Status
         {
-            get { return !stopped; }
+            get { return componentsManager.Status; }
         }
 
         public class Builder
