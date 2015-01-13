@@ -86,17 +86,19 @@ namespace IntelRealSenseStart.Code.RealSense
             public Builder(RealSenseFactory factory)
             {
                 this.factory = factory;
+
+                PXCMSession session = factory.Native.Session();
+                manager = factory.Native.SenseManager(session);
                 
-                propertiesManager = GetPropertiesManager();
-                manager = factory.Native.CreateSenseManager();
+                propertiesManager = GetPropertiesManager(session);
                 properties = DetermineProperties(propertiesManager);
             }
 
-            private RealSensePropertiesManager GetPropertiesManager()
+            private RealSensePropertiesManager GetPropertiesManager(PXCMSession session)
             {
                 return factory.Manager.PropertiesManager()
                     .WithFactory(factory)
-                    .WithSession(factory.Native.CurrentSession)
+                    .WithSession(session)
                     .Build();
             }
 

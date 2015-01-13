@@ -2,19 +2,12 @@
 {
     public class NativeFactory
     {
-        private readonly PXCMSession session;
-
-        public NativeFactory()
+        public PXCMSession Session()
         {
-            session = PXCMSession.CreateInstance();
+            return PXCMSession.CreateInstance();
         }
 
-        public PXCMSession CurrentSession
-        {
-            get { return session; }
-        }
-
-        public PXCMSenseManager CreateSenseManager()
+        public PXCMSenseManager SenseManager(PXCMSession session)
         {
             return session.CreateSenseManager();
         }

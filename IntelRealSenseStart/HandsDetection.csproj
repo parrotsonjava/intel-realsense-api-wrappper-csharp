@@ -106,6 +106,7 @@
     <Compile Include="Code\RealSense\Factory\ManagerFactory.cs" />
     <Compile Include="Code\RealSense\Factory\NativeFactory.cs" />
     <Compile Include="Code\RealSense\Factory\Component\PropertiesComponentsFactory.cs" />
+    <Compile Include="Code\RealSense\Factory\ProviderFactory.cs" />
     <Compile Include="Code\RealSense\Factory\RealSenseFactory.cs" />
     <Compile Include="Code\RealSense\Helper\ImageExtensions.cs" />
     <Compile Include="Code\RealSense\Helper\EnumerableExtensions.cs" />
@@ -124,6 +125,7 @@
     <Compile Include="Code\RealSense\Data\Properties\RealSenseProperties.cs" />
     <Compile Include="Code\RealSense\Data\Properties\StreamProperties.cs" />
     <Compile Include="Code\RealSense\Manager\RealSenseDeterminerManager.cs" />
+    <Compile Include="Code\RealSense\Provider\SenseManagerProvider.cs" />
     <Compile Include="Code\RealSense\RealSenseManager.cs" />
     <Compile Include="Code\RealSense\Manager\RealSensePropertiesManager.cs" />
     <Compile Include="MainForm.cs">

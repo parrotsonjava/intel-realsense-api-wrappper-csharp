@@ -4,6 +4,7 @@ using IntelRealSenseStart.Code.RealSense.Config.RealSense;
 using IntelRealSenseStart.Code.RealSense.Data.Determiner;
 using IntelRealSenseStart.Code.RealSense.Factory;
 using IntelRealSenseStart.Code.RealSense.Helper;
+using IntelRealSenseStart.Code.RealSense.Provider;
 
 namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
 {
@@ -12,14 +13,14 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
         private readonly RealSenseConfiguration configuration;
 
         private readonly RealSenseFactory factory;
-        private readonly PXCMSenseManager manager;
+        private readonly SenseManagerProvider senseManagerProvider;
 
         private PXCMHandData handData;
 
-        private HandsDeterminerComponent(RealSenseFactory factory, PXCMSenseManager manager, RealSenseConfiguration configuration)
+        private HandsDeterminerComponent(RealSenseFactory factory, SenseManagerProvider senseManagerProvider, RealSenseConfiguration configuration)
         {
             this.factory = factory;
-            this.manager = manager;
+            this.senseManagerProvider = senseManagerProvider;
             this.configuration = configuration;
         }
 
@@ -32,13 +33,13 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
         {
             if (configuration.HandsDetectionEnabled)
             {
-                manager.EnableHand();
+                senseManagerProvider.SenseManager.EnableHand();
             }
         }
         
         public void Configure()
         {
-            PXCMHandModule handModule = manager.QueryHand();
+            PXCMHandModule handModule = senseManagerProvider.SenseManager.QueryHand();
             handData = handModule.CreateOutput();
             PXCMHandConfiguration handConfiguration = handModule.CreateActiveConfiguration();
 
@@ -60,8 +61,8 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
 
         public void Process(DeterminerData.Builder determinerData)
         {
-            PXCMCapture.Sample realSenseSample = manager.QuerySample();
-            PXCMCapture.Sample handSample = manager.QueryHandSample();
+            PXCMCapture.Sample realSenseSample = senseManagerProvider.SenseManager.QuerySample();
+            PXCMCapture.Sample handSample = senseManagerProvider.SenseManager.QueryHandSample();
 
             if (realSenseSample != null && handSample != null)
             {
@@ -127,7 +128,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
         public class Builder
         {
             private RealSenseFactory factory;
-            private PXCMSenseManager manager;
+            private SenseManagerProvider senseManagerProvider;
             private RealSenseConfiguration configuration;
 
             public Builder WithFactory(RealSenseFactory factory)
@@ -136,9 +137,9 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
                 return this;
             }
 
-            public Builder WithManager(PXCMSenseManager manager)
+            public Builder WithManager(SenseManagerProvider senseManagerProvider)
             {
-                this.manager = manager;
+                this.senseManagerProvider = senseManagerProvider;
                 return this;
             }
 
@@ -152,12 +153,12 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
             {
                 factory.Check(Preconditions.IsNotNull,
                     "The factory must be set in order to create the hands determiner component");
-                manager.Check(Preconditions.IsNotNull,
+                senseManagerProvider.Check(Preconditions.IsNotNull,
                     "The RealSense manager must be set in order to create the hands determiner component");
                 configuration.Check(Preconditions.IsNotNull,
                     "The RealSense configuration must be set in order to create the hands determiner component");
 
-                return new HandsDeterminerComponent(factory, manager, configuration);
+                return new HandsDeterminerComponent(factory, senseManagerProvider, configuration);
             }
         }
     }

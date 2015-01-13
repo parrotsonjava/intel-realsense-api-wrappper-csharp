@@ -10,6 +10,7 @@ using IntelRealSenseStart.Code.RealSense.Event;
 using IntelRealSenseStart.Code.RealSense.Exception;
 using IntelRealSenseStart.Code.RealSense.Factory;
 using IntelRealSenseStart.Code.RealSense.Helper;
+using IntelRealSenseStart.Code.RealSense.Provider;
 
 namespace IntelRealSenseStart.Code.RealSense.Manager
 {
@@ -23,9 +24,11 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
         private readonly OverallImageCreator overallImageCreator;
 
         private readonly RealSenseFactory factory;
-        private readonly PXCMSenseManager manager;
         private readonly RealSensePropertiesManager propertiesManager;
         private readonly RealSenseConfiguration realSenseConfiguration;
+
+        private readonly SenseManagerProvider.Builder senseManagerProviderBuilder;
+        private readonly SenseManagerProvider senseManagerProvider;
 
         private Thread determinerThread;
         private Thread reconnectThread;
@@ -36,36 +39,38 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
             RealSensePropertiesManager propertiesManager, RealSenseConfiguration realSenseConfiguration)
         {
             this.factory = factory;
-            this.manager = manager;
             this.propertiesManager = propertiesManager;
             this.realSenseConfiguration = realSenseConfiguration;
-            reconnectThread = new Thread(StartReconnect);
 
-            var allComponents = GetComponents();
-            components = allComponents.Where(component => component.ShouldBeStarted).ToArray();
+            senseManagerProviderBuilder = factory.Provider.SenseManager().WithSenseManager(manager);
+            senseManagerProvider = senseManagerProviderBuilder.Build();
+
+            components = GetComponents().Where(component => component.ShouldBeStarted).ToArray();
             overallImageCreator = GetImageCreator(realSenseConfiguration);
+
+            reconnectThread = new Thread(StartReconnect);
         }
 
         private DeterminerComponent[] GetComponents()
         {
             var deviceComponent = factory.Components.Determiner.Device()
                 .WithPropertiesManager(propertiesManager)
-                .WithManager(manager)
+                .WithManager(senseManagerProvider)
                 .WithConfiguration(realSenseConfiguration)
                 .Build();
             var handsComponent = factory.Components.Determiner.Hands()
                 .WithFactory(factory)
-                .WithManager(manager)
+                .WithManager(senseManagerProvider)
                 .WithConfiguration(realSenseConfiguration)
                 .Build();
             var faceComponent = factory.Components.Determiner.Face()
                 .WithFactory(factory)
-                .WithManager(manager)
+                .WithManager(senseManagerProvider)
                 .WithConfiguration(realSenseConfiguration)
                 .Build();
             var pictureComponent = factory.Components.Determiner.Image()
                 .WithFactory(factory)
-                .WithManager(manager)
+                .WithManager(senseManagerProvider)
                 .WithConfiguration(realSenseConfiguration)
                 .Build();
 
@@ -134,7 +139,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
 
         private void InitializeManager()
         {
-            manager.Init();
+            senseManagerProvider.SenseManager.Init();
         }
 
         private void StartDeterminerThread()
@@ -151,10 +156,17 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
             }
             catch (RealSenseException e)
             {
-                // TODO In this case, the PXCMManager must be rebuilt
                 determinerStatus = DeterminerStatus.RECONNECTING;
+                RebuildSenseManager();
+
                 Console.WriteLine(e.Message);
             }
+        }
+
+        private void RebuildSenseManager()
+        {
+            PXCMSenseManager manager = factory.Native.SenseManager(factory.Native.Session());
+            senseManagerProviderBuilder.WithSenseManager(manager);
         }
 
         private void TryToStartDetection()
@@ -184,7 +196,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
 
         private void AcquireFrame()
         {
-            if (manager.AcquireFrame(true) < pxcmStatus.PXCM_STATUS_NO_ERROR)
+            if (senseManagerProvider.SenseManager.AcquireFrame(true) < pxcmStatus.PXCM_STATUS_NO_ERROR)
             {
                 throw new RealSenseException("Error while acquiring frame");
             }
@@ -200,7 +212,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
 
         private void ReleaseFrame()
         {
-            manager.ReleaseFrame();
+            senseManagerProvider.SenseManager.ReleaseFrame();
         }
 
         private void InvokeFrameEvent(FrameEventArgs.Builder eventArgs)
@@ -227,7 +239,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
         {
             determinerThread.Join();
             reconnectThread.Join();
-            manager.Close();
+            senseManagerProvider.SenseManager.Close();
         }
 
         

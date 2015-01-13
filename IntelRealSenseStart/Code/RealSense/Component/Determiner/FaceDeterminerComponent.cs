@@ -4,6 +4,7 @@ using IntelRealSenseStart.Code.RealSense.Config.RealSense;
 using IntelRealSenseStart.Code.RealSense.Data.Determiner;
 using IntelRealSenseStart.Code.RealSense.Factory;
 using IntelRealSenseStart.Code.RealSense.Helper;
+using IntelRealSenseStart.Code.RealSense.Provider;
 
 namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
 {
@@ -12,14 +13,14 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
         private readonly RealSenseConfiguration configuration;
 
         private readonly RealSenseFactory factory;
-        private readonly PXCMSenseManager manager;
+        private readonly SenseManagerProvider senseManagerProvider;
 
         private PXCMFaceData faceData;
 
-        private FaceDeterminerComponent(RealSenseFactory factory, PXCMSenseManager manager, RealSenseConfiguration configuration)
+        private FaceDeterminerComponent(RealSenseFactory factory, SenseManagerProvider senseManagerProvider, RealSenseConfiguration configuration)
         {
             this.factory = factory;
-            this.manager = manager;
+            this.senseManagerProvider = senseManagerProvider;
             this.configuration = configuration;
         }
 
@@ -32,13 +33,13 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
         {
             if (configuration.FaceDetectionEnabled)
             {
-                manager.EnableFace();
+                senseManagerProvider.SenseManager.EnableFace();
             }
         }
 
         public void Configure()
         {
-            PXCMFaceModule faceModule = manager.QueryFace();
+            PXCMFaceModule faceModule = senseManagerProvider.SenseManager.QueryFace();
             PXCMFaceConfiguration moduleConfiguration = faceModule.CreateActiveConfiguration();
 
             moduleConfiguration.SetTrackingMode(PXCMFaceConfiguration.TrackingModeType.FACE_MODE_COLOR_PLUS_DEPTH);
@@ -97,7 +98,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
         public class Builder
         {
             private RealSenseFactory factory;
-            private PXCMSenseManager manager;
+            private SenseManagerProvider senseManagerProvider;
             private RealSenseConfiguration configuration;
 
             public Builder WithFactory(RealSenseFactory factory)
@@ -106,9 +107,9 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
                 return this;
             }
 
-            public Builder WithManager(PXCMSenseManager manager)
+            public Builder WithManager(SenseManagerProvider senseManagerProvider)
             {
-                this.manager = manager;
+                this.senseManagerProvider = senseManagerProvider;
                 return this;
             }
 
@@ -122,12 +123,12 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
             {
                 factory.Check(Preconditions.IsNotNull,
                     "The factory must be set in order to create the hands determiner component");
-                manager.Check(Preconditions.IsNotNull,
+                senseManagerProvider.Check(Preconditions.IsNotNull,
                     "The RealSense manager must be set in order to create the hands determiner component");
                 configuration.Check(Preconditions.IsNotNull,
                     "The RealSense configuration must be set in order to create the hands determiner component");
 
-                return new FaceDeterminerComponent(factory, manager, configuration);
+                return new FaceDeterminerComponent(factory, senseManagerProvider, configuration);
             }
         }
     }

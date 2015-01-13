@@ -3,20 +3,22 @@ using IntelRealSenseStart.Code.RealSense.Data.Determiner;
 using IntelRealSenseStart.Code.RealSense.Exception;
 using IntelRealSenseStart.Code.RealSense.Helper;
 using IntelRealSenseStart.Code.RealSense.Manager;
+using IntelRealSenseStart.Code.RealSense.Provider;
 
 namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
 {
     public class DeviceDeterminerComponent : DeterminerComponent
     {
-        private readonly PXCMSenseManager manager;
+        private readonly SenseManagerProvider senseManagerProvider;
         private readonly RealSensePropertiesManager propertiesManager;
         private readonly RealSenseConfiguration configuration;
 
         private PXCMCapture.Device device;
 
-        private DeviceDeterminerComponent(PXCMSenseManager manager, RealSensePropertiesManager propertiesManager, RealSenseConfiguration configuration)
+        private DeviceDeterminerComponent(SenseManagerProvider senseManagerProvider,
+            RealSensePropertiesManager propertiesManager, RealSenseConfiguration configuration)
         {
-            this.manager = manager;
+            this.senseManagerProvider = senseManagerProvider;
             this.propertiesManager = propertiesManager;
             this.configuration = configuration;
         }
@@ -29,14 +31,14 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
                 var properties = propertiesManager.GetProperties();
                 var deviceProperties = properties.FindDeviceByName(deviceName);
 
-                manager.captureManager.FilterByDeviceInfo(deviceProperties.DeviceInfo);
+                senseManagerProvider.SenseManager.captureManager.FilterByDeviceInfo(deviceProperties.DeviceInfo);
             }
         }
 
         public void Configure()
         {
             PXCMCapture.DeviceInfo deviceInfo;
-            var queryCaptureManager = manager.QueryCaptureManager();
+            var queryCaptureManager = senseManagerProvider.SenseManager.QueryCaptureManager();
             device = queryCaptureManager.QueryDevice();
 
             if (device == null)
@@ -51,9 +53,10 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
                 throw new RealSenseException("No device info found for the selected device");
             }
 
-            manager.captureManager.device.SetDepthConfidenceThreshold(1);
-            manager.captureManager.device.SetMirrorMode(PXCMCapture.Device.MirrorMode.MIRROR_MODE_HORIZONTAL);
-            manager.captureManager.device.SetIVCAMFilterOption(6);
+            senseManagerProvider.SenseManager.captureManager.device.SetDepthConfidenceThreshold(1);
+            senseManagerProvider.SenseManager.captureManager.device.SetMirrorMode(
+                PXCMCapture.Device.MirrorMode.MIRROR_MODE_HORIZONTAL);
+            senseManagerProvider.SenseManager.captureManager.device.SetIVCAMFilterOption(6);
         }
 
         public void Process(DeterminerData.Builder determinerData)
@@ -68,13 +71,13 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
 
         public class Builder
         {
-            private PXCMSenseManager manager;
+            private SenseManagerProvider senseManagerProvider;
             private RealSensePropertiesManager propertiesManager;
             private RealSenseConfiguration configuration;
 
-            public Builder WithManager(PXCMSenseManager manager)
+            public Builder WithManager(SenseManagerProvider senseManagerProvider)
             {
-                this.manager = manager;
+                this.senseManagerProvider = senseManagerProvider;
                 return this;
             }
 
@@ -92,11 +95,14 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
 
             public DeviceDeterminerComponent Build()
             {
-                propertiesManager.Check(Preconditions.IsNotNull, "The properties determiner must be set to create the device component");
-                manager.Check(Preconditions.IsNotNull, "The RealSense manager must be set to create the device component");
-                configuration.Check(Preconditions.IsNotNull, "The RealSense configuration must be set to create the device component");
+                propertiesManager.Check(Preconditions.IsNotNull,
+                    "The properties determiner must be set to create the device component");
+                senseManagerProvider.Check(Preconditions.IsNotNull,
+                    "The RealSense manager must be set to create the device component");
+                configuration.Check(Preconditions.IsNotNull,
+                    "The RealSense configuration must be set to create the device component");
 
-                return new DeviceDeterminerComponent(manager, propertiesManager, configuration);
+                return new DeviceDeterminerComponent(senseManagerProvider, propertiesManager, configuration);
             }
         }
     }

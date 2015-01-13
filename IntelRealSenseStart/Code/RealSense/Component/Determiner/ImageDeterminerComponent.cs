@@ -2,6 +2,7 @@
 using IntelRealSenseStart.Code.RealSense.Data.Determiner;
 using IntelRealSenseStart.Code.RealSense.Factory;
 using IntelRealSenseStart.Code.RealSense.Helper;
+using IntelRealSenseStart.Code.RealSense.Provider;
 
 namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
 {
@@ -10,14 +11,15 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
         private readonly RealSenseConfiguration configuration;
 
         private readonly RealSenseFactory factory;
-        private readonly PXCMSenseManager manager;
+        private readonly SenseManagerProvider senseManagerProvider;
 
         private PXCMCapture.Device device;
 
-        private ImageDeterminerComponent(RealSenseFactory factory, PXCMSenseManager manager, RealSenseConfiguration configuration)
+        private ImageDeterminerComponent(RealSenseFactory factory, SenseManagerProvider senseManagerProvider,
+            RealSenseConfiguration configuration)
         {
             this.factory = factory;
-            this.manager = manager;
+            this.senseManagerProvider = senseManagerProvider;
             this.configuration = configuration;
         }
 
@@ -26,20 +28,22 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
             if (configuration.Image.ColorEnabled)
             {
                 StreamConfiguration streamConfiguration = configuration.Image.ColorStreamConfiguration;
-                manager.EnableStream(PXCMCapture.StreamType.STREAM_TYPE_COLOR, streamConfiguration.Resolution.Width,
-                    streamConfiguration.Resolution.Height, streamConfiguration.FrameRate);
+                senseManagerProvider.SenseManager.EnableStream(PXCMCapture.StreamType.STREAM_TYPE_COLOR,
+                    streamConfiguration.Resolution.Width, streamConfiguration.Resolution.Height,
+                    streamConfiguration.FrameRate);
             }
             if (configuration.Image.DepthEnabled || configuration.HandsDetectionEnabled)
             {
                 StreamConfiguration streamConfiguration = configuration.Image.DepthStreamConfiguration;
-                manager.EnableStream(PXCMCapture.StreamType.STREAM_TYPE_DEPTH, streamConfiguration.Resolution.Width,
-                    streamConfiguration.Resolution.Height, streamConfiguration.FrameRate);
+                senseManagerProvider.SenseManager.EnableStream(PXCMCapture.StreamType.STREAM_TYPE_DEPTH,
+                    streamConfiguration.Resolution.Width, streamConfiguration.Resolution.Height,
+                    streamConfiguration.FrameRate);
             }
         }
 
         public void Configure()
         {
-            device = manager.QueryCaptureManager().QueryDevice();
+            device = senseManagerProvider.SenseManager.QueryCaptureManager().QueryDevice();
         }
 
         public bool ShouldBeStarted
@@ -49,7 +53,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
 
         public void Process(DeterminerData.Builder determinerData)
         {
-            PXCMCapture.Sample realSenseSample = manager.QuerySample();
+            PXCMCapture.Sample realSenseSample = senseManagerProvider.SenseManager.QuerySample();
 
             determinerData.WithImageData(
                 factory.Data.Determiner.Image()
@@ -66,7 +70,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
             }
 
             var projection = device.CreateProjection();
-            var uvMap = new PXCMPointF32[realSenseSample.depth.info.width * realSenseSample.depth.info.height];
+            var uvMap = new PXCMPointF32[realSenseSample.depth.info.width*realSenseSample.depth.info.height];
             projection.QueryUVMap(realSenseSample.depth, uvMap);
             projection.Dispose();
 
@@ -76,7 +80,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
         public class Builder
         {
             private RealSenseFactory factory;
-            private PXCMSenseManager manager;
+            private SenseManagerProvider senseManagerProvider;
             private RealSenseConfiguration configuration;
 
             public Builder WithFactory(RealSenseFactory factory)
@@ -85,9 +89,9 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
                 return this;
             }
 
-            public Builder WithManager(PXCMSenseManager manager)
+            public Builder WithManager(SenseManagerProvider senseManagerProvider)
             {
-                this.manager = manager;
+                this.senseManagerProvider = senseManagerProvider;
                 return this;
             }
 
@@ -101,12 +105,12 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
             {
                 factory.Check(Preconditions.IsNotNull,
                     "The factory must be set in order to create the hands determiner component");
-                manager.Check(Preconditions.IsNotNull,
+                senseManagerProvider.Check(Preconditions.IsNotNull,
                     "The RealSense manager must be set in order to create the hands determiner component");
                 configuration.Check(Preconditions.IsNotNull,
                     "The RealSense configuration must be set in order to create the hands determiner component");
 
-                return new ImageDeterminerComponent(factory, manager, configuration);
+                return new ImageDeterminerComponent(factory, senseManagerProvider, configuration);
             }
         }
     }
