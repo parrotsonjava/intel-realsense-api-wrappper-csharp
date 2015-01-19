@@ -22,6 +22,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
 
         private readonly DeterminerComponent[] components;
         private readonly OverallImageCreator overallImageCreator;
+        private readonly FacesLandmarksBuilder facesLandmarksBuilder;
 
         private readonly RealSenseFactory factory;
         private readonly RealSensePropertiesManager propertiesManager;
@@ -47,6 +48,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
 
             components = GetComponents().Where(component => component.ShouldBeStarted).ToArray();
             overallImageCreator = GetImageCreator(realSenseConfiguration);
+            facesLandmarksBuilder = GetFacesLandmarksBuilder();
 
             reconnectThread = new Thread(StartReconnect);
         }
@@ -92,6 +94,11 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
             return factory.Components.Creator.OverallImageCreator()
                 .WithImageCreators(new ImageCreator[] {basicImageCreator, handsImageCreator, faceImageCreator})
                 .Build();
+        }
+
+        private FacesLandmarksBuilder GetFacesLandmarksBuilder()
+        {
+             return factory.Components.Creator.FacesLandmarksBuilder().Build();
         }
 
         public DeterminerStatus Status
@@ -206,7 +213,10 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
         {
             DeterminerData.Builder determinerDataBuilder = factory.Data.Determiner.DeterminerData();
             components.Do(component => component.Process(determinerDataBuilder));
-            return factory.Events.FrameEvent(overallImageCreator, realSenseConfiguration)
+            return factory.Events.FrameEvent()
+                .WithOverallImageCreator(overallImageCreator)
+                .WithFacesLandmarksBuilder(facesLandmarksBuilder)
+                .WithRealSenseConfiguration(realSenseConfiguration)
                 .WithDeterminerData(determinerDataBuilder);
         }
 
@@ -241,7 +251,6 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
             reconnectThread.Join();
             senseManagerProvider.SenseManager.Close();
         }
-
         
         private void StartReconnect()
         {

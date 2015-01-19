@@ -13,9 +13,9 @@ namespace IntelRealSenseStart.Code.RealSense.Factory
             this.factory = factory;
         }
 
-        public FrameEventArgs.Builder FrameEvent(OverallImageCreator overallImageCreator, RealSenseConfiguration configuration)
+        public FrameEventArgs.Builder FrameEvent()
         {
-            return new FrameEventArgs.Builder(factory, overallImageCreator, configuration);
+            return new FrameEventArgs.Builder(factory);
         }
     }
 }

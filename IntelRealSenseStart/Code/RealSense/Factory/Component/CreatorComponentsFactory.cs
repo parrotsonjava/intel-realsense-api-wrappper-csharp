@@ -35,5 +35,10 @@ namespace IntelRealSenseStart.Code.RealSense.Factory.Component
         {
             return new OverallImageCreator.Builder();
         }
+
+        public FacesLandmarksBuilder.Builder FacesLandmarksBuilder()
+        {
+            return new FacesLandmarksBuilder.Builder(realSenseFactory);
+        }
     }
 }
