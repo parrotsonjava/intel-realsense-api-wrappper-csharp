@@ -41,18 +41,18 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Creator
         private DetectionPoint.Builder GetDetectionPoint(PXCMFaceData.LandmarkPoint landmarkPoint)
         {
             return factory.Data.Events.DetectionPoint()
-                .WithImagePosition(GetPoint2DFrom(landmarkPoint.image))
-                .WithWorldPosition(GetPoint3DFrom(landmarkPoint.world));
+                .WithImagePosition(GetPoint2DFrom(landmarkPoint.image, landmarkPoint.confidenceImage))
+                .WithWorldPosition(GetPoint3DFrom(landmarkPoint.world, landmarkPoint.confidenceWorld));
         }
 
-        private Point2D.Builder GetPoint2DFrom(PXCMPointF32 point)
+        private Point2D.Builder GetPoint2DFrom(PXCMPointF32 point, int confidence)
         {
-            return factory.Data.Common.Point2D().From(point);
+            return factory.Data.Common.Point2D().From(point).WithConfidence(confidence);
         }
 
-        private Point3D.Builder GetPoint3DFrom(PXCMPoint3DF32 point)
+        private Point3D.Builder GetPoint3DFrom(PXCMPoint3DF32 point, int confidence)
         {
-            return factory.Data.Common.Point3D().From(point);
+            return factory.Data.Common.Point3D().From(point).WithConfidence(confidence);
         }
 
         public class Builder

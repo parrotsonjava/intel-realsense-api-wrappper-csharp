@@ -5,6 +5,8 @@
         public float X { get; private set; }
         public float Y { get; private set; }
 
+        public int Confidence { get; private set; }
+
         private Point2D()
         {
         }
@@ -22,8 +24,16 @@
             {
                 point2D.X = point.x;
                 point2D.Y = point.y;
+                return this;
             }
 
+            public Builder From(PXCMPoint3DF32 point)
+            {
+                point2D.X = point.x;
+                point2D.Y = point.y;
+                return this;
+            }
+            
             public Builder WithX(float x)
             {
                 point2D.X = x;
@@ -33,6 +43,12 @@
             public Builder WithY(float y)
             {
                 point2D.Y = y;
+                return this;
+            }
+
+            public Builder WithConfidence(int confidence)
+            {
+                point2D.Confidence = confidence;
                 return this;
             }
 

@@ -60,6 +60,9 @@ namespace IntelRealSenseStart
                 .WithOverlay(ImageOverlay.ColorCoordinateFaceLandmarks)
                 .Create();
 
+            var facesLandmarksData = frameEventArgs.FaceLandmarks;
+            var handsJoints = frameEventArgs.HandsJoints;
+
             BeginInvoke(new BitmapHandler(SetImage), new object[] {bitmap});
         }
 

@@ -6,6 +6,8 @@
         public float Y { get; private set; }
         public float Z { get; private set; }
 
+        public int Confidence { get; private set; }
+
         private Point3D()
         {
         }
@@ -24,8 +26,9 @@
                 point3D.X = point.x;
                 point3D.Y = point.y;
                 point3D.Z = point.z;
+                return this;
             }
-
+            
             public Builder WithX(float x)
             {
                 point3D.X = x;
@@ -41,6 +44,12 @@
             public Builder WithZ(float z)
             {
                 point3D.Z = z;
+                return this;
+            }
+            
+            public Builder WithConfidence(int confidence)
+            {
+                point3D.Confidence = confidence;
                 return this;
             }
 

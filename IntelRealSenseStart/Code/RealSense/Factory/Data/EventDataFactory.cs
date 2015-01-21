@@ -14,6 +14,16 @@ namespace IntelRealSenseStart.Code.RealSense.Factory.Data
             return new FaceLandmarksData.Builder();
         }
 
+        public HandsJointsData.Builder HandsJoints()
+        {
+            return new HandsJointsData.Builder();
+        }
+
+        public HandJointsData.Builder HandJoints()
+        {
+            return new HandJointsData.Builder();
+        }
+
         public DetectionPoint.Builder DetectionPoint()
         {
             return new DetectionPoint.Builder();

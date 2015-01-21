@@ -11,6 +11,7 @@ namespace IntelRealSenseStart.Code.RealSense.Event
         private ImageBuilder imageBuilder;
 
         private FacesLandmarksBuilder facesLandmarksBuilder;
+        private HandsJointsBuilder handsJointsBuilder;
 
         private DeterminerData determinerData;
 
@@ -24,14 +25,21 @@ namespace IntelRealSenseStart.Code.RealSense.Event
             get { return facesLandmarksBuilder.GetLandmarkData(determinerData.FacesData.Faces); }
         }
 
+        public HandsJointsData HandsJoints
+        {
+            get { return handsJointsBuilder.GetJointsData(determinerData.HandsData.Hands); }
+        }
+
         public class Builder
         {
             private readonly FrameEventArgs frameEventArgs;
+
+            private FacesLandmarksBuilder facesLandmarksBuilder;
+            private HandsJointsBuilder handsJointsBuilder;
             
             private readonly ImageBuilder.Builder handsImageBuilderBuilder;
             private OverallImageCreator overallImageCreator;
-            private FacesLandmarksBuilder facesLandmarksBuilder;
-
+            
             private RealSenseConfiguration realSenseConfiguration;
 
             public Builder(RealSenseFactory factory)
@@ -44,6 +52,12 @@ namespace IntelRealSenseStart.Code.RealSense.Event
             public Builder WithFacesLandmarksBuilder(FacesLandmarksBuilder facesLandmarksBuilder)
             {
                 this.facesLandmarksBuilder = facesLandmarksBuilder;
+                return this;
+            }
+
+            public Builder WithHandsJointsBuilder(HandsJointsBuilder handsJointsBuilder)
+            {
+                this.handsJointsBuilder = handsJointsBuilder;
                 return this;
             }
 
@@ -73,6 +87,7 @@ namespace IntelRealSenseStart.Code.RealSense.Event
                     .WithDeterminerData(frameEventArgs.determinerData)
                     .Build();
                 frameEventArgs.facesLandmarksBuilder = facesLandmarksBuilder;
+                frameEventArgs.handsJointsBuilder = handsJointsBuilder;
 
                 return frameEventArgs;
             }

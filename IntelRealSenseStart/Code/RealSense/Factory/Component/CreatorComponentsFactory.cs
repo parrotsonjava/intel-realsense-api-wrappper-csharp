@@ -40,5 +40,10 @@ namespace IntelRealSenseStart.Code.RealSense.Factory.Component
         {
             return new FacesLandmarksBuilder.Builder(realSenseFactory);
         }
+
+        public HandsJointsBuilder.Builder HandsJointsBuilder()
+        {
+            return new HandsJointsBuilder.Builder(realSenseFactory);
+        }
     }
 }

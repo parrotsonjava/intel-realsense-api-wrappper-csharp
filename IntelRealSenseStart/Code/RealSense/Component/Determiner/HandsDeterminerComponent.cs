@@ -103,7 +103,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
         private Dictionary<PXCMHandData.JointType, PXCMHandData.JointData> GetJointData(
             PXCMHandData.IHand individualHandSample)
         {
-            return 0.To(0x20 - 1).ToArray().ToDictionary(
+            return 0.To(21).ToArray().ToDictionary(
                 index => (PXCMHandData.JointType) index,
                 index =>
                 {

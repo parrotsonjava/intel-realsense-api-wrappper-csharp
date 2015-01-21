@@ -23,6 +23,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
         private readonly DeterminerComponent[] components;
         private readonly OverallImageCreator overallImageCreator;
         private readonly FacesLandmarksBuilder facesLandmarksBuilder;
+        private readonly HandsJointsBuilder handsJointsBuilder;
 
         private readonly RealSenseFactory factory;
         private readonly RealSensePropertiesManager propertiesManager;
@@ -35,7 +36,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
         private Thread reconnectThread;
 
         private volatile DeterminerStatus determinerStatus = DeterminerStatus.STOPPED;
-
+        
         private RealSenseDeterminerManager(RealSenseFactory factory, PXCMSenseManager manager,
             RealSensePropertiesManager propertiesManager, RealSenseConfiguration realSenseConfiguration)
         {
@@ -49,6 +50,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
             components = GetComponents().Where(component => component.ShouldBeStarted).ToArray();
             overallImageCreator = GetImageCreator(realSenseConfiguration);
             facesLandmarksBuilder = GetFacesLandmarksBuilder();
+            handsJointsBuilder = getHandsJointsBuilder();
 
             reconnectThread = new Thread(StartReconnect);
         }
@@ -99,6 +101,11 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
         private FacesLandmarksBuilder GetFacesLandmarksBuilder()
         {
              return factory.Components.Creator.FacesLandmarksBuilder().Build();
+        }
+
+        private HandsJointsBuilder getHandsJointsBuilder()
+        {
+            return factory.Components.Creator.HandsJointsBuilder().Build();
         }
 
         public DeterminerStatus Status
@@ -216,6 +223,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
             return factory.Events.FrameEvent()
                 .WithOverallImageCreator(overallImageCreator)
                 .WithFacesLandmarksBuilder(facesLandmarksBuilder)
+                .WithHandsJointsBuilder(handsJointsBuilder)
                 .WithRealSenseConfiguration(realSenseConfiguration)
                 .WithDeterminerData(determinerDataBuilder);
         }

@@ -6,7 +6,7 @@ namespace IntelRealSenseStart.Code.RealSense.Data.Event
     {
         private readonly Dictionary<FaceLandmark, DetectionPoint> detectionPoints;
 
-        public FaceLandmarksData()
+        private FaceLandmarksData()
         {
             detectionPoints = new Dictionary<FaceLandmark, DetectionPoint>();
         }
