@@ -9,17 +9,24 @@ namespace IntelRealSenseStart.Code.RealSense.Helper
             ImageData imageData)
         {
             Size backgroundImageResolution = bitmap.Size;
-            return new PXCMPoint3DF32
+            try
             {
-                x = imageData.UVMap[
-                    (int) depthPosition.y*imageData.DepthImage.info.width +
-                    (int) depthPosition.x
-                    ].x*backgroundImageResolution.Width,
-                y = imageData.UVMap[
-                    (int) depthPosition.y*imageData.DepthImage.info.width +
-                    (int) depthPosition.x
-                    ].y*backgroundImageResolution.Height
-            };
+                return new PXCMPoint3DF32
+                {
+                    x = imageData.UVMap[
+                        (int) depthPosition.y*imageData.DepthImage.info.width +
+                        (int) depthPosition.x
+                        ].x*backgroundImageResolution.Width,
+                    y = imageData.UVMap[
+                        (int) depthPosition.y*imageData.DepthImage.info.width +
+                        (int) depthPosition.x
+                        ].y*backgroundImageResolution.Height
+                };
+            }
+            catch (System.Exception)
+            {
+                return new PXCMPoint3DF32(0, 0, 0);
+            }
         }
 
         public static PXCMPoint3DF32 MapToDepthPositionIn(this PXCMPoint3DF32 depthPosition, Bitmap bitmap, ImageData imageData)
