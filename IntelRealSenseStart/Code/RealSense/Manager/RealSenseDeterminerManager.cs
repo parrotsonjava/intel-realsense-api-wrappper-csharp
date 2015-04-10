@@ -201,18 +201,26 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
 
         private void ProcessFrame()
         {
-            AcquireFrame();
-            var frameEvent = ProcessComponents();
-            ReleaseFrame();
-
-            InvokeFrameEvent(frameEvent);
+            try
+            {
+                AcquireFrame();
+                var frameEvent = ProcessComponents();
+                ReleaseFrame();
+                
+                InvokeFrameEvent(frameEvent);
+            }
+            catch (RealSenseAcquireException)
+            {
+                ReleaseFrame();
+            }
         }
 
         private void AcquireFrame()
         {
-            if (senseManagerProvider.SenseManager.AcquireFrame(true) < pxcmStatus.PXCM_STATUS_NO_ERROR)
+            var acquireFrame = senseManagerProvider.SenseManager.AcquireFrame(true);
+            if (acquireFrame < pxcmStatus.PXCM_STATUS_NO_ERROR)
             {
-                throw new RealSenseException("Error while acquiring frame");
+                throw new RealSenseAcquireException("Error while acquiring frame");
             }
         }
 
