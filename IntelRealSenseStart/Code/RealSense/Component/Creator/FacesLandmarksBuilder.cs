@@ -30,6 +30,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Creator
                 faceLandmarks.WithDetectionPoint(
                     GetLandmarkName(index),
                     GetDetectionPoint(faceData.LandmarkPoints[index])));
+            faceLandmarks.WithPulseData(faceData.PulseData);
             return faceLandmarks;
         }
 

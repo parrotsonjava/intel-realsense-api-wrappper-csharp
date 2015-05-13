@@ -45,6 +45,12 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
 
             moduleConfiguration.SetTrackingMode(PXCMFaceConfiguration.TrackingModeType.FACE_MODE_COLOR_PLUS_DEPTH);
             moduleConfiguration.strategy = PXCMFaceConfiguration.TrackingStrategyType.STRATEGY_RIGHT_TO_LEFT;
+            if (configuration.FaceDetection.UsePulse)
+            {
+                var pulseConfig = moduleConfiguration.QueryPulse();
+                pulseConfig.properties.maxTrackedFaces = 4;
+                pulseConfig.Enable();
+            }
             moduleConfiguration.ApplyChanges();
 
             faceData = faceModule.CreateOutput();
@@ -72,7 +78,8 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
         private FaceData.Builder GetIndividualFaceData(PXCMFaceData.Face face)
         {
             return factory.Data.Determiner.Face()
-                .WithLandmarks(GetLandmarkData(face));
+                .WithLandmarks(GetLandmarkData(face))
+                .WithPulse(GetPulseData(face));
         }
 
         private PXCMFaceData.LandmarkPoint[] GetLandmarkData(PXCMFaceData.Face face)
@@ -95,6 +102,14 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
             PXCMFaceData.LandmarkPoint[] points;
             landMarks.QueryPoints(out points);
             return points;
+        }
+
+        private PXCMFaceData.PulseData GetPulseData(PXCMFaceData.Face face)
+        {
+            if (configuration.FaceDetection.UsePulse) {
+                return face.QueryPulse();
+            }
+            return null;
         }
 
         public class Builder

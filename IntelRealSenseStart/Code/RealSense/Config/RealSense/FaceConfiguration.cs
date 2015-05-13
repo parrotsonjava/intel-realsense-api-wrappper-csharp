@@ -3,15 +3,22 @@
     public class FaceConfiguration
     {
         private bool useLandmarks;
+        private bool usePulse;
 
         private FaceConfiguration()
         {
             useLandmarks = false;
+            usePulse = false;
         }
 
         public bool UseLandmarks
         {
             get { return useLandmarks;  }
+        }
+
+        public bool UsePulse
+        {
+            get { return usePulse;  }
         }
 
         public class Builder
@@ -26,6 +33,12 @@
             public Builder UsingLandmarks()
             {
                 configuration.useLandmarks = true;
+                return this;
+            }
+
+            public Builder UsingPulse()
+            {
+                configuration.usePulse = true;
                 return this;
             }
 

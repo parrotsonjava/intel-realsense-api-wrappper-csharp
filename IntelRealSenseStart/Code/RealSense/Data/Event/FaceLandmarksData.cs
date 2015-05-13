@@ -5,6 +5,7 @@ namespace IntelRealSenseStart.Code.RealSense.Data.Event
     public class FaceLandmarksData
     {
         private readonly Dictionary<FaceLandmark, DetectionPoint> detectionPoints;
+        private float heartRate;
 
         private FaceLandmarksData()
         {
@@ -21,6 +22,11 @@ namespace IntelRealSenseStart.Code.RealSense.Data.Event
             return detectionPoints[landmark];
         }
 
+        public float HeartRate
+        {
+            get { return heartRate; }
+        }
+
         public class Builder
         {
             private readonly FaceLandmarksData faceLandmarksData;
@@ -35,6 +41,16 @@ namespace IntelRealSenseStart.Code.RealSense.Data.Event
                 faceLandmarksData.detectionPoints[landmark] = detectionPoint.Build();
                 return this;
             }
+
+            public Builder WithPulseData(PXCMFaceData.PulseData pulseData)
+            {
+                if (pulseData != null)
+                {
+                    faceLandmarksData.heartRate = pulseData.QueryHeartRate();
+                }
+                return this;
+            }
+
 
             public FaceLandmarksData Build()
             {
