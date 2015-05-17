@@ -79,11 +79,14 @@
     <Compile Include="Code\RealSense\Component\Determiner\DeterminerComponent.cs" />
     <Compile Include="Code\RealSense\Component\Determiner\DeviceDeterminerComponent.cs" />
     <Compile Include="Code\RealSense\Component\Determiner\FaceDeterminerComponent.cs" />
-    <Compile Include="Code\RealSense\Component\Property\DevicePropertiesDeterminer.cs" />
+    <Compile Include="Code\RealSense\Component\Property\AudioDevicePropertiesDeterminer.cs" />
+    <Compile Include="Code\RealSense\Component\Property\VideoDevicePropertiesDeterminer.cs" />
     <Compile Include="Code\RealSense\Component\Property\PropertiesComponent.cs" />
     <Compile Include="Code\RealSense\Config\Image\ImageBackground.cs" />
     <Compile Include="Code\RealSense\Config\Image\ImageCreatorConfiguration.cs" />
     <Compile Include="Code\RealSense\Config\Image\ImageOverlay.cs" />
+    <Compile Include="Code\RealSense\Config\RealSense\AudioDeviceConfiguration.cs" />
+    <Compile Include="Code\RealSense\Config\RealSense\SpeechConfiguration.cs" />
     <Compile Include="Code\RealSense\Config\RealSense\StreamConfiguration.cs" />
     <Compile Include="Code\RealSense\Config\RealSense\DeviceConfiguration.cs" />
     <Compile Include="Code\RealSense\Component\Creator\HandsImageCreator.cs" />
@@ -105,6 +108,7 @@
     <Compile Include="Code\RealSense\Data\Event\HandJoint.cs" />
     <Compile Include="Code\RealSense\Data\Event\HandJointsData.cs" />
     <Compile Include="Code\RealSense\Data\Event\HandsJointsData.cs" />
+    <Compile Include="Code\RealSense\Data\Properties\AudioDeviceProperties.cs" />
     <Compile Include="Code\RealSense\Data\Status\DeterminerStatus.cs" />
     <Compile Include="Code\RealSense\Exception\IllegalStateException.cs" />
     <Compile Include="Code\RealSense\Exception\RealSenseAcquireException.cs" />
@@ -136,11 +140,11 @@
     <Compile Include="Code\RealSense\Exception\RealSenseException.cs" />
     <Compile Include="Code\RealSense\Event\FrameEventArgs.cs" />
     <Compile Include="Code\RealSense\Component\Determiner\HandsDeterminerComponent.cs" />
-    <Compile Include="Code\RealSense\Data\Properties\DeviceProperties.cs" />
+    <Compile Include="Code\RealSense\Data\Properties\VideoDeviceProperties.cs" />
     <Compile Include="Code\RealSense\Data\Properties\RealSenseProperties.cs" />
     <Compile Include="Code\RealSense\Data\Properties\StreamProperties.cs" />
     <Compile Include="Code\RealSense\Manager\RealSenseDeterminerManager.cs" />
-    <Compile Include="Code\RealSense\Provider\SenseManagerProvider.cs" />
+    <Compile Include="Code\RealSense\Provider\NativeSense.cs" />
     <Compile Include="Code\RealSense\RealSenseManager.cs" />
     <Compile Include="Code\RealSense\Manager\RealSensePropertiesManager.cs" />
     <Compile Include="MainForm.cs">

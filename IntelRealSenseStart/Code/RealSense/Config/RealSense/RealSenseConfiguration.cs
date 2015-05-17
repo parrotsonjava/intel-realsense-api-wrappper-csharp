@@ -8,6 +8,7 @@ namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
         private ImageConfiguration imageConfiguration;
         private HandsConfiguration handsConfiguration;
         private FaceConfiguration faceConfiguration;
+        private SpeechConfiguration speechConfiguration;
 
         private RealSenseConfiguration()
         {
@@ -59,6 +60,23 @@ namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
             }
         }
 
+        public bool SpeechDetectionEnabled
+        {
+            get { return speechConfiguration != null; }
+        }
+
+        public SpeechConfiguration SpeechRecognition
+        {
+            get
+            {
+                if (speechConfiguration == null)
+                {
+                    throw new RealSenseException("Speech recognition is not enabled, but tried to access it");
+                }
+                return speechConfiguration;
+            }
+        }
+
         public class Builder
         {
             private readonly RealSenseConfiguration configuration;
@@ -83,6 +101,12 @@ namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
             public Builder WithFaceDetection(FaceConfiguration.Builder faceConfiguration)
             {
                 configuration.faceConfiguration = faceConfiguration.Build();
+                return this;
+            }
+
+            public Builder WithSpeechRecognition(SpeechConfiguration.Builder speechConfiguration)
+            {
+                configuration.speechConfiguration = speechConfiguration.Build();
                 return this;
             }
 

@@ -3,6 +3,7 @@
     public class FaceConfiguration
     {
         private bool useLandmarks;
+        private bool useBoundingRectangle;
 
         private FaceConfiguration()
         {
@@ -12,6 +13,11 @@
         public bool UseLandmarks
         {
             get { return useLandmarks;  }
+        }
+
+        public bool UseBoundingRectangle
+        {
+            get { return useBoundingRectangle; }
         }
 
         public class Builder
@@ -26,6 +32,12 @@
             public Builder UsingLandmarks()
             {
                 configuration.useLandmarks = true;
+                return this;
+            }
+
+            public Builder UsingBoundingRectangle()
+            {
+                configuration.useBoundingRectangle = true;
                 return this;
             }
 

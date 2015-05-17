@@ -4,9 +4,9 @@ namespace IntelRealSenseStart.Code.RealSense.Factory
 {
     public class ProviderFactory
     {
-        public SenseManagerProvider.Builder SenseManager()
+        public NativeSense.Builder NativeSense()
         {
-            return new SenseManagerProvider.Builder();
+            return new NativeSense.Builder();
         }
     }
 }

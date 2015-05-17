@@ -6,7 +6,7 @@ using IntelRealSenseStart.Code.RealSense.Exception;
 
 namespace IntelRealSenseStart.Code.RealSense.Data.Properties
 {
-    public class DeviceProperties
+    public class VideoDeviceProperties
     {
         private String deviceName;
         private PXCMCapture.DeviceInfo deviceInfo;
@@ -14,7 +14,7 @@ namespace IntelRealSenseStart.Code.RealSense.Data.Properties
         private readonly List<StreamProperties> supportedColorStreamProperties; 
         private readonly List<StreamProperties> supportedDepthStreamProperties;
 
-        private DeviceProperties()
+        private VideoDeviceProperties()
         {
             supportedColorStreamProperties = new List<StreamProperties>();
             supportedDepthStreamProperties = new List<StreamProperties>();
@@ -62,40 +62,40 @@ namespace IntelRealSenseStart.Code.RealSense.Data.Properties
 
         public class Builder
         {
-            private readonly DeviceProperties deviceProperties;
+            private readonly VideoDeviceProperties videoDeviceProperties;
 
             public Builder()
             {
-                deviceProperties = new DeviceProperties();
+                videoDeviceProperties = new VideoDeviceProperties();
             }
 
             public Builder WithDeviceName(String deviceName)
             {
-                deviceProperties.deviceName = deviceName;
+                videoDeviceProperties.deviceName = deviceName;
                 return this;
             }
 
             public Builder WithDeviceInfo(PXCMCapture.DeviceInfo deviceInfo)
             {
-                deviceProperties.deviceInfo = deviceInfo;
+                videoDeviceProperties.deviceInfo = deviceInfo;
                 return this;
             }
 
             public Builder WithSupportedColorStreams(IEnumerable<StreamProperties.Builder> streamProperties)
             {
-                deviceProperties.supportedColorStreamProperties.AddRange(streamProperties.Select(builder => builder.Build()));
+                videoDeviceProperties.supportedColorStreamProperties.AddRange(streamProperties.Select(builder => builder.Build()));
                 return this;
             }
 
             public Builder WithSupportedDepthStreams(IEnumerable<StreamProperties.Builder> streamProperties)
             {
-                deviceProperties.supportedDepthStreamProperties.AddRange(streamProperties.Select(builder => builder.Build()));
+                videoDeviceProperties.supportedDepthStreamProperties.AddRange(streamProperties.Select(builder => builder.Build()));
                 return this;
             }
 
-            public DeviceProperties Build()
+            public VideoDeviceProperties Build()
             {
-                return deviceProperties;
+                return videoDeviceProperties;
             }
         }
     }

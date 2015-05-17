@@ -9,9 +9,14 @@ namespace IntelRealSenseStart.Code.RealSense.Factory.Data
             return new RealSenseProperties.Builder();
         }
 
-        public DeviceProperties.Builder Device()
+        public VideoDeviceProperties.Builder VideoDevice()
         {
-            return new DeviceProperties.Builder();
+            return new VideoDeviceProperties.Builder();
+        }
+
+        public AudioDeviceProperties.Builder AudioDevice()
+        {
+            return new AudioDeviceProperties.Builder();
         }
 
         public StreamProperties.Builder Stream()

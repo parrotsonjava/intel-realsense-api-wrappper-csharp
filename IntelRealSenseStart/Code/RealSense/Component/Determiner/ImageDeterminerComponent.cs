@@ -11,15 +11,15 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
         private readonly RealSenseConfiguration configuration;
 
         private readonly RealSenseFactory factory;
-        private readonly SenseManagerProvider senseManagerProvider;
+        private readonly NativeSense nativeSense;
 
         private PXCMCapture.Device device;
 
-        private ImageDeterminerComponent(RealSenseFactory factory, SenseManagerProvider senseManagerProvider,
+        private ImageDeterminerComponent(RealSenseFactory factory, NativeSense nativeSense,
             RealSenseConfiguration configuration)
         {
             this.factory = factory;
-            this.senseManagerProvider = senseManagerProvider;
+            this.nativeSense = nativeSense;
             this.configuration = configuration;
         }
 
@@ -28,14 +28,14 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
             if (configuration.Image.ColorEnabled)
             {
                 StreamConfiguration streamConfiguration = configuration.Image.ColorStreamConfiguration;
-                senseManagerProvider.SenseManager.EnableStream(PXCMCapture.StreamType.STREAM_TYPE_COLOR,
+                nativeSense.SenseManager.EnableStream(PXCMCapture.StreamType.STREAM_TYPE_COLOR,
                     streamConfiguration.Resolution.Width, streamConfiguration.Resolution.Height,
                     streamConfiguration.FrameRate);
             }
             if (configuration.Image.DepthEnabled || configuration.HandsDetectionEnabled)
             {
                 StreamConfiguration streamConfiguration = configuration.Image.DepthStreamConfiguration;
-                senseManagerProvider.SenseManager.EnableStream(PXCMCapture.StreamType.STREAM_TYPE_DEPTH,
+                nativeSense.SenseManager.EnableStream(PXCMCapture.StreamType.STREAM_TYPE_DEPTH,
                     streamConfiguration.Resolution.Width, streamConfiguration.Resolution.Height,
                     streamConfiguration.FrameRate);
             }
@@ -43,7 +43,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
 
         public void Configure()
         {
-            device = senseManagerProvider.SenseManager.QueryCaptureManager().QueryDevice();
+            device = nativeSense.SenseManager.QueryCaptureManager().QueryDevice();
         }
 
         public bool ShouldBeStarted
@@ -53,7 +53,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
 
         public void Process(DeterminerData.Builder determinerData)
         {
-            PXCMCapture.Sample realSenseSample = senseManagerProvider.SenseManager.QuerySample();
+            PXCMCapture.Sample realSenseSample = nativeSense.SenseManager.QuerySample();
 
             determinerData.WithImageData(
                 factory.Data.Determiner.Image()
@@ -80,7 +80,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
         public class Builder
         {
             private RealSenseFactory factory;
-            private SenseManagerProvider senseManagerProvider;
+            private NativeSense nativeSense;
             private RealSenseConfiguration configuration;
 
             public Builder WithFactory(RealSenseFactory factory)
@@ -89,9 +89,9 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
                 return this;
             }
 
-            public Builder WithManager(SenseManagerProvider senseManagerProvider)
+            public Builder WithManager(NativeSense nativeSense)
             {
-                this.senseManagerProvider = senseManagerProvider;
+                this.nativeSense = nativeSense;
                 return this;
             }
 
@@ -105,12 +105,12 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
             {
                 factory.Check(Preconditions.IsNotNull,
                     "The factory must be set in order to create the hands determiner component");
-                senseManagerProvider.Check(Preconditions.IsNotNull,
+                nativeSense.Check(Preconditions.IsNotNull,
                     "The RealSense manager must be set in order to create the hands determiner component");
                 configuration.Check(Preconditions.IsNotNull,
                     "The RealSense configuration must be set in order to create the hands determiner component");
 
-                return new ImageDeterminerComponent(factory, senseManagerProvider, configuration);
+                return new ImageDeterminerComponent(factory, nativeSense, configuration);
             }
         }
     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using IntelRealSenseStart.Code.RealSense.Data.Properties;
 
 namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
 {
@@ -6,20 +7,20 @@ namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
     {
         public static readonly VideoDeviceConfiguration DEFAULT_CONFIGURATION;
 
-        private String deviceName;
+        private Func<VideoDeviceProperties, bool> selectorFunction;
 
         static VideoDeviceConfiguration()
         {
-            DEFAULT_CONFIGURATION = new VideoDeviceConfiguration();
+            DEFAULT_CONFIGURATION = new Builder().WithDefaultConfiguration().Build();
         }
 
         private VideoDeviceConfiguration()
         {
         }
 
-        public String DeviceName
+        public Func<VideoDeviceProperties, bool> SelectorFunction
         {
-            get { return deviceName; }
+            get { return selectorFunction; }
         }
 
         public class Builder
@@ -31,9 +32,21 @@ namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
                 videoDeviceConfiguration = new VideoDeviceConfiguration();
             }
 
+            public Builder WithDefaultConfiguration()
+            {
+                return this;
+            }
+
             public Builder WithVideoDeviceName(String deviceName)
             {
-                videoDeviceConfiguration.deviceName = deviceName;
+                videoDeviceConfiguration.selectorFunction =
+                    videoDeviceProperties => videoDeviceProperties.DeviceName == deviceName;
+                return this;
+            }
+
+            public Builder UsingVideoDevice(Func<VideoDeviceProperties, bool> selectorFunction)
+            {
+                videoDeviceConfiguration.selectorFunction = selectorFunction;
                 return this;
             }
 

@@ -3,18 +3,19 @@ using System.Drawing;
 using System.Linq;
 using IntelRealSenseStart.Code.RealSense.Data.Properties;
 using IntelRealSenseStart.Code.RealSense.Factory;
+using IntelRealSenseStart.Code.RealSense.Provider;
 
 namespace IntelRealSenseStart.Code.RealSense.Component.Property
 {
-    public class DevicePropertiesDeterminer : PropertiesComponent
+    public class VideoDevicePropertiesDeterminer : PropertiesComponent
     {
         private readonly RealSenseFactory factory;
         private readonly PXCMSession session;
 
-        private DevicePropertiesDeterminer(RealSenseFactory factory, PXCMSession session)
+        private VideoDevicePropertiesDeterminer(RealSenseFactory factory, NativeSense nativeSense)
         {
             this.factory = factory;
-            this.session = session;
+            session = nativeSense.Session;
         }
 
         public void UpdateProperties(RealSenseProperties.Builder realSenseProperties)
@@ -38,7 +39,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Property
                     break;
                 }
 
-                realSenseProperties.WithDeviceProperties(GetDevicePropertiesFrom(deviceInfo, device));
+                realSenseProperties.WithVideoDeviceProperties(GetDevicePropertiesFrom(deviceInfo, device));
 
                 deviceCapture.Dispose();
             }
@@ -75,9 +76,9 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Property
             return device != null;
         }
 
-        private DeviceProperties.Builder GetDevicePropertiesFrom(PXCMCapture.DeviceInfo deviceInfo, PXCMCapture.Device device)
+        private VideoDeviceProperties.Builder GetDevicePropertiesFrom(PXCMCapture.DeviceInfo deviceInfo, PXCMCapture.Device device)
         {
-            return factory.Data.Properties.Device()
+            return factory.Data.Properties.VideoDevice()
                 .WithDeviceName(deviceInfo.name)
                 .WithDeviceInfo(deviceInfo)
                 .WithSupportedColorStreams(GetStreamsFor(device, deviceInfo, PXCMCapture.StreamType.STREAM_TYPE_COLOR))
@@ -128,7 +129,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Property
         public class Builder
         {
             private RealSenseFactory factory;
-            private PXCMSession session;
+            private NativeSense nativeSense;
 
             public Builder WithFactory(RealSenseFactory factory)
             {
@@ -136,16 +137,18 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Property
                 return this;
             }
 
-            public Builder WithSession(PXCMSession session)
+            public Builder WithNativeSense(NativeSense nativeSense)
             {
-                this.session = session;
+                this.nativeSense = nativeSense;
                 return this;
             }
 
-            public DevicePropertiesDeterminer Build()
+            public VideoDevicePropertiesDeterminer Build()
             {
-                return new DevicePropertiesDeterminer(factory, session);
+                return new VideoDevicePropertiesDeterminer(factory, nativeSense);
             }
+
+
         }
     }
 }

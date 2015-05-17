@@ -29,23 +29,20 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
         private readonly RealSensePropertiesManager propertiesManager;
         private readonly RealSenseConfiguration realSenseConfiguration;
 
-        private readonly SenseManagerProvider.Builder senseManagerProviderBuilder;
-        private readonly SenseManagerProvider senseManagerProvider;
+        private readonly NativeSense nativeSense;
 
         private Thread determinerThread;
-        private Thread reconnectThread;
+        private readonly Thread reconnectThread;
 
         private volatile DeterminerStatus determinerStatus = DeterminerStatus.STOPPED;
         
-        private RealSenseDeterminerManager(RealSenseFactory factory, PXCMSenseManager manager,
+        private RealSenseDeterminerManager(RealSenseFactory factory, NativeSense nativeSense,
             RealSensePropertiesManager propertiesManager, RealSenseConfiguration realSenseConfiguration)
         {
             this.factory = factory;
+            this.nativeSense = nativeSense;
             this.propertiesManager = propertiesManager;
             this.realSenseConfiguration = realSenseConfiguration;
-
-            senseManagerProviderBuilder = factory.Provider.SenseManager().WithSenseManager(manager);
-            senseManagerProvider = senseManagerProviderBuilder.Build();
 
             components = GetComponents().Where(component => component.ShouldBeStarted).ToArray();
             overallImageCreator = GetImageCreator(realSenseConfiguration);
@@ -59,22 +56,22 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
         {
             var deviceComponent = factory.Components.Determiner.Device()
                 .WithPropertiesManager(propertiesManager)
-                .WithManager(senseManagerProvider)
+                .WithManager(nativeSense)
                 .WithConfiguration(realSenseConfiguration)
                 .Build();
             var handsComponent = factory.Components.Determiner.Hands()
                 .WithFactory(factory)
-                .WithManager(senseManagerProvider)
+                .WithManager(nativeSense)
                 .WithConfiguration(realSenseConfiguration)
                 .Build();
             var faceComponent = factory.Components.Determiner.Face()
                 .WithFactory(factory)
-                .WithManager(senseManagerProvider)
+                .WithManager(nativeSense)
                 .WithConfiguration(realSenseConfiguration)
                 .Build();
             var pictureComponent = factory.Components.Determiner.Image()
                 .WithFactory(factory)
-                .WithManager(senseManagerProvider)
+                .WithManager(nativeSense)
                 .WithConfiguration(realSenseConfiguration)
                 .Build();
 
@@ -153,7 +150,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
 
         private void InitializeManager()
         {
-            senseManagerProvider.SenseManager.Init();
+            nativeSense.SenseManager.Init();
         }
 
         private void StartDeterminerThread()
@@ -171,16 +168,15 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
             catch (RealSenseException e)
             {
                 determinerStatus = DeterminerStatus.RECONNECTING;
-                RebuildSenseManager();
+                ResetSession();
 
                 Console.WriteLine(e.Message);
             }
         }
 
-        private void RebuildSenseManager()
+        private void ResetSession()
         {
-            PXCMSenseManager manager = factory.Native.SenseManager(factory.Native.Session());
-            senseManagerProviderBuilder.WithSenseManager(manager);
+            nativeSense.Initialize();
         }
 
         private void TryToStartDetection()
@@ -217,7 +213,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
 
         private void AcquireFrame()
         {
-            var acquireFrame = senseManagerProvider.SenseManager.AcquireFrame(true);
+            var acquireFrame = nativeSense.SenseManager.AcquireFrame(true);
             if (acquireFrame < pxcmStatus.PXCM_STATUS_NO_ERROR)
             {
                 throw new RealSenseAcquireException("Error while acquiring frame");
@@ -238,7 +234,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
 
         private void ReleaseFrame()
         {
-            senseManagerProvider.SenseManager.ReleaseFrame();
+            nativeSense.SenseManager.ReleaseFrame();
         }
 
         private void InvokeFrameEvent(FrameEventArgs.Builder eventArgs)
@@ -265,7 +261,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
         {
             determinerThread.Join();
             reconnectThread.Join();
-            senseManagerProvider.SenseManager.Close();
+            nativeSense.SenseManager.Close();
         }
         
         private void StartReconnect()
@@ -283,7 +279,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
         public class Builder
         {
             private RealSenseFactory factory;
-            private PXCMSenseManager manager;
+            private NativeSense nativeSense;
             private RealSensePropertiesManager propertiesManager;
             private RealSenseConfiguration configuration;
 
@@ -293,9 +289,9 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
                 return this;
             }
 
-            public Builder WithManager(PXCMSenseManager manager)
+            public Builder WithNativeSense(NativeSense nativeSense)
             {
-                this.manager = manager;
+                this.nativeSense = nativeSense;
                 return this;
             }
 
@@ -315,14 +311,14 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
             {
                 factory.Check(Preconditions.IsNotNull,
                     "The factory must be set in order to create the determiner manager");
-                manager.Check(Preconditions.IsNotNull,
-                    "The RealSense manager must be set in order to create the determiner manager");
+                nativeSense.Check(Preconditions.IsNotNull,
+                    "The native sense must be set in order to create the determiner manager");
                 propertiesManager.Check(Preconditions.IsNotNull,
                     "The properties manager must be set in order to create the determiner manager");
                 configuration.Check(Preconditions.IsNotNull,
                     "The RealSense configuration must be set in order to create the determiner manager");
 
-                return new RealSenseDeterminerManager(factory, manager, propertiesManager, configuration);
+                return new RealSenseDeterminerManager(factory, nativeSense, propertiesManager, configuration);
             }
         }
     }

@@ -19,6 +19,11 @@ namespace IntelRealSenseStart.Code.RealSense.Factory.Configuration
             return new VideoDeviceConfiguration.Builder();
         }
 
+        public AudioDeviceConfiguration.Builder AudioDeviceConfiguration()
+        {
+            return new AudioDeviceConfiguration.Builder();
+        }
+
         public HandsConfiguration.Builder HandsDetection()
         {
             return new HandsConfiguration.Builder();
@@ -27,6 +32,11 @@ namespace IntelRealSenseStart.Code.RealSense.Factory.Configuration
         public FaceConfiguration.Builder FaceDetection()
         {
             return new FaceConfiguration.Builder();
+        }
+
+        public SpeechConfiguration.Builder SpeechRecognition()
+        {
+            return new SpeechConfiguration.Builder();
         }
 
         public ImageConfiguration.Builder Image()

@@ -4,9 +4,14 @@ namespace IntelRealSenseStart.Code.RealSense.Factory.Component
 {
     public class PropertiesComponentsFactory
     {
-        public DevicePropertiesDeterminer.Builder Device()
+        public VideoDevicePropertiesDeterminer.Builder VideoDevice()
         {
-            return new DevicePropertiesDeterminer.Builder();
+            return new VideoDevicePropertiesDeterminer.Builder();
+        }
+
+        public AudioDevicePropertiesDeterminer.Builder AudioDevice()
+        {
+            return new AudioDevicePropertiesDeterminer.Builder();
         }
     }
 }

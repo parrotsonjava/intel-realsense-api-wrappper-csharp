@@ -2,6 +2,7 @@
 using IntelRealSenseStart.Code.RealSense.Data.Properties;
 using IntelRealSenseStart.Code.RealSense.Factory;
 using IntelRealSenseStart.Code.RealSense.Helper;
+using IntelRealSenseStart.Code.RealSense.Provider;
 
 namespace IntelRealSenseStart.Code.RealSense.Manager
 {
@@ -9,23 +10,25 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
     {
         private readonly PropertiesComponent[] components;
 
-        private RealSenseFactory factory;
-        private PXCMSession session;
+        private readonly RealSenseFactory factory;
+        private readonly NativeSense nativeSense;
 
-        private RealSensePropertiesManager(RealSenseFactory factory, PXCMSession session)
+        private RealSensePropertiesManager(RealSenseFactory factory, NativeSense nativeSense)
         {
             this.factory = factory;
-            this.session = session;
+            this.nativeSense = nativeSense;
 
             components = GetComponents();
         }
 
         private PropertiesComponent[] GetComponents()
         {
-            var deviceComponent = factory.Components.Properties.Device()
-                .WithFactory(factory).WithSession(session).Build();
+            var audioDeviceComponent = factory.Components.Properties.AudioDevice()
+                .WithFactory(factory).WithNativeSense(nativeSense).Build();
+            var videoDeviceComponent = factory.Components.Properties.VideoDevice()
+                .WithFactory(factory).WithNativeSense(nativeSense).Build();
 
-            return new PropertiesComponent[] { deviceComponent };
+            return new PropertiesComponent[] { videoDeviceComponent, audioDeviceComponent };
         }
 
         public RealSenseProperties GetProperties()
@@ -38,7 +41,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
         public class Builder
         {
             private RealSenseFactory factory;
-            private PXCMSession session;
+            private NativeSense nativeSense;
            
             public Builder WithFactory(RealSenseFactory factory)
             {
@@ -46,15 +49,15 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
                 return this;
             }
 
-            public Builder WithSession(PXCMSession session)
+            public Builder WithNativeSense(NativeSense nativeSense)
             {
-                this.session = session;
+                this.nativeSense = nativeSense;
                 return this;
             }
 
             public RealSensePropertiesManager Build()
             {
-                return new RealSensePropertiesManager(factory, session);
+                return new RealSensePropertiesManager(factory, nativeSense);
             }
         }
     }
