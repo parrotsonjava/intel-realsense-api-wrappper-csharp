@@ -1,6 +1,6 @@
 ﻿namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
 {
-    public class SpeechConfiguration
+    public class SpeechRecognitionConfiguration
     {
         private const float DEFAULT_VOLUME = 0.2f;
 
@@ -19,11 +19,11 @@
 
         public class Builder
         {
-            private readonly SpeechConfiguration configuration;
+            private readonly SpeechRecognitionConfiguration configuration;
 
             public Builder()
             {
-                configuration = new SpeechConfiguration();
+                configuration = new SpeechRecognitionConfiguration();
                 WithDefaultValues();
             }
 
@@ -44,7 +44,7 @@
                 return this;
             }
 
-            public SpeechConfiguration Build()
+            public SpeechRecognitionConfiguration Build()
             {
                 return configuration;
             }

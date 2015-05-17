@@ -8,7 +8,8 @@ namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
         private ImageConfiguration imageConfiguration;
         private HandsConfiguration handsConfiguration;
         private FaceConfiguration faceConfiguration;
-        private SpeechConfiguration speechConfiguration;
+        private SpeechRecognitionConfiguration speechRecognitionConfiguration;
+        private SpeechSynthesisConfiguration speechSynthesisConfiguration;
 
         private RealSenseConfiguration()
         {
@@ -62,18 +63,35 @@ namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
 
         public bool SpeechRecognitionEnabled
         {
-            get { return speechConfiguration != null; }
+            get { return speechRecognitionConfiguration != null; }
         }
 
-        public SpeechConfiguration SpeechRecognition
+        public SpeechRecognitionConfiguration SpeechRecognition
         {
             get
             {
-                if (speechConfiguration == null)
+                if (speechRecognitionConfiguration == null)
                 {
                     throw new RealSenseException("Speech recognition is not enabled, but tried to access it");
                 }
-                return speechConfiguration;
+                return speechRecognitionConfiguration;
+            }
+        }
+
+        public bool SpeechSynthesisEnabled
+        {
+            get { return speechSynthesisConfiguration != null; }
+        }
+
+        public SpeechSynthesisConfiguration SpeechSynthesis
+        {
+            get
+            {
+                if (speechSynthesisConfiguration == null)
+                {
+                    throw new RealSenseException("Speech synthesis is not enabled, but tried to access it");
+                }
+                return speechSynthesisConfiguration;
             }
         }
 
@@ -104,9 +122,15 @@ namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
                 return this;
             }
 
-            public Builder WithSpeechRecognition(SpeechConfiguration.Builder speechConfiguration)
+            public Builder WithSpeechRecognition(SpeechRecognitionConfiguration.Builder speechRecognitionConfiguration)
             {
-                configuration.speechConfiguration = speechConfiguration.Build();
+                configuration.speechRecognitionConfiguration = speechRecognitionConfiguration.Build();
+                return this;
+            }
+
+            public Builder WithSpeechSynthesis(SpeechSynthesisConfiguration.Builder speechSynthesisConfiguration)
+            {
+                configuration.speechSynthesisConfiguration = speechSynthesisConfiguration.Build();
                 return this;
             }
 

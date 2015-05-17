@@ -9,9 +9,9 @@ namespace IntelRealSenseStart.Code.RealSense.Factory
             return new RealSensePropertiesManager.Builder();
         }
 
-        public RealSenseDeterminerManager.Builder ComponentsManager()
+        public RealSenseComponentsManager.Builder DeterminerManager()
         {
-            return new RealSenseDeterminerManager.Builder();
+            return new RealSenseComponentsManager.Builder();
         }
     }
 }

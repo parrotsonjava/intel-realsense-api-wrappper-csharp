@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading;
+using IntelRealSenseStart.Code.RealSense.Component.Common;
 using IntelRealSenseStart.Code.RealSense.Component.Creator;
 using IntelRealSenseStart.Code.RealSense.Component.Determiner;
 using IntelRealSenseStart.Code.RealSense.Config.RealSense;
@@ -14,13 +15,13 @@ using IntelRealSenseStart.Code.RealSense.Provider;
 
 namespace IntelRealSenseStart.Code.RealSense.Manager
 {
-    public class RealSenseDeterminerManager
+    public class RealSenseComponentsManager
     {
         public delegate void FrameEventListener(FrameEventArgs frameEventArgs);
 
         public event FrameEventListener Frame;
 
-        private readonly DeterminerComponent[] components;
+        private readonly RealSenseComponent[] components;
         private readonly OverallImageCreator overallImageCreator;
         private readonly FacesLandmarksBuilder facesLandmarksBuilder;
         private readonly HandsJointsBuilder handsJointsBuilder;
@@ -36,7 +37,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
 
         private volatile DeterminerStatus determinerStatus = DeterminerStatus.STOPPED;
         
-        private RealSenseDeterminerManager(RealSenseFactory factory, NativeSense nativeSense,
+        private RealSenseComponentsManager(RealSenseFactory factory, NativeSense nativeSense,
             RealSensePropertiesManager propertiesManager, RealSenseConfiguration realSenseConfiguration)
         {
             this.factory = factory;
@@ -52,7 +53,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
             reconnectThread = new Thread(StartReconnect);
         }
 
-        private DeterminerComponent[] GetComponents()
+        private RealSenseComponent[] GetComponents()
         {
             var deviceComponent = factory.Components.Determiner.Device()
                 .WithPropertiesManager(propertiesManager)
@@ -74,16 +75,23 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
                 .WithNativeSense(nativeSense)
                 .WithConfiguration(realSenseConfiguration)
                 .Build();
-            var speechRecognitionDeterminerComponent = factory.Components.Determiner.SpeechRecognition()
+            var speechRecognitionComponent = factory.Components.Determiner.SpeechRecognition()
+                .WithFactory(factory)
+                .WithNativeSense(nativeSense)
+                .WithPropertiesManager(propertiesManager)
+                .WithConfiguration(realSenseConfiguration)
+                .Build();
+            var speechSynthesisComponent = factory.Components.Output.SpeechSynthesis()
                 .WithFactory(factory)
                 .WithNativeSense(nativeSense)
                 .WithPropertiesManager(propertiesManager)
                 .WithConfiguration(realSenseConfiguration)
                 .Build();
 
-            return new DeterminerComponent[]
+            return new RealSenseComponent[]
             {
-                handsComponent, faceComponent, pictureComponent, deviceComponent, speechRecognitionDeterminerComponent
+                handsComponent, faceComponent, pictureComponent, deviceComponent,
+                speechRecognitionComponent, speechSynthesisComponent
             };
         }
 
@@ -323,7 +331,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
                 return this;
             }
 
-            public RealSenseDeterminerManager Build()
+            public RealSenseComponentsManager Build()
             {
                 factory.Check(Preconditions.IsNotNull,
                     "The factory must be set in order to create the determiner manager");
@@ -334,7 +342,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
                 configuration.Check(Preconditions.IsNotNull,
                     "The RealSense configuration must be set in order to create the determiner manager");
 
-                return new RealSenseDeterminerManager(factory, nativeSense, propertiesManager, configuration);
+                return new RealSenseComponentsManager(factory, nativeSense, propertiesManager, configuration);
             }
         }
     }

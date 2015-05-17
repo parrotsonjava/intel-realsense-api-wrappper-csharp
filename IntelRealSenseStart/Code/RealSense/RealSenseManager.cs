@@ -21,7 +21,7 @@ namespace IntelRealSenseStart.Code.RealSense
         private readonly RealSenseFactory factory;
         private readonly RealSenseConfiguration configuration;
 
-        private readonly RealSenseDeterminerManager componentsManager;
+        private readonly RealSenseComponentsManager componentsManager;
         private readonly NativeSense nativeSense;
         private readonly RealSensePropertiesManager propertiesManager;
 
@@ -41,9 +41,9 @@ namespace IntelRealSenseStart.Code.RealSense
             componentsManager = CreateComponentsManager();
             componentsManager.Frame += componentsManager_Frame;
         }
-        private RealSenseDeterminerManager CreateComponentsManager()
+        private RealSenseComponentsManager CreateComponentsManager()
         {
-            return factory.Manager.ComponentsManager()
+            return factory.Manager.DeterminerManager()
                 .WithFactory(factory)
                 .WithNativeSense(nativeSense)
                 .WithPropertiesManager(propertiesManager)

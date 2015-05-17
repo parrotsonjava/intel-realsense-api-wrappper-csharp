@@ -3,16 +3,17 @@ using System.Linq;
 using IntelRealSenseStart.Code.RealSense.Data.Properties;
 using IntelRealSenseStart.Code.RealSense.Factory;
 using IntelRealSenseStart.Code.RealSense.Helper;
+using IntelRealSenseStart.Code.RealSense.Native;
 using IntelRealSenseStart.Code.RealSense.Provider;
 
 namespace IntelRealSenseStart.Code.RealSense.Component.Property
 {
-    public class AudioModulePropertiesDeterminer : PropertiesComponent<AudioProperties.Builder>
+    public class SpeechRecognitionModulePropertiesDeterminer : PropertiesComponent<AudioProperties.Builder>
     {
         private readonly RealSenseFactory factory;
         private readonly PXCMSession session;
 
-        private AudioModulePropertiesDeterminer(RealSenseFactory factory, NativeSense nativeSense)
+        private SpeechRecognitionModulePropertiesDeterminer(RealSenseFactory factory, NativeSense nativeSense)
         {
             this.factory = factory;
             session = nativeSense.Session;
@@ -20,48 +21,30 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Property
 
         public void UpdateProperties(AudioProperties.Builder audioProperties)
         {
-            DetermineAudioModules(audioProperties);
+            DetermineSpeechRecognitionModules(audioProperties);
         }
 
-        private void DetermineAudioModules(AudioProperties.Builder audioProperties)
+        private void DetermineSpeechRecognitionModules(AudioProperties.Builder audioProperties)
         {
             DetermineModules(audioProperties);
         }
 
         private void DetermineModules(AudioProperties.Builder audioProperties)
         {
-            GetSpeechRecognitionModules().Select(GetAudioModule).Do(audioModule => audioProperties.WithModule(audioModule));
+            session.GetModules(PXCMSpeechRecognition.CUID).Select(GetAudioModule).Do(audioModule => audioProperties.WithSpeechRecognitionModule(audioModule));
         }
 
-        private IEnumerable<PXCMSession.ImplDesc> GetSpeechRecognitionModules()
+        private SpeechRecognitionModuleProperties.Builder GetAudioModule(PXCMSession.ImplDesc module)
         {
-            var modules = new List<PXCMSession.ImplDesc>();
-            var moduleDescription = new PXCMSession.ImplDesc();
-            moduleDescription.cuids[0] = PXCMSpeechRecognition.CUID;
-            for (int i = 0;; i++)
-            {
-                PXCMSession.ImplDesc module;
-                if (session.QueryImpl(moduleDescription, i, out module) < pxcmStatus.PXCM_STATUS_NO_ERROR)
-                {
-                    break;
-                }
-
-                modules.Add(module);
-            }
-            return modules;
-        }
-
-        private AudioModuleProperties.Builder GetAudioModule(PXCMSession.ImplDesc module)
-        {
-            return factory.Data.Properties.AudioModule()
+            return factory.Data.Properties.SpeechRecognitionModule()
                 .WithModuleName(module.friendlyName)
                 .WithDeviceInfo(module)
                 .WithProfiles(GetProfiles(module));
         }
 
-        private List<AudioModuleProfileProperties.Builder> GetProfiles(PXCMSession.ImplDesc module)
+        private List<SpeechRecognitionProfileProperties.Builder> GetProfiles(PXCMSession.ImplDesc module)
         {
-            var profiles = new List<AudioModuleProfileProperties.Builder>();
+            var profiles = new List<SpeechRecognitionProfileProperties.Builder>();
 
             var languageDescription = new PXCMSession.ImplDesc();
             languageDescription.cuids[0] = PXCMSpeechRecognition.CUID;
@@ -87,9 +70,9 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Property
             return profiles;
         }
 
-        private AudioModuleProfileProperties.Builder GetProfileFor(PXCMSpeechRecognition.ProfileInfo profile)
+        private SpeechRecognitionProfileProperties.Builder GetProfileFor(PXCMSpeechRecognition.ProfileInfo profile)
         {
-            return factory.Data.Properties.AudioModuleProfile()
+            return factory.Data.Properties.SpeechRecognitionProfile()
                 .WithProfile(profile)
                 .WithLanguage(profile.language)
                 .WithSpeaker(profile.speaker);
@@ -112,14 +95,14 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Property
                 return this;
             }
 
-            public AudioModulePropertiesDeterminer Build()
+            public SpeechRecognitionModulePropertiesDeterminer Build()
             {
                 factory.Check(Preconditions.IsNotNull,
                     "The factory must be set in order to create the audio language properties determiner");
                 nativeSense.Check(Preconditions.IsNotNull,
                     "The native set must be set in order to create the audio language properties determiner");
 
-                return new AudioModulePropertiesDeterminer(factory, nativeSense);
+                return new SpeechRecognitionModulePropertiesDeterminer(factory, nativeSense);
             }
         }
     }

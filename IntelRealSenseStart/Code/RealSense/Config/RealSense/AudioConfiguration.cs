@@ -7,8 +7,9 @@ namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
     {
         public static readonly AudioConfiguration DEFAULT_CONFIGURATION;
 
-        private Func<AudioDeviceProperties, bool> deviceSelectorFunction;
-        private Func<AudioModuleProfileProperties, bool> profileSelectorFunction;
+        private Func<AudioInputDeviceProperties, bool> inputDeviceSelectorFunction;
+        private Func<SpeechRecognitionProfileProperties, bool> speechRecognitionProfileSelectorFunction;
+        private Func<SpeechSynthesisProfileProperties, bool> speechSynthesisProfileSelectorFunction;
 
         static AudioConfiguration()
         {
@@ -19,14 +20,20 @@ namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
         {
         }
 
-        public Func<AudioDeviceProperties, bool> DeviceSelectorFunction
+        public Func<AudioInputDeviceProperties, bool> InputDeviceSelectorFunction
         {
-            get { return deviceSelectorFunction; }
+            get { return inputDeviceSelectorFunction; }
         }
 
-        public Func<AudioModuleProfileProperties, bool> ProfileSelectorFunction
+        public Func<SpeechRecognitionProfileProperties, bool> SpeechRecognitionProfileSelectorFunction
         {
-            get { return profileSelectorFunction; }
+            get { return speechRecognitionProfileSelectorFunction; }
+        }
+
+
+        public Func<SpeechSynthesisProfileProperties, bool> SpeechSynthesisProfileSelectorFunction
+        {
+            get { return speechSynthesisProfileSelectorFunction; }
         }
 
         public class Builder
@@ -41,20 +48,27 @@ namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
 
             public Builder WithDefaultConfiguration()
             {
-                configuration.deviceSelectorFunction = device => true;
-                configuration.profileSelectorFunction = profile => true;
+                configuration.inputDeviceSelectorFunction = device => true;
+                configuration.speechRecognitionProfileSelectorFunction = profile => true;
+                configuration.speechSynthesisProfileSelectorFunction = profile => true;
                 return this;
             }
 
-            public Builder UsingAudioDevice(Func<AudioDeviceProperties, bool> selectorFunction)
+            public Builder UsingAudioInputDevice(Func<AudioInputDeviceProperties, bool> selectorFunction)
             {
-                configuration.deviceSelectorFunction = selectorFunction;
+                configuration.inputDeviceSelectorFunction = selectorFunction;
                 return this;
             }
 
-            public Builder UsingAudioModule(Func<AudioModuleProfileProperties, bool> selectorFunction)
+            public Builder UsingSpeechRecongitionProfile(Func<SpeechRecognitionProfileProperties, bool> selectorFunction)
             {
-                configuration.profileSelectorFunction = selectorFunction;
+                configuration.speechRecognitionProfileSelectorFunction = selectorFunction;
+                return this;
+            }
+
+            public Builder UsingSpeechSynthesisProfile(Func<SpeechSynthesisProfileProperties, bool> selectorFunction)
+            {
+                configuration.speechSynthesisProfileSelectorFunction = selectorFunction;
                 return this;
             }
 

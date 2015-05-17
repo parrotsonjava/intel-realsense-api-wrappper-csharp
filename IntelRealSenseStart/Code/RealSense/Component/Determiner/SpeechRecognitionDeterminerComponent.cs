@@ -65,11 +65,11 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
             StartRecognition();
         }
 
-        private AudioDeviceProperties GetSelectedDevice(AudioProperties audioProperties)
+        private AudioInputDeviceProperties GetSelectedDevice(AudioProperties audioProperties)
         {
             try
             {
-                return audioProperties.Devices.First(configuration.Base.Audio.DeviceSelectorFunction);
+                return audioProperties.InputDevices.First(configuration.Base.Audio.InputDeviceSelectorFunction);
             }
             catch(InvalidOperationException)
             {
@@ -77,12 +77,12 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
             }
         }
 
-        private AudioModuleProfileProperties GetSelectedProfile(AudioProperties audioProperties)
+        private SpeechRecognitionProfileProperties GetSelectedProfile(AudioProperties audioProperties)
         {
             try
             {
-                return audioProperties.Modules.SelectMany(module => module.Profiles)
-                    .First(configuration.Base.Audio.ProfileSelectorFunction);
+                return audioProperties.SpeechRecognitionModules.SelectMany(module => module.Profiles)
+                    .First(configuration.Base.Audio.SpeechRecognitionProfileSelectorFunction);
             }
             catch (InvalidOperationException)
             {

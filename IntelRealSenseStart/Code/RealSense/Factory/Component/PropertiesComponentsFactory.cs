@@ -24,9 +24,14 @@ namespace IntelRealSenseStart.Code.RealSense.Factory.Component
             return new AudioDevicePropertiesDeterminer.Builder();
         }
 
-        public AudioModulePropertiesDeterminer.Builder AudioModuleDeterminer()
+        public SpeechRecognitionModulePropertiesDeterminer.Builder SpeechRecognitionModuleDeterminer()
         {
-            return new AudioModulePropertiesDeterminer.Builder();
+            return new SpeechRecognitionModulePropertiesDeterminer.Builder();
+        }
+
+        public SpeechSynthesisModulePropertiesDeterminer.Builder SpeechSynthesisModuleDeterminer()
+        {
+            return new SpeechSynthesisModulePropertiesDeterminer.Builder();
         }
     }
 }

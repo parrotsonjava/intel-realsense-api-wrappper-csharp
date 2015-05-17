@@ -4,15 +4,15 @@ using IntelRealSenseStart.Code.RealSense.Helper;
 
 namespace IntelRealSenseStart.Code.RealSense.Data.Properties
 {
-    public class AudioModuleProperties
+    public class SpeechRecognitionModuleProperties
     {
         private String moduleName;
         private PXCMSession.ImplDesc module;
-        private readonly List<AudioModuleProfileProperties> profiles; 
+        private readonly List<SpeechRecognitionProfileProperties> profiles; 
 
-        private AudioModuleProperties()
+        private SpeechRecognitionModuleProperties()
         {
-            profiles = new List<AudioModuleProfileProperties>();
+            profiles = new List<SpeechRecognitionProfileProperties>();
         }
 
         public String ModuleName
@@ -25,51 +25,51 @@ namespace IntelRealSenseStart.Code.RealSense.Data.Properties
             get { return module; }
         }
 
-        public List<AudioModuleProfileProperties> Profiles
+        public List<SpeechRecognitionProfileProperties> Profiles
         {
             get { return profiles; }
         } 
 
         public class Builder
         {
-            private readonly AudioModuleProperties audioModuleProperties;
+            private readonly SpeechRecognitionModuleProperties speechRecognitionModuleProperties;
 
             public Builder()
             {
-                audioModuleProperties = new AudioModuleProperties();
+                speechRecognitionModuleProperties = new SpeechRecognitionModuleProperties();
             }
 
             public Builder WithModuleName(String moduleName)
             {
-                audioModuleProperties.moduleName = moduleName;
+                speechRecognitionModuleProperties.moduleName = moduleName;
                 return this;
             }
 
             public Builder WithDeviceInfo(PXCMSession.ImplDesc module)
             {
-                audioModuleProperties.module = module;
+                speechRecognitionModuleProperties.module = module;
                 return this;
             }
 
-            public Builder WithProfile(AudioModuleProfileProperties.Builder profile)
+            public Builder WithProfile(SpeechRecognitionProfileProperties.Builder profile)
             {
-                audioModuleProperties.profiles.Add(profile.Build());
+                speechRecognitionModuleProperties.profiles.Add(profile.Build());
                 return this;
             }
 
-            public Builder WithProfiles(List<AudioModuleProfileProperties.Builder> profiles)
+            public Builder WithProfiles(List<SpeechRecognitionProfileProperties.Builder> profiles)
             {
                 profiles.Do(profile =>
                 {
-                    profile.WithModule(audioModuleProperties);
+                    profile.WithModule(speechRecognitionModuleProperties);
                     WithProfile(profile);
                 });
                 return this;
             }
 
-            public AudioModuleProperties Build()
+            public SpeechRecognitionModuleProperties Build()
             {
-                return audioModuleProperties;
+                return speechRecognitionModuleProperties;
             }
         }
     }

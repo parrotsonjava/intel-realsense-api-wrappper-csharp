@@ -2,12 +2,12 @@
 
 namespace IntelRealSenseStart.Code.RealSense.Data.Properties
 {
-    public class AudioDeviceProperties
+    public class AudioInputDeviceProperties
     {
         private String deviceName;
         private PXCMAudioSource.DeviceInfo deviceInfo;
 
-        private AudioDeviceProperties()
+        private AudioInputDeviceProperties()
         {
         }
 
@@ -23,28 +23,28 @@ namespace IntelRealSenseStart.Code.RealSense.Data.Properties
 
         public class Builder
         {
-            private readonly AudioDeviceProperties audioDeviceProperties;
+            private readonly AudioInputDeviceProperties audioInputDeviceProperties;
 
             public Builder()
             {
-                audioDeviceProperties = new AudioDeviceProperties();
+                audioInputDeviceProperties = new AudioInputDeviceProperties();
             }
 
             public Builder WithDeviceName(string deviceName)
             {
-                audioDeviceProperties.deviceName = deviceName;
+                audioInputDeviceProperties.deviceName = deviceName;
                 return this;
             }
 
             public Builder WithDeviceInfo(PXCMAudioSource.DeviceInfo deviceInfo)
             {
-                audioDeviceProperties.deviceInfo = deviceInfo;
+                audioInputDeviceProperties.deviceInfo = deviceInfo;
                 return this;
             }
 
-            public AudioDeviceProperties Build()
+            public AudioInputDeviceProperties Build()
             {
-                return audioDeviceProperties;
+                return audioInputDeviceProperties;
             }
         }
     }

@@ -34,9 +34,13 @@ namespace IntelRealSenseStart.Code.RealSense.Factory.Configuration
             return new FaceConfiguration.Builder();
         }
 
-        public SpeechConfiguration.Builder SpeechRecognition()
+        public SpeechRecognitionConfiguration.Builder SpeechRecognition()
         {
-            return new SpeechConfiguration.Builder();
+            return new SpeechRecognitionConfiguration.Builder();
+        }
+        public SpeechSynthesisConfiguration.Builder SpeechSynthesis()
+        {
+            return new SpeechSynthesisConfiguration.Builder();
         }
 
         public ImageConfiguration.Builder Image()

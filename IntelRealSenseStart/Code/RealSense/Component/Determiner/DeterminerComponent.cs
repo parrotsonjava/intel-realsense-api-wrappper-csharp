@@ -1,15 +1,10 @@
 ﻿using System;
+using IntelRealSenseStart.Code.RealSense.Component.Common;
+using IntelRealSenseStart.Code.RealSense.Component.Output;
 
 namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
 {
-    public interface DeterminerComponent
+    public interface DeterminerComponent : RealSenseComponent
     {
-        bool ShouldBeStarted { get; }
-
-        void EnableFeatures();
-
-        void Configure();
-
-        void Stop();
     }
 }

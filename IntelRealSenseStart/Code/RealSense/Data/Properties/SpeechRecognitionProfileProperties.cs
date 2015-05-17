@@ -2,20 +2,20 @@
 
 namespace IntelRealSenseStart.Code.RealSense.Data.Properties
 {
-    public class AudioModuleProfileProperties
+    public class SpeechRecognitionProfileProperties
     {
-        private AudioModuleProperties audioModuleProperties;
+        private SpeechRecognitionModuleProperties module;
         private PXCMSpeechRecognition.ProfileInfo profile;
         private PXCMSpeechRecognition.LanguageType language;
         private String speaker;
 
-        private AudioModuleProfileProperties()
+        private SpeechRecognitionProfileProperties()
         {
         }
 
-        public AudioModuleProperties Module
+        public SpeechRecognitionModuleProperties Module
         {
-            get { return audioModuleProperties; }
+            get { return module; }
         }
 
         public PXCMSpeechRecognition.ProfileInfo Profile
@@ -35,43 +35,41 @@ namespace IntelRealSenseStart.Code.RealSense.Data.Properties
 
         public class Builder
         {
-            private readonly AudioModuleProfileProperties audioModuleProfileProperties;
+            private readonly SpeechRecognitionProfileProperties speechRecognitionProfileProperties;
 
             public Builder()
             {
-                audioModuleProfileProperties = new AudioModuleProfileProperties();
+                speechRecognitionProfileProperties = new SpeechRecognitionProfileProperties();
             }
 
-            public Builder WithModule(AudioModuleProperties audioModuleProperties)
+            public Builder WithModule(SpeechRecognitionModuleProperties module)
             {
-                audioModuleProfileProperties.audioModuleProperties = audioModuleProperties;
+                speechRecognitionProfileProperties.module = module;
                 return this;
             }
 
             public Builder WithProfile(PXCMSpeechRecognition.ProfileInfo profile)
             {
-                audioModuleProfileProperties.profile = profile;
+                speechRecognitionProfileProperties.profile = profile;
                 return this;
             }
 
             public Builder WithLanguage(PXCMSpeechRecognition.LanguageType language)
             {
-                audioModuleProfileProperties.language = language;
+                speechRecognitionProfileProperties.language = language;
                 return this;
             }
 
             public Builder WithSpeaker(String speaker)
             {
-                audioModuleProfileProperties.speaker = speaker;
+                speechRecognitionProfileProperties.speaker = speaker;
                 return this;
             }
 
-            public AudioModuleProfileProperties Build()
+            public SpeechRecognitionProfileProperties Build()
             {
-                return audioModuleProfileProperties;
+                return speechRecognitionProfileProperties;
             }
-
-
         }
     }
 }

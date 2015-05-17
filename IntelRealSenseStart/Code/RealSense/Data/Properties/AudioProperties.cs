@@ -4,23 +4,31 @@ namespace IntelRealSenseStart.Code.RealSense.Data.Properties
 {
     public class AudioProperties
     {
-        private readonly List<AudioDeviceProperties> audioDeviceProperties;
-        private readonly List<AudioModuleProperties> audioModuleProperties;
+        private readonly List<AudioInputDeviceProperties> audioInputInputDeviceProperties;
+
+        private readonly List<SpeechRecognitionModuleProperties> speechRecognitionModuleProperties;
+        private readonly List<SpeechSynthesisModuleProperties> speechSynthesisModuleProperties;
 
         private AudioProperties()
         {
-            audioDeviceProperties = new List<AudioDeviceProperties>();
-            audioModuleProperties = new List<AudioModuleProperties>();
+            audioInputInputDeviceProperties = new List<AudioInputDeviceProperties>();
+            speechRecognitionModuleProperties = new List<SpeechRecognitionModuleProperties>();
+            speechSynthesisModuleProperties = new List<SpeechSynthesisModuleProperties>();
         }
 
-        public List<AudioDeviceProperties> Devices
+        public List<AudioInputDeviceProperties> InputDevices
         {
-            get { return audioDeviceProperties; }
+            get { return audioInputInputDeviceProperties; }
         }
 
-        public List<AudioModuleProperties> Modules
+        public List<SpeechRecognitionModuleProperties> SpeechRecognitionModules
         {
-            get { return audioModuleProperties; }
+            get { return speechRecognitionModuleProperties; }
+        }
+
+        public List<SpeechSynthesisModuleProperties> SpeechSynthesisModules
+        {
+            get { return speechSynthesisModuleProperties; }
         }
 
         public class Builder
@@ -32,15 +40,21 @@ namespace IntelRealSenseStart.Code.RealSense.Data.Properties
                 audioProperties = new AudioProperties();
             }
 
-            public Builder WithAudioDevice(AudioDeviceProperties.Builder audioDeviceProperties)
+            public Builder WithAudioInputDevice(AudioInputDeviceProperties.Builder device)
             {
-                audioProperties.audioDeviceProperties.Add(audioDeviceProperties.Build());
+                audioProperties.audioInputInputDeviceProperties.Add(device.Build());
                 return this;
             }
 
-            public Builder WithModule(AudioModuleProperties.Builder audioModule)
+            public Builder WithSpeechRecognitionModule(SpeechRecognitionModuleProperties.Builder module)
             {
-                audioProperties.audioModuleProperties.Add(audioModule.Build());
+                audioProperties.speechRecognitionModuleProperties.Add(module.Build());
+                return this;
+            }
+
+            public Builder WithSpeechSynthesisModule(SpeechSynthesisModuleProperties.Builder module)
+            {
+                audioProperties.speechSynthesisModuleProperties.Add(module.Build());
                 return this;
             }
 

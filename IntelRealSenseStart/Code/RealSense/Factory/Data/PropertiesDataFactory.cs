@@ -1,5 +1,4 @@
-﻿using IntelRealSenseStart.Code.RealSense.Component.Property;
-using IntelRealSenseStart.Code.RealSense.Data.Properties;
+﻿using IntelRealSenseStart.Code.RealSense.Data.Properties;
 
 namespace IntelRealSenseStart.Code.RealSense.Factory.Data
 {
@@ -25,19 +24,28 @@ namespace IntelRealSenseStart.Code.RealSense.Factory.Data
             return new AudioProperties.Builder();
         }
 
-        public AudioDeviceProperties.Builder AudioDevice()
+        public AudioInputDeviceProperties.Builder AudioDevice()
         {
-            return new AudioDeviceProperties.Builder();
+            return new AudioInputDeviceProperties.Builder();
         }
 
-        public AudioModuleProperties.Builder AudioModule()
+        public SpeechRecognitionModuleProperties.Builder SpeechRecognitionModule()
         {
-            return new AudioModuleProperties.Builder();
+            return new SpeechRecognitionModuleProperties.Builder();
+        }
+        public SpeechSynthesisModuleProperties.Builder SpeechSynthesisModule()
+        {
+            return new SpeechSynthesisModuleProperties.Builder();
         }
 
-        public AudioModuleProfileProperties.Builder AudioModuleProfile()
+        public SpeechRecognitionProfileProperties.Builder SpeechRecognitionProfile()
         {
-            return new AudioModuleProfileProperties.Builder();
+            return new SpeechRecognitionProfileProperties.Builder();
+        }
+
+        public SpeechSynthesisProfileProperties.Builder SpeechSynthesisProfile()
+        {
+            return new SpeechSynthesisProfileProperties.Builder();
         }
 
         public StreamProperties.Builder Stream()

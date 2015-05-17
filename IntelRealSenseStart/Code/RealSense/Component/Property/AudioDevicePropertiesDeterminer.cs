@@ -27,7 +27,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Property
         {
             GetAudioDevices()
                 .Select(GetDeviceProperties)
-                .Do(audioDeviceProperties => audioProperties.WithAudioDevice(audioDeviceProperties));
+                .Do(audioDeviceProperties => audioProperties.WithAudioInputDevice(audioDeviceProperties));
         }
 
         private IEnumerable<PXCMAudioSource.DeviceInfo> GetAudioDevices()
@@ -51,7 +51,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Property
             return devices;
         }
 
-        private AudioDeviceProperties.Builder GetDeviceProperties(PXCMAudioSource.DeviceInfo deviceInfo)
+        private AudioInputDeviceProperties.Builder GetDeviceProperties(PXCMAudioSource.DeviceInfo deviceInfo)
         {
             return factory.Data.Properties.AudioDevice()
                 .WithDeviceName(deviceInfo.name)
