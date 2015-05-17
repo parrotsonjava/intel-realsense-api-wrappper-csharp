@@ -1,46 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using IntelRealSenseStart.Code.RealSense.Exception;
-
-namespace IntelRealSenseStart.Code.RealSense.Data.Properties
+﻿namespace IntelRealSenseStart.Code.RealSense.Data.Properties
 {
     public class RealSenseProperties
     {
-        public static readonly RealSenseProperties DEFAULT_PROPERTIES;
-
-        private readonly List<VideoDeviceProperties> videoDevices;
-        private readonly List<AudioDeviceProperties> audioDevices; 
-
-        static RealSenseProperties()
-        {
-            DEFAULT_PROPERTIES = new RealSenseProperties();
-        }
+        private VideoProperties videoProperties;
+        private AudioProperties audioProperties; 
 
         private RealSenseProperties()
         {
-            videoDevices = new List<VideoDeviceProperties>();
-            audioDevices = new List<AudioDeviceProperties>();
         }
 
-        public List<VideoDeviceProperties> VideoDevices
+        public VideoProperties Video
         {
-            get { return videoDevices; }
+            get { return videoProperties; }
         }
 
-        public List<AudioDeviceProperties> AudioDevices
+        public AudioProperties Audio
         {
-            get { return audioDevices; }
-        }
-
-        public VideoDeviceProperties FindDeviceBy(Func<VideoDeviceProperties, bool> selectorFunction)
-        {
-            var properties = VideoDevices.First(selectorFunction);
-            if (properties == null)
-            {
-                throw new RealSenseException(String.Format("No camera with the specified selector is attached"));
-            }
-            return properties;
+            get { return audioProperties; }
         }
 
         public class Builder
@@ -52,15 +28,15 @@ namespace IntelRealSenseStart.Code.RealSense.Data.Properties
                 realSenseProperties = new RealSenseProperties();   
             }
 
-            public Builder WithVideoDeviceProperties(VideoDeviceProperties.Builder videoDeviceProperties)
+            public Builder WithVideoProperties(VideoProperties.Builder videoProperties)
             {
-                realSenseProperties.VideoDevices.Add(videoDeviceProperties.Build());
+                realSenseProperties.videoProperties = videoProperties.Build();
                 return this;
             }
 
-            public Builder WithAudioDeviceProperties(AudioDeviceProperties.Builder audioDeviceProperties)
+            public Builder WithAudioProperties(AudioProperties.Builder audioProperties)
             {
-                realSenseProperties.AudioDevices.Add(audioDeviceProperties.Build());
+                realSenseProperties.audioProperties = audioProperties.Build();
                 return this;
             }
 
@@ -69,7 +45,5 @@ namespace IntelRealSenseStart.Code.RealSense.Data.Properties
                 return realSenseProperties;
             }
         }
-
-
     }
 }

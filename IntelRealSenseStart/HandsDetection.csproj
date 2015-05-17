@@ -80,8 +80,12 @@
     <Compile Include="Code\RealSense\Component\Determiner\DeviceDeterminerComponent.cs" />
     <Compile Include="Code\RealSense\Component\Determiner\FaceDeterminerComponent.cs" />
     <Compile Include="Code\RealSense\Component\Property\AudioDevicePropertiesDeterminer.cs" />
+    <Compile Include="Code\RealSense\Component\Property\AudioPropertiesDeterminer.cs" />
+    <Compile Include="Code\RealSense\Component\Property\VideoPropertiesDeterminer.cs" />
+    <Compile Include="Code\RealSense\Data\Properties\AudioProperties.cs" />
     <Compile Include="Code\RealSense\Component\Property\VideoDevicePropertiesDeterminer.cs" />
     <Compile Include="Code\RealSense\Component\Property\PropertiesComponent.cs" />
+    <Compile Include="Code\RealSense\Data\Properties\VideoProperties.cs" />
     <Compile Include="Code\RealSense\Config\Image\ImageBackground.cs" />
     <Compile Include="Code\RealSense\Config\Image\ImageCreatorConfiguration.cs" />
     <Compile Include="Code\RealSense\Config\Image\ImageOverlay.cs" />

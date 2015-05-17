@@ -1,9 +1,7 @@
-﻿using IntelRealSenseStart.Code.RealSense.Data.Properties;
-
-namespace IntelRealSenseStart.Code.RealSense.Component.Property
+﻿namespace IntelRealSenseStart.Code.RealSense.Component.Property
 {
-    public interface PropertiesComponent
+    public interface PropertiesComponent<in PROPERTIES_BUILDER>
     {
-        void UpdateProperties(RealSenseProperties.Builder realSenseProperties);
+        void UpdateProperties(PROPERTIES_BUILDER videoProperties);
     }
 }

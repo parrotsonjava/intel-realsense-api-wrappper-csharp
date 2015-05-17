@@ -29,7 +29,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
             if (selectorFunction != null)
             {
                 var properties = propertiesManager.GetProperties();
-                var deviceProperties = properties.FindDeviceBy(selectorFunction);
+                var deviceProperties = properties.Video.FindDeviceBy(selectorFunction);
 
                 nativeSense.SenseManager.captureManager.FilterByDeviceInfo(deviceProperties.DeviceInfo);
             }

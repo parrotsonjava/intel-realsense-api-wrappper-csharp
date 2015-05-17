@@ -3,11 +3,12 @@ using System.Drawing;
 using System.Linq;
 using IntelRealSenseStart.Code.RealSense.Data.Properties;
 using IntelRealSenseStart.Code.RealSense.Factory;
+using IntelRealSenseStart.Code.RealSense.Helper;
 using IntelRealSenseStart.Code.RealSense.Provider;
 
 namespace IntelRealSenseStart.Code.RealSense.Component.Property
 {
-    public class VideoDevicePropertiesDeterminer : PropertiesComponent
+    public class VideoDevicePropertiesDeterminer : PropertiesComponent<VideoProperties.Builder>
     {
         private readonly RealSenseFactory factory;
         private readonly PXCMSession session;
@@ -18,12 +19,12 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Property
             session = nativeSense.Session;
         }
 
-        public void UpdateProperties(RealSenseProperties.Builder realSenseProperties)
+        public void UpdateProperties(VideoProperties.Builder videoProperties)
         {
-            DetermineVideoDeviceProperties(realSenseProperties);
+            DetermineVideoDeviceProperties(videoProperties);
         }
 
-        private void DetermineVideoDeviceProperties(RealSenseProperties.Builder realSenseProperties)
+        private void DetermineVideoDeviceProperties(VideoProperties.Builder videoProperties)
         {
             var videoDeviceDescription = CreateVideoDeviceDescription();
             for (int i = 0;; i++)
@@ -39,7 +40,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Property
                     break;
                 }
 
-                realSenseProperties.WithVideoDeviceProperties(GetDevicePropertiesFrom(deviceInfo, device));
+                videoProperties.WithVideoDevice(GetDevicePropertiesFrom(deviceInfo, device));
 
                 deviceCapture.Dispose();
             }
@@ -145,10 +146,13 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Property
 
             public VideoDevicePropertiesDeterminer Build()
             {
+                factory.Check(Preconditions.IsNotNull,
+                    "The factory must be set in order to create the video device properties determiner");
+                nativeSense.Check(Preconditions.IsNotNull,
+                    "The native set must be set in order to create the video device properties determiner");
+
                 return new VideoDevicePropertiesDeterminer(factory, nativeSense);
             }
-
-
         }
     }
 }

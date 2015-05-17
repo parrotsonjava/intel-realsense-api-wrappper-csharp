@@ -7,7 +7,7 @@ using IntelRealSenseStart.Code.RealSense.Provider;
 
 namespace IntelRealSenseStart.Code.RealSense.Component.Property
 {
-    public class AudioDevicePropertiesDeterminer : PropertiesComponent
+    public class AudioDevicePropertiesDeterminer : PropertiesComponent<AudioProperties.Builder>
     {
         private readonly RealSenseFactory factory;
         private readonly PXCMSession session;
@@ -18,16 +18,16 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Property
             session = nativeSense.Session;
         }
 
-        public void UpdateProperties(RealSenseProperties.Builder realSenseProperties)
+        public void UpdateProperties(AudioProperties.Builder videoProperties)
         {
-            DetermineAudioProperties(realSenseProperties);
+            DetermineAudioProperties(videoProperties);
         }
 
-        private void DetermineAudioProperties(RealSenseProperties.Builder realSenseProperties)
+        private void DetermineAudioProperties(AudioProperties.Builder audioProperties)
         {
             GetAudioDevices()
                 .Select(GetDeviceProperties)
-                .Do(audioDeviceProperties => realSenseProperties.WithAudioDeviceProperties(audioDeviceProperties));
+                .Do(audioDeviceProperties => audioProperties.WithAudioDevice(audioDeviceProperties));
         }
 
         private IEnumerable<PXCMAudioSource.DeviceInfo> GetAudioDevices()
@@ -77,6 +77,11 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Property
 
             public AudioDevicePropertiesDeterminer Build()
             {
+                factory.Check(Preconditions.IsNotNull,
+                    "The factory must be set in order to create the audio device properties determiner");
+                nativeSense.Check(Preconditions.IsNotNull,
+                    "The native set must be set in order to create the audio device properties determiner");
+
                 return new AudioDevicePropertiesDeterminer(factory, nativeSense);
             }
         }

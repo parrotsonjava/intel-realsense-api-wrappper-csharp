@@ -1,4 +1,5 @@
-﻿using IntelRealSenseStart.Code.RealSense.Component.Property;
+﻿using System.Collections.Generic;
+using IntelRealSenseStart.Code.RealSense.Component.Property;
 using IntelRealSenseStart.Code.RealSense.Data.Properties;
 using IntelRealSenseStart.Code.RealSense.Factory;
 using IntelRealSenseStart.Code.RealSense.Helper;
@@ -8,7 +9,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
 {
     public class RealSensePropertiesManager
     {
-        private readonly PropertiesComponent[] components;
+        private readonly List<PropertiesComponent<RealSenseProperties.Builder>> components;
 
         private readonly RealSenseFactory factory;
         private readonly NativeSense nativeSense;
@@ -21,14 +22,21 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
             components = GetComponents();
         }
 
-        private PropertiesComponent[] GetComponents()
+        private List<PropertiesComponent<RealSenseProperties.Builder>> GetComponents()
         {
-            var audioDeviceComponent = factory.Components.Properties.AudioDevice()
+            var videoDevicePropertiesDeterminer = factory.Components.Properties.VideoDeviceDeterminer()
                 .WithFactory(factory).WithNativeSense(nativeSense).Build();
-            var videoDeviceComponent = factory.Components.Properties.VideoDevice()
+            var videoPropertiesDeterminer = factory.Components.Properties.VideoDeterminer()
+                .WithFactory(factory).WithVideoPropertiesComponent(videoDevicePropertiesDeterminer);
+            var audioDevicePropertiesDeterminer = factory.Components.Properties.AudioDeviceDeterminer()
                 .WithFactory(factory).WithNativeSense(nativeSense).Build();
+            var audioPropertiesDeterminer = factory.Components.Properties.AudioDeterminer()
+                .WithFactory(factory).WithAudioPropertiesComponent(audioDevicePropertiesDeterminer);
 
-            return new PropertiesComponent[] { videoDeviceComponent, audioDeviceComponent };
+            return new List<PropertiesComponent<RealSenseProperties.Builder>>
+            {
+                videoPropertiesDeterminer.Build(), audioPropertiesDeterminer.Build()
+            };
         }
 
         public RealSenseProperties GetProperties()
@@ -57,6 +65,11 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
 
             public RealSensePropertiesManager Build()
             {
+                factory.Check(Preconditions.IsNotNull,
+                    "The factory must be set in order to create the RealSense properties manager");
+                nativeSense.Check(Preconditions.IsNotNull,
+                    "The native set must be set in order to create the RealSense properties manager");
+
                 return new RealSensePropertiesManager(factory, nativeSense);
             }
         }
