@@ -1,4 +1,5 @@
-﻿using IntelRealSenseStart.Code.RealSense.Data.Properties;
+﻿using IntelRealSenseStart.Code.RealSense.Component.Property;
+using IntelRealSenseStart.Code.RealSense.Data.Properties;
 
 namespace IntelRealSenseStart.Code.RealSense.Factory.Data
 {
@@ -27,6 +28,11 @@ namespace IntelRealSenseStart.Code.RealSense.Factory.Data
         public AudioDeviceProperties.Builder AudioDevice()
         {
             return new AudioDeviceProperties.Builder();
+        }
+
+        public AudioModuleProperties.Builder AudioModule()
+        {
+            return new AudioModuleProperties.Builder();
         }
 
         public StreamProperties.Builder Stream()

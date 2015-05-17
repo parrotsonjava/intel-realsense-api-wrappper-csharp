@@ -28,10 +28,15 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
                 .WithFactory(factory).WithNativeSense(nativeSense).Build();
             var videoPropertiesDeterminer = factory.Components.Properties.VideoDeterminer()
                 .WithFactory(factory).WithVideoPropertiesComponent(videoDevicePropertiesDeterminer);
+
             var audioDevicePropertiesDeterminer = factory.Components.Properties.AudioDeviceDeterminer()
                 .WithFactory(factory).WithNativeSense(nativeSense).Build();
+            var audioLanguagePropertiesDeterminer = factory.Components.Properties.AudioModuleDeterminer()
+                .WithFactory(factory).WithNativeSense(nativeSense).Build();
             var audioPropertiesDeterminer = factory.Components.Properties.AudioDeterminer()
-                .WithFactory(factory).WithAudioPropertiesComponent(audioDevicePropertiesDeterminer);
+                .WithFactory(factory)
+                .WithAudioPropertiesComponent(audioDevicePropertiesDeterminer)
+                .WithAudioPropertiesComponent(audioLanguagePropertiesDeterminer);
 
             return new List<PropertiesComponent<RealSenseProperties.Builder>>
             {

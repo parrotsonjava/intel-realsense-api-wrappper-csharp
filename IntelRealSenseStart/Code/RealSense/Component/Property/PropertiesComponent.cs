@@ -2,6 +2,6 @@
 {
     public interface PropertiesComponent<in PROPERTIES_BUILDER>
     {
-        void UpdateProperties(PROPERTIES_BUILDER videoProperties);
+        void UpdateProperties(PROPERTIES_BUILDER properties);
     }
 }
