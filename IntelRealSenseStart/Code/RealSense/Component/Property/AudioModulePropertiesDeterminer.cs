@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Forms;
 using IntelRealSenseStart.Code.RealSense.Data.Properties;
 using IntelRealSenseStart.Code.RealSense.Factory;
 using IntelRealSenseStart.Code.RealSense.Helper;
@@ -57,36 +56,43 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Property
             return factory.Data.Properties.AudioModule()
                 .WithModuleName(module.friendlyName)
                 .WithDeviceInfo(module)
-                .WithSupportedLanguages(GetSupportedLanguages(module));
+                .WithProfiles(GetProfiles(module));
         }
 
-        private List<PXCMSpeechRecognition.LanguageType> GetSupportedLanguages(PXCMSession.ImplDesc module)
+        private List<AudioModuleProfileProperties.Builder> GetProfiles(PXCMSession.ImplDesc module)
         {
-            var supportedLanguages = new List<PXCMSpeechRecognition.LanguageType>();
+            var profiles = new List<AudioModuleProfileProperties.Builder>();
 
             var languageDescription = new PXCMSession.ImplDesc();
             languageDescription.cuids[0] = PXCMSpeechRecognition.CUID;
             languageDescription.iuid = module.iuid;
 
             PXCMSpeechRecognition speechRecognition;
-            if (session.CreateImpl<PXCMSpeechRecognition>(languageDescription, out speechRecognition) <
-                pxcmStatus.PXCM_STATUS_NO_ERROR)
+            if (session.CreateImpl(languageDescription, out speechRecognition) < pxcmStatus.PXCM_STATUS_NO_ERROR)
             {
-                return new List<PXCMSpeechRecognition.LanguageType>();
+                return profiles;
             }
 
             for (var i = 0; ; i++)
             {
-                PXCMSpeechRecognition.ProfileInfo profileInfo;
-                if (speechRecognition.QueryProfile(i, out profileInfo) < pxcmStatus.PXCM_STATUS_NO_ERROR)
+                PXCMSpeechRecognition.ProfileInfo profile;
+                if (speechRecognition.QueryProfile(i, out profile) < pxcmStatus.PXCM_STATUS_NO_ERROR)
                 {
                     break;
                 }
 
-                supportedLanguages.Add(profileInfo.language);
+                profiles.Add(GetProfileFor(profile));
             }
             speechRecognition.Dispose();
-            return supportedLanguages;
+            return profiles;
+        }
+
+        private AudioModuleProfileProperties.Builder GetProfileFor(PXCMSpeechRecognition.ProfileInfo profile)
+        {
+            return factory.Data.Properties.AudioModuleProfile()
+                .WithProfile(profile)
+                .WithLanguage(profile.language)
+                .WithSpeaker(profile.speaker);
         }
 
         public class Builder

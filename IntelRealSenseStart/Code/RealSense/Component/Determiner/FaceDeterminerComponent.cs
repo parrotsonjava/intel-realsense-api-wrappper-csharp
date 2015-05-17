@@ -8,7 +8,7 @@ using IntelRealSenseStart.Code.RealSense.Provider;
 
 namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
 {
-    public class FaceDeterminerComponent : DeterminerComponent
+    public class FaceDeterminerComponent : FrameDeterminerComponent
     {
         private readonly RealSenseConfiguration configuration;
 
@@ -47,6 +47,11 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
             moduleConfiguration.ApplyChanges();
 
             faceData = faceModule.CreateOutput();
+        }
+
+        public void Stop()
+        {
+            // Nothing to doa
         }
 
         public void Process(DeterminerData.Builder determinerData)
@@ -108,7 +113,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
                 return this;
             }
 
-            public Builder WithManager(NativeSense nativeSense)
+            public Builder WithNativeSense(NativeSense nativeSense)
             {
                 this.nativeSense = nativeSense;
                 return this;

@@ -9,19 +9,19 @@ namespace IntelRealSenseStart.Code.RealSense.Factory.Configuration
             return new RealSenseConfiguration.Builder();
         }
 
-        public DeviceConfiguration.Builder DeviceConfiguration()
+        public BaseConfiguration.Builder BaseConfiguration()
         {
-            return new DeviceConfiguration.Builder();
+            return new BaseConfiguration.Builder();
         }
 
-        public VideoDeviceConfiguration.Builder VideoDeviceConfiguration()
+        public VideoConfiguration.Builder VideoConfiguration()
         {
-            return new VideoDeviceConfiguration.Builder();
+            return new VideoConfiguration.Builder();
         }
 
-        public AudioDeviceConfiguration.Builder AudioDeviceConfiguration()
+        public AudioConfiguration.Builder AudioConfiguration()
         {
-            return new AudioDeviceConfiguration.Builder();
+            return new AudioConfiguration.Builder();
         }
 
         public HandsConfiguration.Builder HandsDetection()

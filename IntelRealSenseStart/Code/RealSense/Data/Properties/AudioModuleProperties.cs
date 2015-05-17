@@ -8,11 +8,11 @@ namespace IntelRealSenseStart.Code.RealSense.Data.Properties
     {
         private String moduleName;
         private PXCMSession.ImplDesc module;
-        private readonly List<PXCMSpeechRecognition.LanguageType> supportedLanguages; 
+        private readonly List<AudioModuleProfileProperties> profiles; 
 
         private AudioModuleProperties()
         {
-            supportedLanguages = new List<PXCMSpeechRecognition.LanguageType>();
+            profiles = new List<AudioModuleProfileProperties>();
         }
 
         public String ModuleName
@@ -25,9 +25,9 @@ namespace IntelRealSenseStart.Code.RealSense.Data.Properties
             get { return module; }
         }
 
-        public List<PXCMSpeechRecognition.LanguageType> SupportedLanguages
+        public List<AudioModuleProfileProperties> Profiles
         {
-            get { return supportedLanguages; }
+            get { return profiles; }
         } 
 
         public class Builder
@@ -51,15 +51,19 @@ namespace IntelRealSenseStart.Code.RealSense.Data.Properties
                 return this;
             }
 
-            public Builder WithSupportedLanguage(PXCMSpeechRecognition.LanguageType language)
+            public Builder WithProfile(AudioModuleProfileProperties.Builder profile)
             {
-                audioModuleProperties.supportedLanguages.Add(language);
+                audioModuleProperties.profiles.Add(profile.Build());
                 return this;
             }
 
-            public Builder WithSupportedLanguages(List<PXCMSpeechRecognition.LanguageType> supportedLanguages)
+            public Builder WithProfiles(List<AudioModuleProfileProperties.Builder> profiles)
             {
-                supportedLanguages.Do(supportedLanguage => WithSupportedLanguage(supportedLanguage));
+                profiles.Do(profile =>
+                {
+                    profile.WithModule(audioModuleProperties);
+                    WithProfile(profile);
+                });
                 return this;
             }
 

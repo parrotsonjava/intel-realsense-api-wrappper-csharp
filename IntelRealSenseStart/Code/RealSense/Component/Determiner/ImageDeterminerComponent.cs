@@ -6,7 +6,7 @@ using IntelRealSenseStart.Code.RealSense.Provider;
 
 namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
 {
-    public class ImageDeterminerComponent : DeterminerComponent
+    public class ImageDeterminerComponent : FrameDeterminerComponent
     {
         private readonly RealSenseConfiguration configuration;
 
@@ -51,6 +51,11 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
             get { return configuration.Image.ColorEnabled || configuration.Image.DepthEnabled; }
         }
 
+        public void Stop()
+        {
+            // Nothing to doa
+        }
+
         public void Process(DeterminerData.Builder determinerData)
         {
             PXCMCapture.Sample realSenseSample = nativeSense.SenseManager.QuerySample();
@@ -89,7 +94,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
                 return this;
             }
 
-            public Builder WithManager(NativeSense nativeSense)
+            public Builder WithNativeSense(NativeSense nativeSense)
             {
                 this.nativeSense = nativeSense;
                 return this;

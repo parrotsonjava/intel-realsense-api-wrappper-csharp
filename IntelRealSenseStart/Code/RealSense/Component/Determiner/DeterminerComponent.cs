@@ -1,8 +1,8 @@
-﻿using IntelRealSenseStart.Code.RealSense.Data.Determiner;
+﻿using System;
 
 namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
 {
-    internal interface DeterminerComponent
+    public interface DeterminerComponent
     {
         bool ShouldBeStarted { get; }
 
@@ -10,6 +10,6 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
 
         void Configure();
 
-        void Process(DeterminerData.Builder determinerData);
+        void Stop();
     }
 }

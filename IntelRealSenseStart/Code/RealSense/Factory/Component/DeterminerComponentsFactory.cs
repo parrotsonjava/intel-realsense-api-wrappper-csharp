@@ -23,5 +23,10 @@ namespace IntelRealSenseStart.Code.RealSense.Factory.Component
         {
             return new DeviceDeterminerComponent.Builder();
         }
+
+        public SpeechRecognitionDeterminerComponent.Builder SpeechRecognition()
+        {
+            return new SpeechRecognitionDeterminerComponent.Builder();
+        }
     }
 }

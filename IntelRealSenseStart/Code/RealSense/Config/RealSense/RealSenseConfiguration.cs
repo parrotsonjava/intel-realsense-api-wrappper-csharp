@@ -4,7 +4,7 @@ namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
 {
     public class RealSenseConfiguration
     {
-        private DeviceConfiguration deviceConfiguration;
+        private BaseConfiguration baseConfiguration;
         private ImageConfiguration imageConfiguration;
         private HandsConfiguration handsConfiguration;
         private FaceConfiguration faceConfiguration;
@@ -12,13 +12,13 @@ namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
 
         private RealSenseConfiguration()
         {
-            deviceConfiguration = DeviceConfiguration.DEFAULT_CONFIGURATION;
+            baseConfiguration = BaseConfiguration.DEFAULT_CONFIGURATION;
             imageConfiguration = ImageConfiguration.DEFAULT_CONFIGURATION;
         }
 
-        public DeviceConfiguration Device
+        public BaseConfiguration Base
         {
-            get { return deviceConfiguration; }
+            get { return baseConfiguration; }
         }
 
         public ImageConfiguration Image
@@ -60,7 +60,7 @@ namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
             }
         }
 
-        public bool SpeechDetectionEnabled
+        public bool SpeechRecognitionEnabled
         {
             get { return speechConfiguration != null; }
         }
@@ -86,9 +86,9 @@ namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
                 configuration = new RealSenseConfiguration();
             }
 
-            public Builder UsingDeviceConfiguration(DeviceConfiguration.Builder deviceConfiguration)
+            public Builder UsingBaseConfiguration(BaseConfiguration.Builder deviceConfiguration)
             {
-                configuration.deviceConfiguration = deviceConfiguration.Build();
+                configuration.baseConfiguration = deviceConfiguration.Build();
                 return this;
             }
 

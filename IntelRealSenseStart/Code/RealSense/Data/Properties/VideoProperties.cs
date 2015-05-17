@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using IntelRealSenseStart.Code.RealSense.Exception;
+﻿using System.Collections.Generic;
 
 namespace IntelRealSenseStart.Code.RealSense.Data.Properties
 {
@@ -12,16 +9,6 @@ namespace IntelRealSenseStart.Code.RealSense.Data.Properties
         private VideoProperties()
         {
             videoDeviceProperties = new List<VideoDeviceProperties>();
-        }
-
-        public VideoDeviceProperties FindDeviceBy(Func<VideoDeviceProperties, bool> selectorFunction)
-        {
-            var properties = Devices.First(selectorFunction);
-            if (properties == null)
-            {
-                throw new RealSenseException(String.Format("No camera with the specified selector is attached"));
-            }
-            return properties;
         }
 
         public List<VideoDeviceProperties> Devices

@@ -3,18 +3,18 @@ using IntelRealSenseStart.Code.RealSense.Data.Properties;
 
 namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
 {
-    public class VideoDeviceConfiguration
+    public class VideoConfiguration
     {
-        public static readonly VideoDeviceConfiguration DEFAULT_CONFIGURATION;
+        public static readonly VideoConfiguration DEFAULT_CONFIGURATION;
 
         private Func<VideoDeviceProperties, bool> selectorFunction;
 
-        static VideoDeviceConfiguration()
+        static VideoConfiguration()
         {
             DEFAULT_CONFIGURATION = new Builder().WithDefaultConfiguration().Build();
         }
 
-        private VideoDeviceConfiguration()
+        private VideoConfiguration()
         {
         }
 
@@ -25,11 +25,11 @@ namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
 
         public class Builder
         {
-            private readonly VideoDeviceConfiguration videoDeviceConfiguration;
+            private readonly VideoConfiguration videoConfiguration;
 
             public Builder()
             {
-                videoDeviceConfiguration = new VideoDeviceConfiguration();
+                videoConfiguration = new VideoConfiguration();
             }
 
             public Builder WithDefaultConfiguration()
@@ -39,20 +39,20 @@ namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
 
             public Builder WithVideoDeviceName(String deviceName)
             {
-                videoDeviceConfiguration.selectorFunction =
+                videoConfiguration.selectorFunction =
                     videoDeviceProperties => videoDeviceProperties.DeviceName == deviceName;
                 return this;
             }
 
             public Builder UsingVideoDevice(Func<VideoDeviceProperties, bool> selectorFunction)
             {
-                videoDeviceConfiguration.selectorFunction = selectorFunction;
+                videoConfiguration.selectorFunction = selectorFunction;
                 return this;
             }
 
-            public VideoDeviceConfiguration Build()
+            public VideoConfiguration Build()
             {
-                return videoDeviceConfiguration;
+                return videoConfiguration;
             }
         }
     }

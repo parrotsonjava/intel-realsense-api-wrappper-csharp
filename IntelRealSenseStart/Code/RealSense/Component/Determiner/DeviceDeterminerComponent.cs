@@ -1,5 +1,9 @@
-﻿using IntelRealSenseStart.Code.RealSense.Config.RealSense;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using IntelRealSenseStart.Code.RealSense.Config.RealSense;
 using IntelRealSenseStart.Code.RealSense.Data.Determiner;
+using IntelRealSenseStart.Code.RealSense.Data.Properties;
 using IntelRealSenseStart.Code.RealSense.Exception;
 using IntelRealSenseStart.Code.RealSense.Helper;
 using IntelRealSenseStart.Code.RealSense.Manager;
@@ -7,7 +11,7 @@ using IntelRealSenseStart.Code.RealSense.Provider;
 
 namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
 {
-    public class DeviceDeterminerComponent : DeterminerComponent
+    public class DeviceDeterminerComponent : FrameDeterminerComponent
     {
         private readonly NativeSense nativeSense;
         private readonly RealSensePropertiesManager propertiesManager;
@@ -25,14 +29,23 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
 
         public void EnableFeatures()
         {
-            var selectorFunction = configuration.Device.VideoDevice.SelectorFunction;
+            var selectorFunction = configuration.Base.Video.SelectorFunction;
             if (selectorFunction != null)
             {
                 var properties = propertiesManager.GetProperties();
-                var deviceProperties = properties.Video.FindDeviceBy(selectorFunction);
+                var deviceProperties = FindDeviceBy(properties.Video.Devices, selectorFunction);
 
                 nativeSense.SenseManager.captureManager.FilterByDeviceInfo(deviceProperties.DeviceInfo);
             }
+        }
+        public VideoDeviceProperties FindDeviceBy(List<VideoDeviceProperties> devices, Func<VideoDeviceProperties, bool> selectorFunction)
+        {
+            var properties = devices.First(selectorFunction);
+            if (properties == null)
+            {
+                throw new RealSenseException(String.Format("No camera with the specified selector is attached"));
+            }
+            return properties;
         }
 
         public void Configure()
@@ -59,6 +72,11 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
             nativeSense.SenseManager.captureManager.device.SetIVCAMFilterOption(6);
         }
 
+        public void Stop()
+        {
+            // Nothing to doa
+        }
+
         public void Process(DeterminerData.Builder determinerData)
         {
             determinerData.WithDevice(device);
@@ -75,7 +93,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
             private RealSensePropertiesManager propertiesManager;
             private RealSenseConfiguration configuration;
 
-            public Builder WithManager(NativeSense nativeSense)
+            public Builder WithNativeSense(NativeSense nativeSense)
             {
                 this.nativeSense = nativeSense;
                 return this;
@@ -96,14 +114,16 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
             public DeviceDeterminerComponent Build()
             {
                 propertiesManager.Check(Preconditions.IsNotNull,
-                    "The properties determiner must be set to create the device component");
+                    "The properties manager must be set to create the device component");
                 nativeSense.Check(Preconditions.IsNotNull,
-                    "The RealSense manager must be set to create the device component");
+                    "The native RealSense must be set to create the device component");
                 configuration.Check(Preconditions.IsNotNull,
                     "The RealSense configuration must be set to create the device component");
 
                 return new DeviceDeterminerComponent(nativeSense, propertiesManager, configuration);
             }
         }
+
+
     }
 }

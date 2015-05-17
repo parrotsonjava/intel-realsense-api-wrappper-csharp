@@ -56,26 +56,35 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
         {
             var deviceComponent = factory.Components.Determiner.Device()
                 .WithPropertiesManager(propertiesManager)
-                .WithManager(nativeSense)
+                .WithNativeSense(nativeSense)
                 .WithConfiguration(realSenseConfiguration)
                 .Build();
             var handsComponent = factory.Components.Determiner.Hands()
                 .WithFactory(factory)
-                .WithManager(nativeSense)
+                .WithNativeSense(nativeSense)
                 .WithConfiguration(realSenseConfiguration)
                 .Build();
             var faceComponent = factory.Components.Determiner.Face()
                 .WithFactory(factory)
-                .WithManager(nativeSense)
+                .WithNativeSense(nativeSense)
                 .WithConfiguration(realSenseConfiguration)
                 .Build();
             var pictureComponent = factory.Components.Determiner.Image()
                 .WithFactory(factory)
-                .WithManager(nativeSense)
+                .WithNativeSense(nativeSense)
+                .WithConfiguration(realSenseConfiguration)
+                .Build();
+            var speechRecognitionDeterminerComponent = factory.Components.Determiner.SpeechRecognition()
+                .WithFactory(factory)
+                .WithNativeSense(nativeSense)
+                .WithPropertiesManager(propertiesManager)
                 .WithConfiguration(realSenseConfiguration)
                 .Build();
 
-            return new DeterminerComponent[] {handsComponent, faceComponent, pictureComponent, deviceComponent};
+            return new DeterminerComponent[]
+            {
+                handsComponent, faceComponent, pictureComponent, deviceComponent, speechRecognitionDeterminerComponent
+            };
         }
 
         private OverallImageCreator GetImageCreator(RealSenseConfiguration realSenseConfiguration)
@@ -188,6 +197,8 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
             {
                 ProcessFrame();
             }
+
+            StopComponents();
         }
 
         public void ConfigureComponents()
@@ -223,7 +234,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
         private FrameEventArgs.Builder ProcessComponents()
         {
             DeterminerData.Builder determinerDataBuilder = factory.Data.Determiner.DeterminerData();
-            components.Do(component => component.Process(determinerDataBuilder));
+            components.OfType<FrameDeterminerComponent>().Do(component => component.Process(determinerDataBuilder));
             return factory.Events.FrameEvent()
                 .WithOverallImageCreator(overallImageCreator)
                 .WithFacesLandmarksBuilder(facesLandmarksBuilder)
@@ -243,6 +254,11 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
             {
                 Frame.Invoke(eventArgs.Build());
             }
+        }
+
+        private void StopComponents()
+        {
+            components.Do(component => component.Stop());
         }
 
         public void Stop()

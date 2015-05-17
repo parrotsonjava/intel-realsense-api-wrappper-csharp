@@ -35,6 +35,11 @@ namespace IntelRealSenseStart.Code.RealSense.Factory.Data
             return new AudioModuleProperties.Builder();
         }
 
+        public AudioModuleProfileProperties.Builder AudioModuleProfile()
+        {
+            return new AudioModuleProfileProperties.Builder();
+        }
+
         public StreamProperties.Builder Stream()
         {
             return new StreamProperties.Builder();

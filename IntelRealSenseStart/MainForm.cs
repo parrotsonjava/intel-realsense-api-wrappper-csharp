@@ -11,7 +11,7 @@ namespace IntelRealSenseStart
     public partial class MainForm : Form
     {
         public const String CAMERA_NAME = "Intel(R) RealSense(TM) 3D Camera"; // or "Lenovo EasyCamera"
-        public const String AUDIO_DEVICE_NAME = "";
+        public const String AUDIO_DEVICE_NAME = "VF0800";
 
         public delegate void BitmapHandler(Bitmap bitmap);
 
@@ -22,11 +22,12 @@ namespace IntelRealSenseStart
             InitializeComponent();
             var builder = RealSenseManager.Create();
             manager = builder.Configure(factory => factory.Configuration()
-                .UsingDeviceConfiguration(factory.DeviceConfiguration()
-                    .WithAudioDeviceConfiguration(factory.AudioDeviceConfiguration()
-                        .UsingAudioDevice(audioDeviceProperties => audioDeviceProperties.DeviceName == AUDIO_DEVICE_NAME))
-                    .WithVideoDeviceConfiguration(factory.VideoDeviceConfiguration()
+                .UsingBaseConfiguration(factory.BaseConfiguration()
+                    .WithAudioConfiguration(factory.AudioConfiguration()
+                        .UsingAudioDevice(audioDeviceProperties => audioDeviceProperties.DeviceName.Contains(AUDIO_DEVICE_NAME)))
+                    .WithVideoConfiguration(factory.VideoConfiguration()
                         .WithVideoDeviceName(CAMERA_NAME)))
+                .WithSpeechRecognition(factory.SpeechRecognition().UsingDictation())
                 .WithHandsDetection(factory.HandsDetection().WithSegmentationImage())
                 .WithFaceDetection(factory.FaceDetection().UsingLandmarks())
                 .WithImage(factory.Image()
