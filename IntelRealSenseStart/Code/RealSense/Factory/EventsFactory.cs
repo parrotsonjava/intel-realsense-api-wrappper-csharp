@@ -15,5 +15,10 @@ namespace IntelRealSenseStart.Code.RealSense.Factory
         {
             return new FrameEventArgs.Builder(factory);
         }
+
+        public SpeechEventArgs.Builder SpeechEvent()
+        {
+            return new SpeechEventArgs.Builder();
+        }
     }
 }

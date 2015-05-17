@@ -2,6 +2,7 @@
 using System.Linq;
 using IntelRealSenseStart.Code.RealSense.Config.RealSense;
 using IntelRealSenseStart.Code.RealSense.Data.Properties;
+using IntelRealSenseStart.Code.RealSense.Event;
 using IntelRealSenseStart.Code.RealSense.Exception;
 using IntelRealSenseStart.Code.RealSense.Factory;
 using IntelRealSenseStart.Code.RealSense.Helper;
@@ -12,6 +13,8 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
 {
     public class SpeechRecognitionDeterminerComponent : DeterminerComponent
     {
+        public event SpeechEventListener Speech;
+
         private readonly RealSenseFactory factory;
         private readonly NativeSense nativeSense;
         private readonly RealSensePropertiesManager propertiesManager;
@@ -133,7 +136,18 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
         {
             if (data.scores[0].label < 0)
             {
-                Console.WriteLine(data.scores[0].sentence);
+                var sentence = data.scores[0].sentence;
+                InvokeSpeech(sentence);
+            }
+        }
+
+        private void InvokeSpeech(string sentence)
+        {
+            if (Speech != null)
+            {
+                var speechEventArgs = factory.Events.SpeechEvent()
+                    .WithSentence(sentence).Build();
+                Speech.Invoke(speechEventArgs);
             }
         }
 

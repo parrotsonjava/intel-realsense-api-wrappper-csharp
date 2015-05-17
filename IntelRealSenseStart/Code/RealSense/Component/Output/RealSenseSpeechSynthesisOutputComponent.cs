@@ -54,7 +54,10 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Output
             for (int i = 0; ; i++)
             {
                 var sample = speechSynthesis.QueryBuffer(1, i);
-                if (sample == null) break;
+                if (sample == null)
+                {
+                    break;
+                }
                 voiceOut.RenderAudio(sample);
             }
             voiceOut.Close();

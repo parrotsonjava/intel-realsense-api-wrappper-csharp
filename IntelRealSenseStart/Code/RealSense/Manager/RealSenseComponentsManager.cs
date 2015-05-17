@@ -4,6 +4,7 @@ using System.Threading;
 using IntelRealSenseStart.Code.RealSense.Component.Common;
 using IntelRealSenseStart.Code.RealSense.Component.Creator;
 using IntelRealSenseStart.Code.RealSense.Component.Determiner;
+using IntelRealSenseStart.Code.RealSense.Component.Output;
 using IntelRealSenseStart.Code.RealSense.Config.RealSense;
 using IntelRealSenseStart.Code.RealSense.Data.Determiner;
 using IntelRealSenseStart.Code.RealSense.Data.Status;
@@ -17,11 +18,12 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
 {
     public class RealSenseComponentsManager
     {
-        public delegate void FrameEventListener(FrameEventArgs frameEventArgs);
-
         public event FrameEventListener Frame;
+        public event SpeechEventListener Speech;
 
         private readonly RealSenseComponent[] components;
+        private RealSenseSpeechSynthesisOutputComponent speechSynthesizer;
+
         private readonly OverallImageCreator overallImageCreator;
         private readonly FacesLandmarksBuilder facesLandmarksBuilder;
         private readonly HandsJointsBuilder handsJointsBuilder;
@@ -81,18 +83,33 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
                 .WithPropertiesManager(propertiesManager)
                 .WithConfiguration(realSenseConfiguration)
                 .Build();
-            var speechSynthesisComponent = factory.Components.Output.SpeechSynthesis()
+            speechSynthesizer = factory.Components.Output.SpeechSynthesis()
                 .WithFactory(factory)
                 .WithNativeSense(nativeSense)
                 .WithPropertiesManager(propertiesManager)
                 .WithConfiguration(realSenseConfiguration)
                 .Build();
 
+            InitializeListeners(speechRecognitionComponent);
+
             return new RealSenseComponent[]
             {
                 handsComponent, faceComponent, pictureComponent, deviceComponent,
-                speechRecognitionComponent, speechSynthesisComponent
+                speechRecognitionComponent, speechSynthesizer
             };
+        }
+
+        private void InitializeListeners(SpeechRecognitionDeterminerComponent speechRecognitionComponent)
+        {
+            speechRecognitionComponent.Speech += speechRecognitionCompoment_Speech;
+        }
+
+        private void speechRecognitionCompoment_Speech(SpeechEventArgs speechEventArgs)
+        {
+            if (Speech != null)
+            {
+                Speech.Invoke(speechEventArgs);
+            }
         }
 
         private OverallImageCreator GetImageCreator(RealSenseConfiguration realSenseConfiguration)
@@ -298,6 +315,11 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
                 }
                 Thread.Sleep(5000);
             }
+        }
+
+        public void Speak(String sentence)
+        {
+            speechSynthesizer.Speak(sentence);
         }
 
         public class Builder

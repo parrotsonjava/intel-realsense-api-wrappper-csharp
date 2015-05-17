@@ -1,4 +1,5 @@
-﻿using IntelRealSenseStart.Code.RealSense.Config.RealSense;
+﻿using System;
+using IntelRealSenseStart.Code.RealSense.Config.RealSense;
 using IntelRealSenseStart.Code.RealSense.Data.Properties;
 using IntelRealSenseStart.Code.RealSense.Data.Status;
 using IntelRealSenseStart.Code.RealSense.Event;
@@ -12,9 +13,8 @@ namespace IntelRealSenseStart.Code.RealSense
 {
     public class RealSenseManager
     {
-        public delegate void FrameEventListener(FrameEventArgs frameEventArgs);
-
         public event FrameEventListener Frame;
+        public event SpeechEventListener Speech;
 
         public delegate RealSenseConfiguration.Builder FeatureConfigurer(DeterminerConfigurationFactory featureFactory);
 
@@ -40,10 +40,11 @@ namespace IntelRealSenseStart.Code.RealSense
 
             componentsManager = CreateComponentsManager();
             componentsManager.Frame += componentsManager_Frame;
+            componentsManager.Speech += componentsManager_Speech;
         }
         private RealSenseComponentsManager CreateComponentsManager()
         {
-            return factory.Manager.DeterminerManager()
+            return factory.Manager.Components()
                 .WithFactory(factory)
                 .WithNativeSense(nativeSense)
                 .WithPropertiesManager(propertiesManager)
@@ -61,11 +62,24 @@ namespace IntelRealSenseStart.Code.RealSense
             componentsManager.Stop();
         }
 
+        public void Speak(String sentence)
+        {
+            componentsManager.Speak(sentence);
+        }
+
         private void componentsManager_Frame(FrameEventArgs frameEventArgs)
         {
             if (Frame != null)
             {
                 Frame.Invoke(frameEventArgs);
+            }
+        }
+
+        private void componentsManager_Speech(SpeechEventArgs speechEventArgs)
+        {
+            if (Speech != null)
+            {
+                Speech.Invoke(speechEventArgs);
             }
         }
 

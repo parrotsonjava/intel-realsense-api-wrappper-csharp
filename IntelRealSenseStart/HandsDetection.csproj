@@ -126,6 +126,9 @@
     <Compile Include="Code\RealSense\Data\Event\HandsJointsData.cs" />
     <Compile Include="Code\RealSense\Data\Properties\AudioInputDeviceProperties.cs" />
     <Compile Include="Code\RealSense\Data\Status\DeterminerStatus.cs" />
+    <Compile Include="Code\RealSense\Event\FrameEventListener.cs" />
+    <Compile Include="Code\RealSense\Event\SpeechEventArgs.cs" />
+    <Compile Include="Code\RealSense\Event\SpeechEventListener.cs" />
     <Compile Include="Code\RealSense\Exception\IllegalStateException.cs" />
     <Compile Include="Code\RealSense\Exception\RealSenseAcquireException.cs" />
     <Compile Include="Code\RealSense\Exception\RealSenseInitializationException.cs" />

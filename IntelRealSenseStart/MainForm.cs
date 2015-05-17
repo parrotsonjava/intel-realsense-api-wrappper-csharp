@@ -36,7 +36,8 @@ namespace IntelRealSenseStart
                     .WithDepthStream(factory.ColorStream().From(new Size(640, 480), 30))
                     .WithProjectionEnabled())).Build();
 
-            manager.Frame += realSense_Hands_Frame;
+            manager.Frame += realSense_Frame;
+            manager.Speech += realSense_Speech;
 
         }
 
@@ -56,7 +57,7 @@ namespace IntelRealSenseStart
             }
         }
 
-        private void realSense_Hands_Frame(FrameEventArgs frameEventArgs)
+        private void realSense_Frame(FrameEventArgs frameEventArgs)
         {
             Bitmap bitmap = frameEventArgs.CreateImage()
                 .WithResolution(new Size(640, 480))
@@ -69,6 +70,12 @@ namespace IntelRealSenseStart
             var handsJoints = frameEventArgs.HandsJoints;
 
             BeginInvoke(new BitmapHandler(SetImage), new object[] {bitmap});
+        }
+
+        private void realSense_Speech(SpeechEventArgs speechEventArgs)
+        {
+            var sentence = speechEventArgs.Sentence;
+            manager.Speak(String.Format("Did you say {0}?", sentence));
         }
 
         private void SetImage(Bitmap bitmap)
