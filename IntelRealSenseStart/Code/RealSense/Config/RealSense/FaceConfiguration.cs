@@ -4,10 +4,12 @@
     {
         private bool useLandmarks;
         private bool useBoundingRectangle;
+        private bool usePulse;
 
         private FaceConfiguration()
         {
             useLandmarks = false;
+            usePulse = false;
         }
 
         public bool UseLandmarks
@@ -18,6 +20,11 @@
         public bool UseBoundingRectangle
         {
             get { return useBoundingRectangle; }
+        }
+
+        public bool UsePulse
+        {
+            get { return usePulse;  }
         }
 
         public class Builder
@@ -38,6 +45,12 @@
             public Builder UsingBoundingRectangle()
             {
                 configuration.useBoundingRectangle = true;
+                return this;
+            }
+
+            public Builder UsingPulse()
+            {
+                configuration.usePulse = true;
                 return this;
             }
 

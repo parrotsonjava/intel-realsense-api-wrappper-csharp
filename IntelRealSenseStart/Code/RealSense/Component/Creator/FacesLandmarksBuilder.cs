@@ -26,10 +26,14 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Creator
         private FaceLandmarksData.Builder GetFaceLandmarks(FaceData faceData)
         {
             var faceLandmarks = factory.Data.Events.FaceLandmarks();
-            0.To(faceData.LandmarkPoints.Length - 1).ToArray().Do(index =>
-                faceLandmarks.WithDetectionPoint(
-                    GetLandmarkName(index),
-                    GetDetectionPoint(faceData.LandmarkPoints[index])));
+            if (faceData.LandmarkPoints != null)
+            {
+                0.To(faceData.LandmarkPoints.Length - 1).ToArray().Do(index =>
+                    faceLandmarks.WithDetectionPoint(
+                        GetLandmarkName(index),
+                        GetDetectionPoint(faceData.LandmarkPoints[index])));
+            }
+            faceLandmarks.WithPulseData(faceData.PulseData);
             return faceLandmarks;
         }
 

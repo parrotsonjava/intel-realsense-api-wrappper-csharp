@@ -32,9 +32,9 @@
         RIGHT_EYE_UPPER_MID = 20,
         RIGHT_EYE_UPPER_RIGHT = 21,
         RIGHT_EYE_RIGHT = 22,
-        RIGHT_EYE_LOWER_LEFT = 23,
+        RIGHT_EYE_LOWER_RIGHT = 23,
         RIGHT_EYE_LOWER_MID = 24,
-        RIGHT_EYE_LOWER_RIGHT = 25,
+        RIGHT_EYE_LOWER_LEFT = 25,
 
         // Nose
         NOSE_HIGH_CENTER = 26,

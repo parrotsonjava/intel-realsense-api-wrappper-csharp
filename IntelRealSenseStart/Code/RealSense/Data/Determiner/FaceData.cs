@@ -3,10 +3,16 @@
     public class FaceData
     {
         private PXCMFaceData.LandmarkPoint[] landmarkPoints;
+        private PXCMFaceData.PulseData pulseData;
 
         public PXCMFaceData.LandmarkPoint[] LandmarkPoints
         {
             get { return landmarkPoints; }
+        }
+
+        public PXCMFaceData.PulseData PulseData
+        {
+            get { return pulseData; }
         }
 
         public class Builder
@@ -26,6 +32,12 @@
             public Builder WithLandmarks(PXCMFaceData.LandmarkPoint[] landmarkPoints)
             {
                 faceData.landmarkPoints = landmarkPoints;
+                return this;
+            }
+
+            public Builder WithPulse(PXCMFaceData.PulseData pulseData)
+            {
+                faceData.pulseData = pulseData;
                 return this;
             }
         }
