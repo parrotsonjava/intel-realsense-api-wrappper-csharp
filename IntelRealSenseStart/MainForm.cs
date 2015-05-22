@@ -5,6 +5,7 @@ using IntelRealSenseStart.Code.RealSense;
 using IntelRealSenseStart.Code.RealSense.Config.Image;
 using IntelRealSenseStart.Code.RealSense.Data.Status;
 using IntelRealSenseStart.Code.RealSense.Event;
+using IntelRealSenseStart.Code.RealSense.Exception;
 
 namespace IntelRealSenseStart
 {
@@ -59,17 +60,23 @@ namespace IntelRealSenseStart
 
         private void realSense_Frame(FrameEventArgs frameEventArgs)
         {
-            Bitmap bitmap = frameEventArgs.CreateImage()
-                .WithResolution(new Size(640, 480))
-                .WithBackgroundImage(ImageBackground.ColorImage)
-                .WithOverlay(ImageOverlay.ColorCoordinateHandJoints)
-                .WithOverlay(ImageOverlay.ColorCoordinateFaceLandmarks)
-                .Create();
+            try
+            {
+                Bitmap bitmap = frameEventArgs.CreateImage()
+                    .WithResolution(new Size(640, 480))
+                    .WithBackgroundImage(ImageBackground.ColorImage)
+                    .WithOverlay(ImageOverlay.ColorCoordinateHandJoints)
+                    .WithOverlay(ImageOverlay.ColorCoordinateFaceLandmarks)
+                    .Create();
+                BeginInvoke(new BitmapHandler(SetImage), new object[] { bitmap });
+            }
+            catch (RealSenseException e)
+            {
+                Console.WriteLine(@"Error creating the image: {0}", e.Message);
+            }
 
             var facesLandmarksData = frameEventArgs.FaceLandmarks;
             var handsJoints = frameEventArgs.HandsJoints;
-
-            BeginInvoke(new BitmapHandler(SetImage), new object[] {bitmap});
         }
 
         private void realSense_Speech(SpeechEventArgs speechEventArgs)

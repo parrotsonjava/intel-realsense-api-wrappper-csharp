@@ -11,7 +11,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Creator
     public class ImageBuilder
     {
         private readonly ImageCreatorConfiguration.Builder imageConfigurationBuilder;
-        private OverallImageCreator _overallImageCreator;
+        private OverallImageCreator overallImageCreator;
 
         private RealSenseConfiguration realSenseConfiguration;
         private DeterminerData determinerData;
@@ -104,7 +104,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Creator
             var imageConfiguration = imageConfigurationBuilder.Build();
             CheckConfiguration(imageConfiguration);
 
-            return _overallImageCreator.Create(determinerData, realSenseConfiguration, imageConfiguration);
+            return overallImageCreator.Create(determinerData, realSenseConfiguration, imageConfiguration);
         }
 
         // ReSharper disable once UnusedParameter.Local
@@ -130,7 +130,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Creator
 
             public Builder WithImageCreator(OverallImageCreator _overallImageCreator)
             {
-                imageBuilder._overallImageCreator = _overallImageCreator;
+                imageBuilder.overallImageCreator = _overallImageCreator;
                 return this;
             }
 
