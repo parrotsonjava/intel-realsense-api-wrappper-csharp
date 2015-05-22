@@ -65,6 +65,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager.Builder
         public SpeechSynthesisOutputComponent CreateSpeechSynthesisOutputComponent()
         {
             return factory.Components.Output.SpeechSynthesis()
+                .WithFactory(factory)
                 .WithNativeSense(nativeSense)
                 .WithPropertiesManager(propertiesManager)
                 .WithConfiguration(configuration)

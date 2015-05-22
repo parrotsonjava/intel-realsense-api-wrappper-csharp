@@ -113,18 +113,22 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Output
             bool spokenBefore = false;
             while (!stopped)
             {
-                bool spoken = SpeakNextSentence();
+                bool spoken = SpeakNextSentence(spokenBefore);
                 InvokeSpeechEventBasedOn(spokenBefore, spoken);
                 spokenBefore = spoken;
             }
         }
         
-        private bool SpeakNextSentence()
+        private bool SpeakNextSentence(bool spokenBefore)
         {
             if (sentencesToSpeak.Count > 0)
             {
+                if (spokenBefore)
+                {
+                    Thread.Sleep(TIME_BETWEEN_SENTENCES);
+                }
+
                 SpeakSentence(sentencesToSpeak.Dequeue());
-                Thread.Sleep(TIME_BETWEEN_SENTENCES);
                 return true;
             }
 

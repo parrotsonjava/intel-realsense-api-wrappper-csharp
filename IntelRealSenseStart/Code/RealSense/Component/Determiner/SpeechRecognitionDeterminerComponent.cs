@@ -184,21 +184,27 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
 
         private void OnRecognition(PXCMSpeechRecognition.RecognitionData data)
         {
-            if (data.scores[0].label < 0)
-            {
-                var sentence = data.scores[0].sentence;
-                InvokeSpeech(sentence);
-            }
+            InvokeSpeech(data);
         }
 
-        private void InvokeSpeech(string sentence)
+        private void InvokeSpeech(PXCMSpeechRecognition.RecognitionData data)
         {
             if (Speech != null)
             {
-                var speechEventArgs = factory.Events.SpeechRecognitionEvent()
-                    .WithSentence(sentence).Build();
+                var speechEventArgs = BuildSpeechRecognitionEventArgs(data);
                 Speech.Invoke(speechEventArgs);
             }
+        }
+
+        private SpeechRecognitionEventArgs BuildSpeechRecognitionEventArgs(PXCMSpeechRecognition.RecognitionData data)
+        {
+            var speechEventArgs = factory.Events.SpeechRecognitionEvent();
+            foreach (var score in data.scores.Where(
+                score => score.label < 0 && !String.IsNullOrEmpty(score.sentence)))
+            {
+                speechEventArgs.WithSentence(score.sentence, score.confidence);
+            }
+            return speechEventArgs.Build();
         }
 
         public bool RecognitionStarted

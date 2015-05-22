@@ -19,9 +19,9 @@ namespace IntelRealSenseStart.Code.RealSense
         public event SpeechRecognitionEventListener SpeechRecognized;
         public event SpeechOutputStatusListener SpeechOutput;
 
-        public delegate RealSenseConfiguration.Builder FeatureConfigurer(DeterminerConfigurationFactory featureFactory);
-
         private readonly RealSenseComponentsManager componentsManager;
+
+        private readonly RealSenseFactory factory;
 
         public static Builder Create()
         {
@@ -31,6 +31,7 @@ namespace IntelRealSenseStart.Code.RealSense
         private RealSenseManager(RealSenseFactory factory, RealSenseConfiguration configuration,
             NativeSense nativeSense, RealSenseComponentsBuilder componentsBuilder)
         {
+            this.factory = factory;
             componentsManager = factory.Manager.Components()
                 .WithFactory(factory)
                 .WithNativeSense(nativeSense)
@@ -61,8 +62,9 @@ namespace IntelRealSenseStart.Code.RealSense
             componentsManager.Speak(sentence);
         }
 
-        public void ConfigureRecognition(SpeechRecognitionConfiguration configuration)
+        public void ConfigureRecognition(FeatureConfigurationListener<SpeechRecognitionConfiguration.Builder> configurer)
         {
+            var configuration = configurer.Invoke(factory.Configuration.Determiner).Build();
             componentsManager.ConfigureRecognition(configuration);
         }
 
@@ -152,7 +154,7 @@ namespace IntelRealSenseStart.Code.RealSense
                 return propertiesManager.GetProperties();
             }
 
-            public Builder Configure(FeatureConfigurer configurer)
+            public Builder Configure(FeatureConfigurationListener<RealSenseConfiguration.Builder> configurer)
             {
                 configuration = configurer.Invoke(factory.Configuration.Determiner).Build();
                 return this;

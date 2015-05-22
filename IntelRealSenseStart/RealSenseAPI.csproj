@@ -130,10 +130,15 @@
     <Compile Include="Code\RealSense\Data\Event\HandsJointsData.cs" />
     <Compile Include="Code\RealSense\Data\Properties\AudioInputDeviceProperties.cs" />
     <Compile Include="Code\RealSense\Data\Status\DeterminerStatus.cs" />
+    <Compile Include="Code\RealSense\Event\Data\SpeechRecognitionMatch.cs" />
+    <Compile Include="Code\RealSense\Event\Data\SpeechOutputStatus.cs" />
+    <Compile Include="Code\RealSense\Event\FeatureConfigurerListener.cs" />
     <Compile Include="Code\RealSense\Event\FrameEventListener.cs" />
     <Compile Include="Code\RealSense\Event\ReadyEventListener.cs" />
-    <Compile Include="Code\RealSense\Event\SpeechEventArgs.cs" />
-    <Compile Include="Code\RealSense\Event\SpeechEventListener.cs" />
+    <Compile Include="Code\RealSense\Event\SpeechOutputStatusEventArgs.cs" />
+    <Compile Include="Code\RealSense\Event\SpeechOutputStatusListener.cs" />
+    <Compile Include="Code\RealSense\Event\SpeechRecognitionEventArgs.cs" />
+    <Compile Include="Code\RealSense\Event\SpeechRecognitionEventListener.cs" />
     <Compile Include="Code\RealSense\Exception\IllegalStateException.cs" />
     <Compile Include="Code\RealSense\Exception\RealSenseAcquireException.cs" />
     <Compile Include="Code\RealSense\Exception\RealSenseInitializationException.cs" />
@@ -169,7 +174,7 @@
     <Compile Include="Code\RealSense\Data\Properties\VideoDeviceProperties.cs" />
     <Compile Include="Code\RealSense\Data\Properties\RealSenseProperties.cs" />
     <Compile Include="Code\RealSense\Data\Properties\StreamProperties.cs" />
-    <Compile Include="Code\RealSense\Manager\Builder\RealSenseDeterminerComponentsBuilder.cs" />
+    <Compile Include="Code\RealSense\Manager\Builder\RealSenseComponentsBuilder.cs" />
     <Compile Include="Code\RealSense\Manager\Builder\RealSensePropertyComponentsBuilder.cs" />
     <Compile Include="Code\RealSense\Manager\RealSenseComponentsManager.cs" />
     <Compile Include="Code\RealSense\Manager\RealSenseComponentsManagerSpeechExtensions.cs" />

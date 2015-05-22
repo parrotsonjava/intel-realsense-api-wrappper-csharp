@@ -1,37 +1,41 @@
 ﻿using System;
+using System.Collections.Generic;
+using IntelRealSenseStart.Code.RealSense.Event.Data;
 
 namespace IntelRealSenseStart.Code.RealSense.Event
 {
     public class SpeechRecognitionEventArgs
     {
-        private String sentence;
+        private List<SpeechRecognitionMatch> matches;
 
         private SpeechRecognitionEventArgs()
-        { }
-
-        public String Sentence
         {
-            get { return sentence; }
+            matches = new List<SpeechRecognitionMatch>();
+        }
+
+        public List<SpeechRecognitionMatch> Matches
+        {
+            get { return matches; }
         }
 
         public class Builder
         {
-            private readonly SpeechRecognitionEventArgs _recognitionEventArgs;
+            private readonly SpeechRecognitionEventArgs eventArgs;
 
             public Builder()
             {
-                _recognitionEventArgs = new SpeechRecognitionEventArgs();
+                eventArgs = new SpeechRecognitionEventArgs();
             }
 
-            public Builder WithSentence(String sentence)
+            public Builder WithSentence(String sentence, int confidence)
             {
-                _recognitionEventArgs.sentence = sentence;
+                eventArgs.matches.Add(new SpeechRecognitionMatch(sentence, confidence));
                 return this;
             }
 
             public SpeechRecognitionEventArgs Build()
             {
-                return _recognitionEventArgs;
+                return eventArgs;
             }
         }
     }

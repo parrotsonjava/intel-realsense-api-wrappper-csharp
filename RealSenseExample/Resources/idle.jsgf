@@ -1,0 +1,6 @@
+﻿#JSGF V1.0;
+
+grammar Idle;
+
+public <Idle> = Okay <noun>;
+<noun> = ( real sense );

@@ -6,32 +6,51 @@ using IntelRealSenseStart.Code.RealSense;
 using IntelRealSenseStart.Code.RealSense.Config.Image;
 using IntelRealSenseStart.Code.RealSense.Data.Status;
 using IntelRealSenseStart.Code.RealSense.Event;
+using IntelRealSenseStart.Code.RealSense.Event.Data;
 using IntelRealSenseStart.Code.RealSense.Exception;
 
 namespace RealSenseExample
 {
     public partial class MainForm : Form
     {
+        private enum Status
+        {
+            IDLE,
+            WAITING_FOR_NAME,
+            WAITING_FOR_CONFIRMATION
+        }
+
         public const String CAMERA_NAME = "Intel(R) RealSense(TM) 3D Camera"; // or "Lenovo EasyCamera"
         public const String AUDIO_DEVICE_NAME = "VF0800";
 
         public delegate void BitmapHandler(Bitmap bitmap);
 
-        private readonly RealSenseManager manager;
+        private readonly RealSenseManager realSenseManager;
+        private readonly String grammarIdle, grammarConfirm;
+
+        private Status status = Status.IDLE;
+        private String detectedName;
 
         public MainForm()
         {
-            var grammar = File.ReadAllText(@"Resources\control.jsgf");
-
             InitializeComponent();
+
+            grammarIdle = File.ReadAllText(@"Resources\idle.jsgf");
+            grammarConfirm = File.ReadAllText(@"Resources\confirm.jsgf");
+
+            realSenseManager = CreateRealSenseManager();
+        }
+
+        public RealSenseManager CreateRealSenseManager()
+        {
             var builder = RealSenseManager.Create();
-            manager = builder.Configure(factory => factory.Configuration()
+            var manager = builder.Configure(factory => factory.Configuration()
                 .UsingBaseConfiguration(factory.BaseConfiguration()
                     .WithAudioConfiguration(factory.AudioConfiguration()
                         .UsingAudioInputDevice(audioDeviceProperties => audioDeviceProperties.DeviceName.Contains(AUDIO_DEVICE_NAME)))
                     .WithVideoConfiguration(factory.VideoConfiguration()
                         .WithVideoDeviceName(CAMERA_NAME)))
-                .WithSpeechRecognition(factory.SpeechRecognition().UsingGrammmar(grammar))
+                .WithSpeechRecognition(factory.SpeechRecognition().UsingGrammmar(grammarIdle))
                 .WithSpeechSynthesis(factory.SpeechSynthesis())
                 .WithHandsDetection(factory.HandsDetection().WithSegmentationImage())
                 .WithFaceDetection(factory.FaceDetection().UsingLandmarks())
@@ -42,28 +61,31 @@ namespace RealSenseExample
 
             manager.Ready += realSense_Ready;
             manager.Frame += realSense_Frame;
-            manager.SpeechRecognized += realSense_Speech;
+            manager.SpeechRecognized += realSense_SpeechRecognized;
+            manager.SpeechOutput += realSense_SpeechOutput;
+
+            return manager;
         }
 
         private void buttonStart_Click(object sender, EventArgs e)
         {
-            if (manager.Status == DeterminerStatus.STOPPED)
+            if (realSenseManager.Status == DeterminerStatus.STOPPED)
             {
-                manager.Start();
+                realSenseManager.Start();
             }
         }
 
         private void buttonStop_Click(object sender, EventArgs e)
         {
-            if (manager.Status == DeterminerStatus.STARTED)
+            if (realSenseManager.Status == DeterminerStatus.STARTED)
             {
-                manager.Stop();
+                realSenseManager.Stop();
             }
         }
 
         private void realSense_Ready()
         {
-            manager.StartRecognition();
+            realSenseManager.StartRecognition();
         }
 
         private void realSense_Frame(FrameEventArgs frameEventArgs)
@@ -87,10 +109,65 @@ namespace RealSenseExample
             var handsJoints = frameEventArgs.HandsJoints;
         }
 
-        private void realSense_Speech(SpeechRecognitionEventArgs speechRecognitionEventArgs)
+        private void realSense_SpeechRecognized(SpeechRecognitionEventArgs eventArgs)
         {
-            var sentence = speechRecognitionEventArgs.Sentence;
-            manager.Speak(String.Format("Did you say {0}?", sentence));
+            var sentence = eventArgs.Matches[0].Sentence;
+            if (status == Status.IDLE && sentence == "Okay real sense")
+            {
+                SetRealSenseCalledMode();
+            }
+            else if (status == Status.WAITING_FOR_NAME)
+            {
+                SetRealSenseName(sentence);
+            }
+            else if (status == Status.WAITING_FOR_CONFIRMATION)
+            {
+                SetRealSenseConfirmation(sentence);
+            }
+        }
+        
+        private void SetRealSenseCalledMode()
+        {
+            status = Status.WAITING_FOR_NAME;
+            realSenseManager.ConfigureRecognition(factory => factory.SpeechRecognition().UsingDictation());
+            realSenseManager.Speak("What up?");
+        }
+
+        private void SetRealSenseName(String sentence)
+        {
+            if (sentence.StartsWith("This is ", StringComparison.OrdinalIgnoreCase))
+            {
+                detectedName = sentence.Replace("This is", "");
+                status = Status.WAITING_FOR_CONFIRMATION;
+                realSenseManager.ConfigureRecognition(factory => factory.SpeechRecognition().UsingGrammmar(grammarConfirm));
+                realSenseManager.Speak(String.Format("Is this really {0}?", detectedName));
+            }
+        }
+        private void SetRealSenseConfirmation(string sentence)
+        {
+            if (sentence.Equals("yes", StringComparison.OrdinalIgnoreCase))
+            {
+                status = Status.IDLE;
+                realSenseManager.ConfigureRecognition(factory => factory.SpeechRecognition().UsingGrammmar(grammarIdle));
+                realSenseManager.Speak(String.Format("Confirmed.", detectedName));
+            } else if (sentence.Equals("no", StringComparison.OrdinalIgnoreCase))
+            {
+                status = Status.WAITING_FOR_NAME;
+                realSenseManager.ConfigureRecognition(factory => factory.SpeechRecognition().UsingDictation());
+                realSenseManager.Speak("In this case, you should speak more clearly.");
+            }
+        }
+
+        private void realSense_SpeechOutput(SpeechOutputStatusEventArgs eventArgs)
+        {
+            if (eventArgs.Status == SpeechOutputStatus.STARTED_SPEAKING)
+            {
+                realSenseManager.StopRecognition();
+            }
+            else if (eventArgs.Status == SpeechOutputStatus.ENDED_SPEAKING)
+            {
+                realSenseManager.StartRecognition();
+            }
         }
 
         private void SetImage(Bitmap bitmap)
