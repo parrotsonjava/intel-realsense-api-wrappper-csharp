@@ -1,9 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using IntelRealSenseStart.Code.RealSense.Config.RealSense;
 using IntelRealSenseStart.Code.RealSense.Data.Properties;
+using IntelRealSenseStart.Code.RealSense.Event;
+using IntelRealSenseStart.Code.RealSense.Event.Data;
 using IntelRealSenseStart.Code.RealSense.Exception;
 using IntelRealSenseStart.Code.RealSense.Factory;
+using IntelRealSenseStart.Code.RealSense.Helper;
 using IntelRealSenseStart.Code.RealSense.Manager;
 using IntelRealSenseStart.Code.RealSense.Native;
 using IntelRealSenseStart.Code.RealSense.Provider;
@@ -12,6 +17,11 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Output
 {
     public class SpeechSynthesisOutputComponent : OutputComponent
     {
+        public event SpeechOutputStatusListener Speech;
+
+        private const int TIME_BETWEEN_SENTENCES = 300;
+        private const int WAIT_TIMEOUT = 25;
+
         private readonly RealSenseFactory factory;
         private readonly NativeSense nativeSense;
         private readonly RealSensePropertiesManager propertiesManager;
@@ -20,13 +30,20 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Output
         private PXCMSpeechSynthesis speechSynthesis;
         private PXCMSpeechSynthesis.ProfileInfo profile;
 
-        private SpeechSynthesisOutputComponent(RealSenseFactory factory, NativeSense nativeSense,
+        private readonly Queue<String> sentencesToSpeak;
+        private Thread speechOutputThread;
+
+        private volatile bool stopped;
+
+        private SpeechSynthesisOutputComponent(RealSenseFactory factory, NativeSense nativeSense, 
             RealSensePropertiesManager propertiesManager, RealSenseConfiguration configuration)
         {
             this.factory = factory;
             this.nativeSense = nativeSense;
             this.propertiesManager = propertiesManager;
             this.configuration = configuration;
+
+            sentencesToSpeak = new Queue<String>();
         }
 
         public void EnableFeatures()
@@ -41,26 +58,8 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Output
             CreateSpeechSynthesis();
             CreateProfile(profileProperties);
             SetProfile(profile);
-        }
 
-        public void Speak(String sentence)
-        {
-            if (speechSynthesis.BuildSentence(1, sentence) < pxcmStatus.PXCM_STATUS_NO_ERROR)
-            {
-                throw new RealSenseException(String.Format("Error building the sentence {0} for speech synthesis", sentence));
-            }
-
-            var voiceOut = new VoiceOut(profile.outputs);
-            for (int i = 0; ; i++)
-            {
-                var sample = speechSynthesis.QueryBuffer(1, i);
-                if (sample == null)
-                {
-                    break;
-                }
-                voiceOut.RenderAudio(sample);
-            }
-            voiceOut.Close();
+            StartOutputThread();
         }
 
         private SpeechSynthesisProfileProperties GetSelectedProfile(AudioProperties audioProperties)
@@ -101,8 +100,94 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Output
             profile.pitch = configuration.SpeechSynthesis.Pitch;
         }
 
+        private void StartOutputThread()
+        {
+            speechOutputThread = new Thread(OutputSpeech);
+            speechOutputThread.Start();
+        }
+
+        private void OutputSpeech()
+        {
+            stopped = false;
+
+            bool spokenBefore = false;
+            while (!stopped)
+            {
+                bool spoken = SpeakNextSentence();
+                InvokeSpeechEventBasedOn(spokenBefore, spoken);
+                spokenBefore = spoken;
+            }
+        }
+        
+        private bool SpeakNextSentence()
+        {
+            if (sentencesToSpeak.Count > 0)
+            {
+                SpeakSentence(sentencesToSpeak.Dequeue());
+                Thread.Sleep(TIME_BETWEEN_SENTENCES);
+                return true;
+            }
+
+            Thread.Sleep(WAIT_TIMEOUT);
+            return false;
+        }
+
+        private void SpeakSentence(String sentence)
+        {
+            if (speechSynthesis.BuildSentence(1, sentence) < pxcmStatus.PXCM_STATUS_NO_ERROR)
+            {
+                throw new RealSenseException(String.Format("Error building the sentence {0} for speech synthesis", sentence));
+            }
+
+            var voiceOut = new VoiceOut(profile.outputs);
+            for (int i = 0; ; i++)
+            {
+                var sample = speechSynthesis.QueryBuffer(1, i);
+                if (sample == null)
+                {
+                    break;
+                }
+                voiceOut.RenderAudio(sample);
+            }
+            voiceOut.Close();
+        }
+
+        private void InvokeSpeechEventBasedOn(bool spokenBefore, bool spoken)
+        {
+            if (spokenBefore && !spoken)
+            {
+                InvokeSpeechEvent(SpeechOutputStatus.ENDED_SPEAKING);
+            }
+            else if (!spokenBefore && spoken)
+            {
+                InvokeSpeechEvent(SpeechOutputStatus.STARTED_SPEAKING); 
+            }
+        }
+
+        private void InvokeSpeechEvent(SpeechOutputStatus status)
+        {
+            if (Speech != null)
+            {
+                var eventArgs = factory.Events.SpeechOutputEvent()
+                    .WithStatus(status)
+                    .Build();
+                Speech.Invoke(eventArgs);
+            }
+        }
+
         public void Stop()
         {
+            if (!stopped)
+            {
+                stopped = true;
+                speechOutputThread.Join();
+                speechOutputThread = null;
+            }
+        }
+
+        public void Speak(String sentence)
+        {
+            sentencesToSpeak.Enqueue(sentence);
         }
 
         public bool ShouldBeStarted
@@ -116,7 +201,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Output
             private NativeSense nativeSense;
             private RealSensePropertiesManager propertiesManager;
             private RealSenseConfiguration configuration;
-            
+
             public Builder WithFactory(RealSenseFactory factory)
             {
                 this.factory = factory;
@@ -143,6 +228,15 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Output
 
             public SpeechSynthesisOutputComponent Build()
             {
+                factory.Check(Preconditions.IsNotNull,
+                    "The factory must be set in order to create the speech synthesis output component");
+                nativeSense.Check(Preconditions.IsNotNull,
+                    "The native sense must be set in order to create the speech synthesis output component");
+                propertiesManager.Check(Preconditions.IsNotNull,
+                    "The properties manager must be set in order to create the hspeech synthesis output component");
+                configuration.Check(Preconditions.IsNotNull,
+                    "The RealSense configuration must be set in order to create the hspeech synthesis output component");
+
                 return new SpeechSynthesisOutputComponent(factory, nativeSense, propertiesManager, configuration);
             }
         }

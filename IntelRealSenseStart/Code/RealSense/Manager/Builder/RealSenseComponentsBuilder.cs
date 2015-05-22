@@ -7,7 +7,7 @@ using IntelRealSenseStart.Code.RealSense.Provider;
 
 namespace IntelRealSenseStart.Code.RealSense.Manager.Builder
 {
-    public class RealSenseDeterminerComponentsBuilder
+    public class RealSenseComponentsBuilder
     {
         private RealSenseFactory factory;
         private NativeSense nativeSense;
@@ -65,7 +65,6 @@ namespace IntelRealSenseStart.Code.RealSense.Manager.Builder
         public SpeechSynthesisOutputComponent CreateSpeechSynthesisOutputComponent()
         {
             return factory.Components.Output.SpeechSynthesis()
-                .WithFactory(factory)
                 .WithNativeSense(nativeSense)
                 .WithPropertiesManager(propertiesManager)
                 .WithConfiguration(configuration)
@@ -112,11 +111,11 @@ namespace IntelRealSenseStart.Code.RealSense.Manager.Builder
 
         public class Builder
         {
-            private readonly RealSenseDeterminerComponentsBuilder componentsBuilder;
+            private readonly RealSenseComponentsBuilder componentsBuilder;
 
             public Builder()
             {
-                componentsBuilder = new RealSenseDeterminerComponentsBuilder();
+                componentsBuilder = new RealSenseComponentsBuilder();
             }
 
             public Builder WithFactory(RealSenseFactory factory)
@@ -143,7 +142,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager.Builder
                 return this;
             }
 
-            public RealSenseDeterminerComponentsBuilder Build()
+            public RealSenseComponentsBuilder Build()
             {
                 return componentsBuilder;
             }

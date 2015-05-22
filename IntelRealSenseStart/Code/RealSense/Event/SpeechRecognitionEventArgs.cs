@@ -2,11 +2,11 @@
 
 namespace IntelRealSenseStart.Code.RealSense.Event
 {
-    public class SpeechEventArgs
+    public class SpeechRecognitionEventArgs
     {
         private String sentence;
 
-        private SpeechEventArgs()
+        private SpeechRecognitionEventArgs()
         { }
 
         public String Sentence
@@ -16,22 +16,22 @@ namespace IntelRealSenseStart.Code.RealSense.Event
 
         public class Builder
         {
-            private readonly SpeechEventArgs eventArgs;
+            private readonly SpeechRecognitionEventArgs _recognitionEventArgs;
 
             public Builder()
             {
-                eventArgs = new SpeechEventArgs();
+                _recognitionEventArgs = new SpeechRecognitionEventArgs();
             }
 
             public Builder WithSentence(String sentence)
             {
-                eventArgs.sentence = sentence;
+                _recognitionEventArgs.sentence = sentence;
                 return this;
             }
 
-            public SpeechEventArgs Build()
+            public SpeechRecognitionEventArgs Build()
             {
-                return eventArgs;
+                return _recognitionEventArgs;
             }
         }
     }

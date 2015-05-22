@@ -14,7 +14,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
 {
     public class SpeechRecognitionDeterminerComponent : DeterminerComponent
     {
-        public event SpeechEventListener Speech;
+        public event SpeechRecognitionEventListener Speech;
 
         private readonly GrammarBuilder grammarBuilder;
         private readonly RealSenseFactory factory;
@@ -195,7 +195,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
         {
             if (Speech != null)
             {
-                var speechEventArgs = factory.Events.SpeechEvent()
+                var speechEventArgs = factory.Events.SpeechRecognitionEvent()
                     .WithSentence(sentence).Build();
                 Speech.Invoke(speechEventArgs);
             }
@@ -206,9 +206,9 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
             get { return recognitionStarted; }
         }
 
-        public SpeechRecognitionDeterminerComponent WithSpeechListener(SpeechEventListener speechRecognitionCallback)
+        public SpeechRecognitionDeterminerComponent WithSpeechListener(SpeechRecognitionEventListener speechRecognitionRecognitionCallback)
         {
-            Speech += speechRecognitionCallback;
+            Speech += speechRecognitionRecognitionCallback;
             return this;
         }
 

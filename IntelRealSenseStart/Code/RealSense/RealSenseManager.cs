@@ -16,7 +16,8 @@ namespace IntelRealSenseStart.Code.RealSense
     {
         public event ReadyEventListener Ready;
         public event FrameEventListener Frame;
-        public event SpeechEventListener Speech;
+        public event SpeechRecognitionEventListener SpeechRecognized;
+        public event SpeechOutputStatusListener SpeechOutput;
 
         public delegate RealSenseConfiguration.Builder FeatureConfigurer(DeterminerConfigurationFactory featureFactory);
 
@@ -28,7 +29,7 @@ namespace IntelRealSenseStart.Code.RealSense
         }
 
         private RealSenseManager(RealSenseFactory factory, RealSenseConfiguration configuration,
-            NativeSense nativeSense, RealSenseDeterminerComponentsBuilder componentsBuilder)
+            NativeSense nativeSense, RealSenseComponentsBuilder componentsBuilder)
         {
             componentsManager = factory.Manager.Components()
                 .WithFactory(factory)
@@ -39,8 +40,12 @@ namespace IntelRealSenseStart.Code.RealSense
 
             componentsManager.OnReady(componentsManager_Ready);
             componentsManager.OnFrame(componentsManager_Frame);
-            componentsManager.OnSpeech(componentsManager_Speech);
+            componentsManager.OnSpeechRecognized(componentsManager_SpeechRecognized);
+            componentsManager.OnSpeechOutput(componentsManager_SpeechOutput);
         }
+
+
+
         public void Start()
         {
             componentsManager.Start();
@@ -79,11 +84,19 @@ namespace IntelRealSenseStart.Code.RealSense
             }
         }
 
-        private void componentsManager_Speech(SpeechEventArgs speechEventArgs)
+        private void componentsManager_SpeechRecognized(SpeechRecognitionEventArgs eventArgs)
         {
-            if (Speech != null)
+            if (SpeechRecognized != null)
             {
-                Speech.Invoke(speechEventArgs);
+                SpeechRecognized.Invoke(eventArgs);
+            }
+        }
+
+        private void componentsManager_SpeechOutput(SpeechOutputStatusEventArgs eventArgs)
+        {
+            if (SpeechRecognized != null)
+            {
+                SpeechOutput.Invoke(eventArgs);
             }
         }
 
@@ -121,7 +134,6 @@ namespace IntelRealSenseStart.Code.RealSense
                 properties = DetermineProperties(propertiesManager);
             }
 
-
             private RealSensePropertiesManager CreatePropertiesManager()
             {
                 var componentsBuilder = factory.Manager.PropertyComponentsBuilder()
@@ -151,7 +163,7 @@ namespace IntelRealSenseStart.Code.RealSense
                 configuration.Check(Preconditions.IsNotNull,
                     "The RealSense manager must be configured before using it");
 
-                var componentsBuilder = factory.Manager.DeterminerComponentsBuilder()
+                var componentsBuilder = factory.Manager.ComponentsBuilder()
                     .WithFactory(factory)
                     .WithNativeSense(nativeSense)
                     .WithConfiguration(configuration)

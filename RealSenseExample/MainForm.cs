@@ -42,7 +42,7 @@ namespace RealSenseExample
 
             manager.Ready += realSense_Ready;
             manager.Frame += realSense_Frame;
-            manager.Speech += realSense_Speech;
+            manager.SpeechRecognized += realSense_Speech;
         }
 
         private void buttonStart_Click(object sender, EventArgs e)
@@ -87,9 +87,9 @@ namespace RealSenseExample
             var handsJoints = frameEventArgs.HandsJoints;
         }
 
-        private void realSense_Speech(SpeechEventArgs speechEventArgs)
+        private void realSense_Speech(SpeechRecognitionEventArgs speechRecognitionEventArgs)
         {
-            var sentence = speechEventArgs.Sentence;
+            var sentence = speechRecognitionEventArgs.Sentence;
             manager.Speak(String.Format("Did you say {0}?", sentence));
         }
 

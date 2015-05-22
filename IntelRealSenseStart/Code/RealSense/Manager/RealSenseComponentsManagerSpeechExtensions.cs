@@ -27,15 +27,20 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
             manager.GetComponent<SpeechRecognitionDeterminerComponent>().StopRecognition();
         }
 
-        public static void OnSpeech(this RealSenseComponentsManager manager, SpeechEventListener speechEventListener)
+        public static void OnSpeechRecognized(this RealSenseComponentsManager manager, SpeechRecognitionEventListener listener)
         {
-            manager.GetComponent<SpeechRecognitionDeterminerComponent>().Speech += speechEventListener;
+            manager.GetComponent<SpeechRecognitionDeterminerComponent>().Speech += listener;
         }
 
         public static void Speak(this RealSenseComponentsManager manager, String sentence)
         {
             manager.CheckIfReady();
             manager.GetComponent<SpeechSynthesisOutputComponent>().Speak(sentence);
+        }
+
+        public static void OnSpeechOutput(this RealSenseComponentsManager manager, SpeechOutputStatusListener listener)
+        {
+            manager.GetComponent<SpeechSynthesisOutputComponent>().Speech += listener;
         }
     }
 }

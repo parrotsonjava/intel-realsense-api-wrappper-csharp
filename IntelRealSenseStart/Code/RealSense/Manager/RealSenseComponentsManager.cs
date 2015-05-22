@@ -39,7 +39,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
         private volatile DeterminerStatus determinerStatus;
         
         private RealSenseComponentsManager(RealSenseFactory factory, NativeSense nativeSense,
-            RealSenseConfiguration realSenseConfiguration, RealSenseDeterminerComponentsBuilder componentsBuilder)
+            RealSenseConfiguration realSenseConfiguration, RealSenseComponentsBuilder componentsBuilder)
         {
             this.factory = factory;
             this.nativeSense = nativeSense;
@@ -55,7 +55,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
             reconnectThread = new Thread(StartReconnect);
         }
 
-        private IEnumerable<RealSenseComponent> GetComponents(RealSenseDeterminerComponentsBuilder componentsBuilder)
+        private IEnumerable<RealSenseComponent> GetComponents(RealSenseComponentsBuilder componentsBuilder)
         {
             var realSenseComponents = new RealSenseComponent[]
             {
@@ -69,7 +69,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
             return realSenseComponents.Where(component => component.ShouldBeStarted);
         }
 
-        private OverallImageCreator GetImageCreator(RealSenseDeterminerComponentsBuilder componentsBuilder)
+        private OverallImageCreator GetImageCreator(RealSenseComponentsBuilder componentsBuilder)
         {
             return componentsBuilder.CreateOverallImageCreator(new ImageCreator[]
             {
@@ -280,7 +280,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
             private RealSenseFactory factory;
             private NativeSense nativeSense;
             private RealSenseConfiguration configuration;
-            private RealSenseDeterminerComponentsBuilder componentsBuilder;
+            private RealSenseComponentsBuilder componentsBuilder;
 
             public Builder WithFactory(RealSenseFactory factory)
             {
@@ -300,7 +300,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
                 return this;
             }
 
-            public Builder WithComponentsBuilder(RealSenseDeterminerComponentsBuilder componentsBuilder)
+            public Builder WithComponentsBuilder(RealSenseComponentsBuilder componentsBuilder)
             {
                 this.componentsBuilder = componentsBuilder;
                 return this;
