@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using IntelRealSenseStart.Code.RealSense.Component.Common;
@@ -12,6 +13,7 @@ using IntelRealSenseStart.Code.RealSense.Event;
 using IntelRealSenseStart.Code.RealSense.Exception;
 using IntelRealSenseStart.Code.RealSense.Factory;
 using IntelRealSenseStart.Code.RealSense.Helper;
+using IntelRealSenseStart.Code.RealSense.Manager.Builder;
 using IntelRealSenseStart.Code.RealSense.Provider;
 
 namespace IntelRealSenseStart.Code.RealSense.Manager
@@ -21,15 +23,14 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
         public event FrameEventListener Frame;
         public event SpeechEventListener Speech;
 
-        private readonly RealSenseComponent[] components;
-        private RealSenseSpeechSynthesisOutputComponent speechSynthesizer;
+        private readonly IEnumerable<RealSenseComponent> components;
+        private readonly RealSenseSpeechSynthesisOutputComponent speechSynthesizer;
 
         private readonly OverallImageCreator overallImageCreator;
         private readonly FacesLandmarksBuilder facesLandmarksBuilder;
         private readonly HandsJointsBuilder handsJointsBuilder;
 
         private readonly RealSenseFactory factory;
-        private readonly RealSensePropertiesManager propertiesManager;
         private readonly RealSenseConfiguration realSenseConfiguration;
 
         private readonly NativeSense nativeSense;
@@ -37,106 +38,51 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
         private Thread determinerThread;
         private readonly Thread reconnectThread;
 
-        private volatile DeterminerStatus determinerStatus = DeterminerStatus.STOPPED;
+        private volatile DeterminerStatus determinerStatus;
         
         private RealSenseComponentsManager(RealSenseFactory factory, NativeSense nativeSense,
-            RealSensePropertiesManager propertiesManager, RealSenseConfiguration realSenseConfiguration)
+            RealSenseConfiguration realSenseConfiguration, RealSenseDeterminerComponentsBuilder componentsBuilder)
         {
             this.factory = factory;
             this.nativeSense = nativeSense;
-            this.propertiesManager = propertiesManager;
             this.realSenseConfiguration = realSenseConfiguration;
 
-            components = GetComponents().Where(component => component.ShouldBeStarted).ToArray();
-            overallImageCreator = GetImageCreator(realSenseConfiguration);
-            facesLandmarksBuilder = GetFacesLandmarksBuilder();
-            handsJointsBuilder = getHandsJointsBuilder();
+            determinerStatus = DeterminerStatus.STOPPED;
+
+            components = GetComponents(componentsBuilder, out speechSynthesizer);
+            overallImageCreator = GetImageCreator(componentsBuilder);
+            facesLandmarksBuilder = componentsBuilder.GetFacesLandmarksBuilder();
+            handsJointsBuilder = componentsBuilder.getHandsJointsBuilder();
 
             reconnectThread = new Thread(StartReconnect);
         }
 
-        private RealSenseComponent[] GetComponents()
+        private IEnumerable<RealSenseComponent> GetComponents(RealSenseDeterminerComponentsBuilder componentsBuilder,
+            out RealSenseSpeechSynthesisOutputComponent speechSynthesizer)
         {
-            var deviceComponent = factory.Components.Determiner.Device()
-                .WithPropertiesManager(propertiesManager)
-                .WithNativeSense(nativeSense)
-                .WithConfiguration(realSenseConfiguration)
-                .Build();
-            var handsComponent = factory.Components.Determiner.Hands()
-                .WithFactory(factory)
-                .WithNativeSense(nativeSense)
-                .WithConfiguration(realSenseConfiguration)
-                .Build();
-            var faceComponent = factory.Components.Determiner.Face()
-                .WithFactory(factory)
-                .WithNativeSense(nativeSense)
-                .WithConfiguration(realSenseConfiguration)
-                .Build();
-            var pictureComponent = factory.Components.Determiner.Image()
-                .WithFactory(factory)
-                .WithNativeSense(nativeSense)
-                .WithConfiguration(realSenseConfiguration)
-                .Build();
-            var speechRecognitionComponent = factory.Components.Determiner.SpeechRecognition()
-                .WithFactory(factory)
-                .WithNativeSense(nativeSense)
-                .WithPropertiesManager(propertiesManager)
-                .WithConfiguration(realSenseConfiguration)
-                .Build();
-            speechSynthesizer = factory.Components.Output.SpeechSynthesis()
-                .WithFactory(factory)
-                .WithNativeSense(nativeSense)
-                .WithPropertiesManager(propertiesManager)
-                .WithConfiguration(realSenseConfiguration)
-                .Build();
+            speechSynthesizer = componentsBuilder.CreateSpeechSynthesisOutputComponent();
 
-            InitializeListeners(speechRecognitionComponent);
-
-            return new RealSenseComponent[]
+            var realSenseComponents = new RealSenseComponent[]
             {
-                handsComponent, faceComponent, pictureComponent, deviceComponent,
-                speechRecognitionComponent, speechSynthesizer
+                componentsBuilder.CreateHandsDeterminerComponent(), 
+                componentsBuilder.CreateFaceDeterminerComponent(), 
+                componentsBuilder.CreatePictureDeterminerComponent(), 
+                componentsBuilder.CreateDeviceDeterminerComponent(),
+                componentsBuilder.CreateSpeechRecognitionDeterminerComponent()
+                    .WithSpeechListener(speechRecognitionCompoment_Speech),
+                speechSynthesizer
             };
+            return realSenseComponents.Where(component => component.ShouldBeStarted).ToArray();
         }
 
-        private void InitializeListeners(SpeechRecognitionDeterminerComponent speechRecognitionComponent)
+        private OverallImageCreator GetImageCreator(RealSenseDeterminerComponentsBuilder componentsBuilder)
         {
-            speechRecognitionComponent.Speech += speechRecognitionCompoment_Speech;
-        }
-
-        private void speechRecognitionCompoment_Speech(SpeechEventArgs speechEventArgs)
-        {
-            if (Speech != null)
+            return componentsBuilder.CreateOverallImageCreator(new ImageCreator[]
             {
-                Speech.Invoke(speechEventArgs);
-            }
-        }
-
-        private OverallImageCreator GetImageCreator(RealSenseConfiguration realSenseConfiguration)
-        {
-            var basicImageCreator = factory.Components.Creator.BasicImageCreator()
-                .WithRealSenseConfiguration(realSenseConfiguration)
-                .Build();
-            var handsImageCreator = factory.Components.Creator.HandsImageCreator()
-                .WithRealSenseConfiguration(realSenseConfiguration)
-                .Build();
-            var faceImageCreator = factory.Components.Creator.FaceImageCreator()
-                .WithRealSenseConfiguration(realSenseConfiguration)
-                .Build();
-
-            return factory.Components.Creator.OverallImageCreator()
-                .WithImageCreators(new ImageCreator[] {basicImageCreator, handsImageCreator, faceImageCreator})
-                .Build();
-        }
-
-        private FacesLandmarksBuilder GetFacesLandmarksBuilder()
-        {
-             return factory.Components.Creator.FacesLandmarksBuilder().Build();
-        }
-
-        private HandsJointsBuilder getHandsJointsBuilder()
-        {
-            return factory.Components.Creator.HandsJointsBuilder().Build();
+                componentsBuilder.CreateBasicImageCreatorComponent(),
+                componentsBuilder.CreateHandsImageCreatorComponent(),
+                componentsBuilder.CreateFaceImageCreatorComponent()
+            });
         }
 
         public DeterminerStatus Status
@@ -161,9 +107,9 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
             {
                 determinerStatus = DeterminerStatus.STARTING;
 
-                EnableFeatures();
-                InitializeManager();
-                StartDeterminerThread();
+                components.Do(component => component.EnableFeatures());
+                nativeSense.SenseManager.Init();
+                (determinerThread = new Thread(StartDetection)).Start();
             }
             catch (RealSenseException e)
             {
@@ -176,22 +122,6 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
         {
             reconnectThread.Start();
         }
-        
-        private void EnableFeatures()
-        {
-            components.Do(component => component.EnableFeatures());
-        }
-
-        private void InitializeManager()
-        {
-            nativeSense.SenseManager.Init();
-        }
-
-        private void StartDeterminerThread()
-        {
-            determinerThread = new Thread(StartDetection);
-            determinerThread.Start();
-        }
 
         private void StartDetection()
         {
@@ -201,10 +131,9 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
             }
             catch (RealSenseException e)
             {
+                Console.WriteLine(@"Reconnecting due to error: {0}", e.Message);
                 determinerStatus = DeterminerStatus.RECONNECTING;
                 ResetSession();
-
-                Console.WriteLine(e.Message);
             }
         }
 
@@ -215,7 +144,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
 
         private void TryToStartDetection()
         {
-            ConfigureComponents();
+            components.Do(component => component.Configure());
 
             determinerStatus = DeterminerStatus.STARTED;
             while (determinerStatus == DeterminerStatus.STARTED)
@@ -224,11 +153,6 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
             }
 
             StopComponents();
-        }
-
-        public void ConfigureComponents()
-        {
-            components.Do(component => component.Configure());
         }
 
         private void ProcessFrame()
@@ -322,12 +246,20 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
             speechSynthesizer.Speak(sentence);
         }
 
+        private void speechRecognitionCompoment_Speech(SpeechEventArgs speechEventArgs)
+        {
+            if (Speech != null)
+            {
+                Speech.Invoke(speechEventArgs);
+            }
+        }
+
         public class Builder
         {
             private RealSenseFactory factory;
             private NativeSense nativeSense;
-            private RealSensePropertiesManager propertiesManager;
             private RealSenseConfiguration configuration;
+            private RealSenseDeterminerComponentsBuilder componentsBuilder;
 
             public Builder WithFactory(RealSenseFactory factory)
             {
@@ -341,30 +273,30 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
                 return this;
             }
 
-            public Builder WithPropertiesManager(RealSensePropertiesManager propertiesManager)
-            {
-                this.propertiesManager = propertiesManager;
-                return this;
-            }
-
             public Builder WithConfiguration(RealSenseConfiguration configuration)
             {
                 this.configuration = configuration;
                 return this;
             }
 
+            public Builder WithComponentsBuilder(RealSenseDeterminerComponentsBuilder componentsBuilder)
+            {
+                this.componentsBuilder = componentsBuilder;
+                return this;
+            }
+
             public RealSenseComponentsManager Build()
             {
                 factory.Check(Preconditions.IsNotNull,
-                    "The factory must be set in order to create the determiner manager");
+                    "The factory must be set in order to create the components manager");
                 nativeSense.Check(Preconditions.IsNotNull,
-                    "The native sense must be set in order to create the determiner manager");
-                propertiesManager.Check(Preconditions.IsNotNull,
-                    "The properties manager must be set in order to create the determiner manager");
+                    "The native sense must be set in order to create the components manager");
+                componentsBuilder.Check(Preconditions.IsNotNull,
+                    "The components builder must be set in order to create the components manager");
                 configuration.Check(Preconditions.IsNotNull,
-                    "The RealSense configuration must be set in order to create the determiner manager");
+                    "The RealSense configuration must be set in order to create the components manager");
 
-                return new RealSenseComponentsManager(factory, nativeSense, propertiesManager, configuration);
+                return new RealSenseComponentsManager(factory, nativeSense, configuration, componentsBuilder);
             }
         }
     }

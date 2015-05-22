@@ -3,7 +3,7 @@ using IntelRealSenseStart.Code.RealSense.Component.Property;
 using IntelRealSenseStart.Code.RealSense.Data.Properties;
 using IntelRealSenseStart.Code.RealSense.Factory;
 using IntelRealSenseStart.Code.RealSense.Helper;
-using IntelRealSenseStart.Code.RealSense.Provider;
+using IntelRealSenseStart.Code.RealSense.Manager.Builder;
 
 namespace IntelRealSenseStart.Code.RealSense.Manager
 {
@@ -12,38 +12,22 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
         private readonly List<PropertiesComponent<RealSenseProperties.Builder>> components;
 
         private readonly RealSenseFactory factory;
-        private readonly NativeSense nativeSense;
 
-        private RealSensePropertiesManager(RealSenseFactory factory, NativeSense nativeSense)
+        private RealSensePropertiesManager(RealSenseFactory factory, RealSensePropertyComponentsBuilder componentsBuilder)
         {
             this.factory = factory;
-            this.nativeSense = nativeSense;
 
-            components = GetComponents();
+            components = GetComponents(componentsBuilder);
         }
 
-        private List<PropertiesComponent<RealSenseProperties.Builder>> GetComponents()
+        private List<PropertiesComponent<RealSenseProperties.Builder>> GetComponents(RealSensePropertyComponentsBuilder componentsBuilder)
         {
-            var videoDevicePropertiesDeterminer = factory.Components.Properties.VideoDeviceDeterminer()
-                .WithFactory(factory).WithNativeSense(nativeSense).Build();
-            var videoPropertiesDeterminer = factory.Components.Properties.VideoDeterminer()
-                .WithFactory(factory).WithVideoPropertiesComponent(videoDevicePropertiesDeterminer);
-
-            var audioDevicePropertiesDeterminer = factory.Components.Properties.AudioDeviceDeterminer()
-                .WithFactory(factory).WithNativeSense(nativeSense).Build();
-            var speechSynthesisModuleDeterminer = factory.Components.Properties.SpeechSynthesisModuleDeterminer()
-                .WithFactory(factory).WithNativeSense(nativeSense).Build();
-            var speechRecognitionModuleDeterminer = factory.Components.Properties.SpeechRecognitionModuleDeterminer()
-                .WithFactory(factory).WithNativeSense(nativeSense).Build();
-            var audioPropertiesDeterminer = factory.Components.Properties.AudioDeterminer()
-                .WithFactory(factory)
-                .WithAudioPropertiesComponent(audioDevicePropertiesDeterminer)
-                .WithAudioPropertiesComponent(speechRecognitionModuleDeterminer)
-                .WithAudioPropertiesComponent(speechSynthesisModuleDeterminer);
+            var videoPropertiesDeterminer = componentsBuilder.CreateVideoPropertiesDeterminer();
+            var audioPropertiesDeterminer = componentsBuilder.CreateAudioPropertiesDeterminer();
 
             return new List<PropertiesComponent<RealSenseProperties.Builder>>
             {
-                videoPropertiesDeterminer.Build(), audioPropertiesDeterminer.Build()
+                videoPropertiesDeterminer, audioPropertiesDeterminer
             };
         }
 
@@ -57,7 +41,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
         public class Builder
         {
             private RealSenseFactory factory;
-            private NativeSense nativeSense;
+            private RealSensePropertyComponentsBuilder componentsBuilder;
            
             public Builder WithFactory(RealSenseFactory factory)
             {
@@ -65,20 +49,20 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
                 return this;
             }
 
-            public Builder WithNativeSense(NativeSense nativeSense)
+            public Builder WithComponentsBuilder(RealSensePropertyComponentsBuilder componentsBuilder)
             {
-                this.nativeSense = nativeSense;
+                this.componentsBuilder = componentsBuilder;
                 return this;
             }
 
             public RealSensePropertiesManager Build()
             {
                 factory.Check(Preconditions.IsNotNull,
-                    "The factory must be set in order to create the RealSense properties manager");
-                nativeSense.Check(Preconditions.IsNotNull,
-                    "The native set must be set in order to create the RealSense properties manager");
+                    "The factory must be set in order to create the properties manager");
+                componentsBuilder.Check(Preconditions.IsNotNull,
+                    "The components builder must be set in order to create the properties manager");
 
-                return new RealSensePropertiesManager(factory, nativeSense);
+                return new RealSensePropertiesManager(factory, componentsBuilder);
             }
         }
     }

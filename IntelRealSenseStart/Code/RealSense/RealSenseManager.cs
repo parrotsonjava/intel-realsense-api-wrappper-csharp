@@ -7,6 +7,7 @@ using IntelRealSenseStart.Code.RealSense.Factory;
 using IntelRealSenseStart.Code.RealSense.Factory.Configuration;
 using IntelRealSenseStart.Code.RealSense.Helper;
 using IntelRealSenseStart.Code.RealSense.Manager;
+using IntelRealSenseStart.Code.RealSense.Manager.Builder;
 using IntelRealSenseStart.Code.RealSense.Provider;
 
 namespace IntelRealSenseStart.Code.RealSense
@@ -18,12 +19,7 @@ namespace IntelRealSenseStart.Code.RealSense
 
         public delegate RealSenseConfiguration.Builder FeatureConfigurer(DeterminerConfigurationFactory featureFactory);
 
-        private readonly RealSenseFactory factory;
-        private readonly RealSenseConfiguration configuration;
-
         private readonly RealSenseComponentsManager componentsManager;
-        private readonly NativeSense nativeSense;
-        private readonly RealSensePropertiesManager propertiesManager;
 
         public static Builder Create()
         {
@@ -31,27 +27,18 @@ namespace IntelRealSenseStart.Code.RealSense
         }
 
         private RealSenseManager(RealSenseFactory factory, RealSenseConfiguration configuration,
-            NativeSense nativeSense, RealSensePropertiesManager propertiesManager)
+            NativeSense nativeSense, RealSenseDeterminerComponentsBuilder componentsBuilder)
         {
-            this.factory = factory;
-            this.configuration = configuration;
-            this.nativeSense = nativeSense;
-            this.propertiesManager = propertiesManager;
+            componentsManager = factory.Manager.Components()
+                .WithFactory(factory)
+                .WithNativeSense(nativeSense)
+                .WithConfiguration(configuration)
+                .WithComponentsBuilder(componentsBuilder)
+                .Build();
 
-            componentsManager = CreateComponentsManager();
             componentsManager.Frame += componentsManager_Frame;
             componentsManager.Speech += componentsManager_Speech;
         }
-        private RealSenseComponentsManager CreateComponentsManager()
-        {
-            return factory.Manager.Components()
-                .WithFactory(factory)
-                .WithNativeSense(nativeSense)
-                .WithPropertiesManager(propertiesManager)
-                .WithConfiguration(configuration)
-                .Build();
-        }
-
         public void Start()
         {
             componentsManager.Start();
@@ -105,15 +92,21 @@ namespace IntelRealSenseStart.Code.RealSense
                 nativeSense = factory.Provider.NativeSense().WithFactory(factory.Native).Build();
                 nativeSense.Initialize();
 
-                propertiesManager = GetPropertiesManager();
+                propertiesManager = CreatePropertiesManager();
                 properties = DetermineProperties(propertiesManager);
             }
 
-            private RealSensePropertiesManager GetPropertiesManager()
+
+            private RealSensePropertiesManager CreatePropertiesManager()
             {
-                return factory.Manager.PropertiesManager()
+                var componentsBuilder = factory.Manager.PropertyComponentsBuilder()
                     .WithFactory(factory)
                     .WithNativeSense(nativeSense)
+                    .Build();
+
+                return factory.Manager.PropertiesManager()
+                    .WithFactory(factory)
+                    .WithComponentsBuilder(componentsBuilder)
                     .Build();
             }
 
@@ -133,7 +126,14 @@ namespace IntelRealSenseStart.Code.RealSense
                 configuration.Check(Preconditions.IsNotNull,
                     "The RealSense manager must be configured before using it");
 
-                return new RealSenseManager(factory, configuration, nativeSense, propertiesManager);
+                var componentsBuilder = factory.Manager.DeterminerComponentsBuilder()
+                    .WithFactory(factory)
+                    .WithNativeSense(nativeSense)
+                    .WithConfiguration(configuration)
+                    .WithPropertiesManager(propertiesManager)
+                    .Build();
+
+                return new RealSenseManager(factory, configuration, nativeSense, componentsBuilder);
             }
 
             public RealSenseProperties Properties

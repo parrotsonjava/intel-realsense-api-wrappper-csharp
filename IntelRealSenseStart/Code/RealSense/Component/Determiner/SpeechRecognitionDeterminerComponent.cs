@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using IntelRealSenseStart.Code.RealSense.Component.Common;
 using IntelRealSenseStart.Code.RealSense.Config.RealSense;
 using IntelRealSenseStart.Code.RealSense.Data.Properties;
 using IntelRealSenseStart.Code.RealSense.Event;
@@ -149,6 +150,12 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
                     .WithSentence(sentence).Build();
                 Speech.Invoke(speechEventArgs);
             }
+        }
+
+        public SpeechRecognitionDeterminerComponent WithSpeechListener(SpeechEventListener speechRecognitionCallback)
+        {
+            Speech += speechRecognitionCallback;
+            return this;
         }
 
         public class Builder

@@ -167,6 +167,8 @@
     <Compile Include="Code\RealSense\Data\Properties\VideoDeviceProperties.cs" />
     <Compile Include="Code\RealSense\Data\Properties\RealSenseProperties.cs" />
     <Compile Include="Code\RealSense\Data\Properties\StreamProperties.cs" />
+    <Compile Include="Code\RealSense\Manager\Builder\RealSenseDeterminerComponentsBuilder.cs" />
+    <Compile Include="Code\RealSense\Manager\Builder\RealSensePropertyComponentsBuilder.cs" />
     <Compile Include="Code\RealSense\Manager\RealSenseComponentsManager.cs" />
     <Compile Include="Code\RealSense\Native\RealSenseExtensions.cs" />
     <Compile Include="Code\RealSense\Native\VoiceOut.cs" />
