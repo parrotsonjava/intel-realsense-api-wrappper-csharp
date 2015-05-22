@@ -14,6 +14,7 @@ namespace IntelRealSenseStart.Code.RealSense
 {
     public class RealSenseManager
     {
+        public event ReadyEventListener Ready;
         public event FrameEventListener Frame;
         public event SpeechEventListener Speech;
 
@@ -36,8 +37,9 @@ namespace IntelRealSenseStart.Code.RealSense
                 .WithComponentsBuilder(componentsBuilder)
                 .Build();
 
-            componentsManager.Frame += componentsManager_Frame;
-            componentsManager.Speech += componentsManager_Speech;
+            componentsManager.OnReady(componentsManager_Ready);
+            componentsManager.OnFrame(componentsManager_Frame);
+            componentsManager.OnSpeech(componentsManager_Speech);
         }
         public void Start()
         {
@@ -54,6 +56,21 @@ namespace IntelRealSenseStart.Code.RealSense
             componentsManager.Speak(sentence);
         }
 
+        public void ConfigureRecognition(SpeechRecognitionConfiguration configuration)
+        {
+            componentsManager.ConfigureRecognition(configuration);
+        }
+
+        public void StartRecognition()
+        {
+            componentsManager.StartRecognition();
+        }
+
+        public void StopRecognition()
+        {
+            componentsManager.StopRecognition();
+        }
+
         private void componentsManager_Frame(FrameEventArgs frameEventArgs)
         {
             if (Frame != null)
@@ -67,6 +84,14 @@ namespace IntelRealSenseStart.Code.RealSense
             if (Speech != null)
             {
                 Speech.Invoke(speechEventArgs);
+            }
+        }
+
+        private void componentsManager_Ready()
+        {
+            if (Ready != null)
+            {
+                Ready.Invoke();
             }
         }
 

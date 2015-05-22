@@ -1,4 +1,5 @@
 ﻿using IntelRealSenseStart.Code.RealSense.Component.Determiner;
+using IntelRealSenseStart.Code.RealSense.Component.Determiner.Builder;
 
 namespace IntelRealSenseStart.Code.RealSense.Factory.Component
 {
@@ -26,7 +27,7 @@ namespace IntelRealSenseStart.Code.RealSense.Factory.Component
 
         public SpeechRecognitionDeterminerComponent.Builder SpeechRecognition()
         {
-            return new SpeechRecognitionDeterminerComponent.Builder();
+            return new SpeechRecognitionDeterminerComponent.Builder(new GrammarBuilder());
         }
     }
 }

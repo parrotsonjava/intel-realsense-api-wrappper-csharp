@@ -1,20 +1,28 @@
-﻿namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
+﻿using System;
+
+namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
 {
     public class SpeechRecognitionConfiguration
     {
         private const float DEFAULT_VOLUME = 0.2f;
 
-        private bool usingDictation;
         private float volume;
+        private String grammmar;
 
-        public bool UsingDictation
-        {
-            get { return usingDictation; }
-        }
 
         public float Volume
         {
             get { return volume; }
+        }
+
+        public bool UsingGrammar
+        {
+            get { return grammmar != null; }
+        }
+
+        public String Grammar
+        {
+            get { return grammmar; }
         }
 
         public class Builder
@@ -40,7 +48,13 @@
 
             public Builder UsingDictation()
             {
-                configuration.usingDictation = true;
+                configuration.grammmar = null;
+                return this;
+            }
+
+            public Builder UsingGrammmar(String grammar)
+            {
+                configuration.grammmar = grammar;
                 return this;
             }
 

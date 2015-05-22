@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using IntelRealSenseStart.Code.RealSense.Component.Common;
+using IntelRealSenseStart.Code.RealSense.Component.Determiner.Builder;
 using IntelRealSenseStart.Code.RealSense.Config.RealSense;
 using IntelRealSenseStart.Code.RealSense.Data.Properties;
 using IntelRealSenseStart.Code.RealSense.Event;
@@ -16,9 +16,11 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
     {
         public event SpeechEventListener Speech;
 
+        private readonly GrammarBuilder grammarBuilder;
         private readonly RealSenseFactory factory;
         private readonly NativeSense nativeSense;
         private readonly RealSensePropertiesManager propertiesManager;
+
         private readonly RealSenseConfiguration configuration;
 
         private readonly PXCMSpeechRecognition.Handler recognitionHandler;
@@ -26,9 +28,12 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
         private PXCMAudioSource audioSource;
         private PXCMSpeechRecognition speechRecognition;
 
-        private SpeechRecognitionDeterminerComponent(RealSenseFactory factory, NativeSense nativeSense, 
-            RealSensePropertiesManager propertiesManager, RealSenseConfiguration configuration)
+        private bool recognitionStarted;
+
+        private SpeechRecognitionDeterminerComponent(GrammarBuilder grammarBuilder, RealSenseFactory factory, 
+            NativeSense nativeSense, RealSensePropertiesManager propertiesManager, RealSenseConfiguration configuration)
         {
+            this.grammarBuilder = grammarBuilder;
             this.factory = factory;
             this.nativeSense = nativeSense;
             this.propertiesManager = propertiesManager;
@@ -49,14 +54,12 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
 
         public void EnableFeatures()
         {
-
         }
 
         public void Configure()
         {
             audioSource = factory.Native.AudioSource(nativeSense.Session);
-            audioSource.SetVolume(configuration.SpeechRecognition.Volume);
-
+            
             var audioProperties = propertiesManager.GetProperties().Audio;
             var deviceProperties = GetSelectedDevice(audioProperties);
             var profileProperties = GetSelectedProfile(audioProperties);
@@ -64,9 +67,9 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
             audioSource.SetDevice(deviceProperties.DeviceInfo);
             CreateSpeechRecognition();
             speechRecognition.SetProfile(profileProperties.Profile);
+            grammarBuilder.UseSpeechRecognition(speechRecognition);
 
-            ConfigureRecognitionMode();
-            StartRecognition();
+            UpdateConfiguration(configuration.SpeechRecognition);
         }
 
         private AudioInputDeviceProperties GetSelectedDevice(AudioProperties audioProperties)
@@ -102,20 +105,66 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
             }
         }
 
-        private void StartRecognition()
+        public void UpdateConfiguration(SpeechRecognitionConfiguration configuration)
         {
+            var startRecognition = false;
+            if (recognitionStarted)
+            {
+                StopRecognition();
+                startRecognition = true;
+            }
+
+            ApplyConfiguration(configuration);
+
+            if (startRecognition)
+            {
+                StartRecognition();
+            }
+        }
+
+        private void ApplyConfiguration(SpeechRecognitionConfiguration configuration)
+        {
+            audioSource.SetVolume(configuration.Volume);
+
+            if (configuration.UsingGrammar)
+            {
+                var grammarId = grammarBuilder.GetGrammarId(configuration.Grammar);
+                speechRecognition.SetGrammar(grammarId);
+            }
+            else
+            {
+                speechRecognition.SetDictation();
+            }
+        }
+
+        public void StartRecognition()
+        {
+            if (recognitionStarted)
+            {
+                return;
+            }
             if (speechRecognition.StartRec(audioSource, recognitionHandler) < pxcmStatus.PXCM_STATUS_NO_ERROR)
             {
                 throw new RealSenseInitializationException("The speech recognition could not be started");
             }
+            recognitionStarted = true;
         }
 
-        private void ConfigureRecognitionMode()
+        public void StopRecognition()
         {
-            if (configuration.SpeechRecognition.UsingDictation)
+            if (!recognitionStarted)
             {
-                speechRecognition.SetDictation();
+                return;
             }
+
+            speechRecognition.StopRec();
+            recognitionStarted = false;
+        }
+
+        public void RestartRecognition()
+        {
+            StopRecognition();
+            StopRecognition();
         }
 
         public void Stop()
@@ -152,6 +201,11 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
             }
         }
 
+        public bool RecognitionStarted
+        {
+            get { return recognitionStarted; }
+        }
+
         public SpeechRecognitionDeterminerComponent WithSpeechListener(SpeechEventListener speechRecognitionCallback)
         {
             Speech += speechRecognitionCallback;
@@ -160,10 +214,16 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
 
         public class Builder
         {
+            private readonly GrammarBuilder grammarBuilder;
             private RealSenseFactory factory;
             private NativeSense nativeSense;
             private RealSensePropertiesManager propertiesManager;
             private RealSenseConfiguration configuration;
+
+            public Builder(GrammarBuilder grammarBuilder)
+            {
+                this.grammarBuilder = grammarBuilder;
+            }
 
             public Builder WithFactory(RealSenseFactory factory)
             {
@@ -200,7 +260,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
                 configuration.Check(Preconditions.IsNotNull,
                     "The RealSense configuration must be set in order to create the speech recognition determiner component");
 
-                return new SpeechRecognitionDeterminerComponent(factory, nativeSense, propertiesManager, configuration);
+                return new SpeechRecognitionDeterminerComponent(grammarBuilder, factory, nativeSense, propertiesManager, configuration);
             }
         }
     }

@@ -4,9 +4,9 @@ namespace IntelRealSenseStart.Code.RealSense.Factory.Component
 {
     public class OutputComponentsFactory
     {
-        public RealSenseSpeechSynthesisOutputComponent.Builder SpeechSynthesis()
+        public SpeechSynthesisOutputComponent.Builder SpeechSynthesis()
         {
-            return new RealSenseSpeechSynthesisOutputComponent.Builder();
+            return new SpeechSynthesisOutputComponent.Builder();
         }
     }
 }

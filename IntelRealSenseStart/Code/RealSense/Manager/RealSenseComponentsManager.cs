@@ -5,7 +5,6 @@ using System.Threading;
 using IntelRealSenseStart.Code.RealSense.Component.Common;
 using IntelRealSenseStart.Code.RealSense.Component.Creator;
 using IntelRealSenseStart.Code.RealSense.Component.Determiner;
-using IntelRealSenseStart.Code.RealSense.Component.Output;
 using IntelRealSenseStart.Code.RealSense.Config.RealSense;
 using IntelRealSenseStart.Code.RealSense.Data.Determiner;
 using IntelRealSenseStart.Code.RealSense.Data.Status;
@@ -20,11 +19,10 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
 {
     public class RealSenseComponentsManager
     {
+        public event ReadyEventListener Ready;
         public event FrameEventListener Frame;
-        public event SpeechEventListener Speech;
 
         private readonly IEnumerable<RealSenseComponent> components;
-        private readonly RealSenseSpeechSynthesisOutputComponent speechSynthesizer;
 
         private readonly OverallImageCreator overallImageCreator;
         private readonly FacesLandmarksBuilder facesLandmarksBuilder;
@@ -49,7 +47,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
 
             determinerStatus = DeterminerStatus.STOPPED;
 
-            components = GetComponents(componentsBuilder, out speechSynthesizer);
+            components = GetComponents(componentsBuilder);
             overallImageCreator = GetImageCreator(componentsBuilder);
             facesLandmarksBuilder = componentsBuilder.GetFacesLandmarksBuilder();
             handsJointsBuilder = componentsBuilder.getHandsJointsBuilder();
@@ -57,22 +55,18 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
             reconnectThread = new Thread(StartReconnect);
         }
 
-        private IEnumerable<RealSenseComponent> GetComponents(RealSenseDeterminerComponentsBuilder componentsBuilder,
-            out RealSenseSpeechSynthesisOutputComponent speechSynthesizer)
+        private IEnumerable<RealSenseComponent> GetComponents(RealSenseDeterminerComponentsBuilder componentsBuilder)
         {
-            speechSynthesizer = componentsBuilder.CreateSpeechSynthesisOutputComponent();
-
             var realSenseComponents = new RealSenseComponent[]
             {
                 componentsBuilder.CreateHandsDeterminerComponent(), 
                 componentsBuilder.CreateFaceDeterminerComponent(), 
                 componentsBuilder.CreatePictureDeterminerComponent(), 
                 componentsBuilder.CreateDeviceDeterminerComponent(),
-                componentsBuilder.CreateSpeechRecognitionDeterminerComponent()
-                    .WithSpeechListener(speechRecognitionCompoment_Speech),
-                speechSynthesizer
+                componentsBuilder.CreateSpeechRecognitionDeterminerComponent(),
+                componentsBuilder.CreateSpeechSynthesisOutputComponent()
             };
-            return realSenseComponents.Where(component => component.ShouldBeStarted).ToArray();
+            return realSenseComponents.Where(component => component.ShouldBeStarted);
         }
 
         private OverallImageCreator GetImageCreator(RealSenseDeterminerComponentsBuilder componentsBuilder)
@@ -144,15 +138,27 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
 
         private void TryToStartDetection()
         {
-            components.Do(component => component.Configure());
-
-            determinerStatus = DeterminerStatus.STARTED;
+            StartComponents();
             while (determinerStatus == DeterminerStatus.STARTED)
             {
                 ProcessFrame();
             }
-
             StopComponents();
+        }
+
+        private void StartComponents()
+        {
+            components.Do(component => component.Configure());
+            determinerStatus = DeterminerStatus.STARTED;
+            InvokeReadyEvent();
+        }
+
+        private void InvokeReadyEvent()
+        {
+            if (Ready != null)
+            {
+                Ready.Invoke();
+            }
         }
 
         private void ProcessFrame()
@@ -241,17 +247,32 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
             }
         }
 
-        public void Speak(String sentence)
+        public T GetComponent<T>() where T : RealSenseComponent
         {
-            speechSynthesizer.Speak(sentence);
+            try
+            {
+                return (T) components.First(component => component.GetType() == typeof(T));
+            }
+            catch (InvalidOperationException)
+            {
+                throw new RealSenseException(String.Format("No component with type {0} was found", typeof(T).Name));
+            }
         }
 
-        private void speechRecognitionCompoment_Speech(SpeechEventArgs speechEventArgs)
+        public void OnFrame(FrameEventListener frameEventListener)
         {
-            if (Speech != null)
-            {
-                Speech.Invoke(speechEventArgs);
-            }
+            Frame += frameEventListener;
+        }
+
+        public void OnReady(ReadyEventListener readyEventListener)
+        {
+            Ready += readyEventListener;
+        }
+
+        public void CheckIfReady()
+        {
+            this.Check(manager => manager.determinerStatus == DeterminerStatus.STARTED,
+                "The component manager is not yet fully started");
         }
 
         public class Builder

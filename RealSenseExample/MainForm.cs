@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 using IntelRealSenseStart.Code.RealSense;
 using IntelRealSenseStart.Code.RealSense.Config.Image;
@@ -7,7 +8,7 @@ using IntelRealSenseStart.Code.RealSense.Data.Status;
 using IntelRealSenseStart.Code.RealSense.Event;
 using IntelRealSenseStart.Code.RealSense.Exception;
 
-namespace IntelRealSenseStart
+namespace RealSenseExample
 {
     public partial class MainForm : Form
     {
@@ -20,6 +21,8 @@ namespace IntelRealSenseStart
 
         public MainForm()
         {
+            var grammar = File.ReadAllText(@"Resources\control.jsgf");
+
             InitializeComponent();
             var builder = RealSenseManager.Create();
             manager = builder.Configure(factory => factory.Configuration()
@@ -28,7 +31,7 @@ namespace IntelRealSenseStart
                         .UsingAudioInputDevice(audioDeviceProperties => audioDeviceProperties.DeviceName.Contains(AUDIO_DEVICE_NAME)))
                     .WithVideoConfiguration(factory.VideoConfiguration()
                         .WithVideoDeviceName(CAMERA_NAME)))
-                .WithSpeechRecognition(factory.SpeechRecognition().UsingDictation())
+                .WithSpeechRecognition(factory.SpeechRecognition().UsingGrammmar(grammar))
                 .WithSpeechSynthesis(factory.SpeechSynthesis())
                 .WithHandsDetection(factory.HandsDetection().WithSegmentationImage())
                 .WithFaceDetection(factory.FaceDetection().UsingLandmarks())
@@ -37,9 +40,9 @@ namespace IntelRealSenseStart
                     .WithDepthStream(factory.ColorStream().From(new Size(640, 480), 30))
                     .WithProjectionEnabled())).Build();
 
+            manager.Ready += realSense_Ready;
             manager.Frame += realSense_Frame;
             manager.Speech += realSense_Speech;
-
         }
 
         private void buttonStart_Click(object sender, EventArgs e)
@@ -56,6 +59,11 @@ namespace IntelRealSenseStart
             {
                 manager.Stop();
             }
+        }
+
+        private void realSense_Ready()
+        {
+            manager.StartRecognition();
         }
 
         private void realSense_Frame(FrameEventArgs frameEventArgs)

@@ -10,7 +10,7 @@ using IntelRealSenseStart.Code.RealSense.Provider;
 
 namespace IntelRealSenseStart.Code.RealSense.Component.Output
 {
-    public class RealSenseSpeechSynthesisOutputComponent : OutputComponent
+    public class SpeechSynthesisOutputComponent : OutputComponent
     {
         private readonly RealSenseFactory factory;
         private readonly NativeSense nativeSense;
@@ -20,7 +20,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Output
         private PXCMSpeechSynthesis speechSynthesis;
         private PXCMSpeechSynthesis.ProfileInfo profile;
 
-        private RealSenseSpeechSynthesisOutputComponent(RealSenseFactory factory, NativeSense nativeSense,
+        private SpeechSynthesisOutputComponent(RealSenseFactory factory, NativeSense nativeSense,
             RealSensePropertiesManager propertiesManager, RealSenseConfiguration configuration)
         {
             this.factory = factory;
@@ -141,9 +141,9 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Output
                 return this;
             }
 
-            public RealSenseSpeechSynthesisOutputComponent Build()
+            public SpeechSynthesisOutputComponent Build()
             {
-                return new RealSenseSpeechSynthesisOutputComponent(factory, nativeSense, propertiesManager, configuration);
+                return new SpeechSynthesisOutputComponent(factory, nativeSense, propertiesManager, configuration);
             }
         }
     }

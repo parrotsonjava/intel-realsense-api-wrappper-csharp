@@ -1,0 +1,6 @@
+﻿#JSGF V1.0;
+
+grammar Test;
+
+public <Test> = Okay <noun>;
+<noun> = ( real sense | google );

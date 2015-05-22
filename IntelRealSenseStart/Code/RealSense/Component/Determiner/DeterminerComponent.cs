@@ -1,6 +1,4 @@
-﻿using System;
-using IntelRealSenseStart.Code.RealSense.Component.Common;
-using IntelRealSenseStart.Code.RealSense.Component.Output;
+﻿using IntelRealSenseStart.Code.RealSense.Component.Common;
 
 namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
 {

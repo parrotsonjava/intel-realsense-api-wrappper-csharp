@@ -1,4 +1,4 @@
-﻿namespace IntelRealSenseStart
+﻿namespace RealSenseExample
 {
     partial class MainForm
     {
