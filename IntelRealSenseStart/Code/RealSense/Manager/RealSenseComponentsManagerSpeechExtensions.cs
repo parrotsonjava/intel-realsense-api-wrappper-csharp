@@ -43,7 +43,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
 
         public static void OnSpeechOutput(this RealSenseComponentsManager manager, SpeechOutputStatusListener listener)
         {
-            if (manager.IsComponentActive(typeof(SpeechRecognitionDeterminerComponent)))
+            if (manager.IsComponentActive(typeof(SpeechSynthesisOutputComponent)))
             {
                 manager.GetComponent<SpeechSynthesisOutputComponent>().Speech += listener;
             }
