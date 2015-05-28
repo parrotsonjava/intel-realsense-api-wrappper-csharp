@@ -170,7 +170,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
                 .Where(face => face != null);
         }
 
-        private FaceData.Builder GetIndividualFaceData(PXCMFaceData.Face face)
+        private FaceDeterminerData.Builder GetIndividualFaceData(PXCMFaceData.Face face)
         {
             return factory.Data.Determiner.Face()
                 .WithLandmarks(GetLandmarkData(face))

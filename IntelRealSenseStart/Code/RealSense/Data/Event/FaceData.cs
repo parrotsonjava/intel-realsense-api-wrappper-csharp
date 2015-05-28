@@ -2,12 +2,16 @@
 
 namespace IntelRealSenseStart.Code.RealSense.Data.Event
 {
-    public class FaceLandmarksData
+    public class FaceData
     {
         private readonly Dictionary<FaceLandmark, DetectionPoint> detectionPoints;
+
         private float heartRate;
 
-        private FaceLandmarksData()
+        private int faceId;
+        private int? recognizedId;
+
+        private FaceData()
         {
             detectionPoints = new Dictionary<FaceLandmark, DetectionPoint>();
         }
@@ -27,18 +31,28 @@ namespace IntelRealSenseStart.Code.RealSense.Data.Event
             get { return heartRate; }
         }
 
+        public int FaceId
+        {
+            get { return faceId; }
+        }
+
+        public int? RecognizedId
+        {
+            get { return recognizedId; }
+        }
+
         public class Builder
         {
-            private readonly FaceLandmarksData faceLandmarksData;
+            private readonly FaceData faceData;
 
             public Builder()
             {
-                faceLandmarksData = new FaceLandmarksData();
+                faceData = new FaceData();
             }
 
             public Builder WithDetectionPoint(FaceLandmark landmark, DetectionPoint.Builder detectionPoint)
             {
-                faceLandmarksData.detectionPoints[landmark] = detectionPoint.Build();
+                faceData.detectionPoints[landmark] = detectionPoint.Build();
                 return this;
             }
 
@@ -46,15 +60,26 @@ namespace IntelRealSenseStart.Code.RealSense.Data.Event
             {
                 if (pulseData != null)
                 {
-                    faceLandmarksData.heartRate = pulseData.QueryHeartRate();
+                    faceData.heartRate = pulseData.QueryHeartRate();
                 }
                 return this;
             }
 
-
-            public FaceLandmarksData Build()
+            public Builder WithFaceId(int faceId)
             {
-                return faceLandmarksData;
+                faceData.faceId = faceId;
+                return this;
+            }
+
+            public Builder WithRecognizedId(int? recognizedId)
+            {
+                faceData.recognizedId = recognizedId;
+                return this;
+            }
+
+            public FaceData Build()
+            {
+                return faceData;
             }
         }
     }

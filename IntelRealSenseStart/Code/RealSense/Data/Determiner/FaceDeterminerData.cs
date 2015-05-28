@@ -1,6 +1,6 @@
 ﻿namespace IntelRealSenseStart.Code.RealSense.Data.Determiner
 {
-    public class FaceData
+    public class FaceDeterminerData
     {
         private PXCMFaceData.LandmarkPoint[] landmarkPoints;
 
@@ -31,39 +31,39 @@
 
         public class Builder
         {
-            private readonly FaceData faceData;
+            private readonly FaceDeterminerData faceDeterminerData;
 
             public Builder()
             {
-                faceData = new FaceData();
+                faceDeterminerData = new FaceDeterminerData();
             }
 
-            public FaceData Build()
+            public FaceDeterminerData Build()
             {
-                return faceData;
+                return faceDeterminerData;
             }
 
             public Builder WithLandmarks(PXCMFaceData.LandmarkPoint[] landmarkPoints)
             {
-                faceData.landmarkPoints = landmarkPoints;
+                faceDeterminerData.landmarkPoints = landmarkPoints;
                 return this;
             }
 
             public Builder WithPulse(PXCMFaceData.PulseData pulseData)
             {
-                faceData.pulseData = pulseData;
+                faceDeterminerData.pulseData = pulseData;
                 return this;
             }
 
             public Builder WithFaceId(int userId)
             {
-                faceData.faceId = userId;
+                faceDeterminerData.faceId = userId;
                 return this;
             }
 
             public Builder WithRecognizedId(int recognizedId)
             {
-                faceData.recognizedId = recognizedId;
+                faceDeterminerData.recognizedId = recognizedId;
                 return this;
             }
         }

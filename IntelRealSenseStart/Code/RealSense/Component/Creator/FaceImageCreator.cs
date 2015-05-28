@@ -65,7 +65,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Creator
             private void OverlayBitmapWithFaceLandmarks()
             {
                 var graphics = Graphics.FromImage(bitmap);
-                foreach (FaceData face in determinerData.FacesData.Faces)
+                foreach (FaceDeterminerData face in determinerData.FacesData.Faces)
                 {
                     if (face.LandmarkPoints != null)
                     {
@@ -74,9 +74,9 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Creator
                 }
             }
 
-            private void AddFaceLandmarksFor(Graphics graphics, FaceData faceData)
+            private void AddFaceLandmarksFor(Graphics graphics, FaceDeterminerData faceDeterminerData)
             {
-                faceData.LandmarkPoints
+                faceDeterminerData.LandmarkPoints
                     .Where(point => point.confidenceImage > CONFIDENCE_THRESHOLD)
                     .Do(point => DrawPoint(graphics, point.image));
             }

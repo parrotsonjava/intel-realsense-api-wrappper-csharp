@@ -72,12 +72,12 @@ namespace IntelRealSenseStart.Code.RealSense.Manager.Builder
                 .Build();
         }
 
-        public FacesLandmarksBuilder GetFacesLandmarksBuilder()
+        public FacesBuilder GetFacesLandmarksBuilder()
         {
             return factory.Components.Creator.FacesLandmarksBuilder().Build();
         }
 
-        public HandsJointsBuilder getHandsJointsBuilder()
+        public HandsBuilder getHandsJointsBuilder()
         {
             return factory.Components.Creator.HandsJointsBuilder().Build();
         }

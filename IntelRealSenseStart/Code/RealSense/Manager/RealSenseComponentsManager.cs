@@ -25,8 +25,8 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
         private readonly IEnumerable<RealSenseComponent> components;
 
         private readonly OverallImageCreator overallImageCreator;
-        private readonly FacesLandmarksBuilder facesLandmarksBuilder;
-        private readonly HandsJointsBuilder handsJointsBuilder;
+        private readonly FacesBuilder facesLandmarksBuilder;
+        private readonly HandsBuilder handsJointsBuilder;
 
         private readonly RealSenseFactory factory;
         private readonly RealSenseConfiguration realSenseConfiguration;

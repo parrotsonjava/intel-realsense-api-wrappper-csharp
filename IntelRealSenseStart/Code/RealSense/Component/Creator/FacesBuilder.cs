@@ -4,37 +4,41 @@ using IntelRealSenseStart.Code.RealSense.Data.Determiner;
 using IntelRealSenseStart.Code.RealSense.Data.Event;
 using IntelRealSenseStart.Code.RealSense.Factory;
 using IntelRealSenseStart.Code.RealSense.Helper;
+using FaceData = IntelRealSenseStart.Code.RealSense.Data.Event.FaceData;
+using FacesData = IntelRealSenseStart.Code.RealSense.Data.Event.FacesData;
 
 namespace IntelRealSenseStart.Code.RealSense.Component.Creator
 {
-    public class FacesLandmarksBuilder
+    public class FacesBuilder
     {
         private readonly RealSenseFactory factory;
 
-        public FacesLandmarksBuilder(RealSenseFactory factory)
+        public FacesBuilder(RealSenseFactory factory)
         {
             this.factory = factory;
         }
 
-        public FacesLandmarksData GetLandmarkData(List<FaceData> facesData)
+        public FacesData GetFacesData(List<FaceDeterminerData> facesDeterminerData)
         {
-            var facesLandmarks = factory.Data.Events.FacesLandmarks();
-            facesData.Do(faceData => facesLandmarks.WithFaceLandmarks(GetFaceLandmarks(faceData)));
+            var facesLandmarks = factory.Data.Events.Faces();
+            facesDeterminerData.Do(faceData => facesLandmarks.WithFaceLandmarks(GetFaceData(faceData)));
             return facesLandmarks.Build();
         }
 
-        private FaceLandmarksData.Builder GetFaceLandmarks(FaceData faceData)
+        private FaceData.Builder GetFaceData(FaceDeterminerData faceDeterminerData)
         {
-            var faceLandmarks = factory.Data.Events.FaceLandmarks();
-            if (faceData.LandmarkPoints != null)
+            var face = factory.Data.Events.Face();
+            if (faceDeterminerData.LandmarkPoints != null)
             {
-                0.To(faceData.LandmarkPoints.Length - 1).ToArray().Do(index =>
-                    faceLandmarks.WithDetectionPoint(
+                0.To(faceDeterminerData.LandmarkPoints.Length - 1).ToArray().Do(index =>
+                    face.WithDetectionPoint(
                         GetLandmarkName(index),
-                        GetDetectionPoint(faceData.LandmarkPoints[index])));
+                        GetDetectionPoint(faceDeterminerData.LandmarkPoints[index])));
             }
-            faceLandmarks.WithPulseData(faceData.PulseData);
-            return faceLandmarks;
+
+            return face.WithPulseData(faceDeterminerData.PulseData)
+                .WithFaceId(faceDeterminerData.FaceId)
+                .WithRecognizedId(GetRecognizedId(faceDeterminerData));
         }
 
         private FaceLandmark GetLandmarkName(int index)
@@ -59,16 +63,25 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Creator
             return factory.Data.Common.Point3D().From(point).WithConfidence(confidence);
         }
 
+        private int? GetRecognizedId(FaceDeterminerData faceDeterminerData)
+        {
+            if (faceDeterminerData.RecognizedId == -1)
+            {
+                return null;
+            }
+            return faceDeterminerData.RecognizedId;
+        }
+
         public class Builder
         {
-            private readonly FacesLandmarksBuilder facesLandmarksBuilder;
+            private readonly FacesBuilder facesLandmarksBuilder;
 
             public Builder(RealSenseFactory factory)
             {
-                facesLandmarksBuilder = new FacesLandmarksBuilder(factory);
+                facesLandmarksBuilder = new FacesBuilder(factory);
             }
 
-            public FacesLandmarksBuilder Build()
+            public FacesBuilder Build()
             {
                 return facesLandmarksBuilder;
             }

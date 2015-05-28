@@ -69,7 +69,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Creator
             private void OverlayBitmapWithUserIds()
             {
                 var graphics = Graphics.FromImage(bitmap);
-                foreach (FaceData face in determinerData.FacesData.Faces)
+                foreach (FaceDeterminerData face in determinerData.FacesData.Faces)
                 {
                     if (face.LandmarkPoints != null &&
                         face.LandmarkPoints.Length > RIGHT_LANDMARK_INDEX)
@@ -79,7 +79,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Creator
                 }
             }
 
-            private void DrawUserIds(Graphics graphics, FaceData face)
+            private void DrawUserIds(Graphics graphics, FaceDeterminerData face)
             {
                 var centerPoint = face.LandmarkPoints[RIGHT_LANDMARK_INDEX].image;
 
@@ -87,7 +87,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Creator
                 DrawRecognizedId(graphics, face, centerPoint);
             }
 
-            private void DrawFaceId(Graphics graphics, FaceData face, PXCMPointF32 centerPoint)
+            private void DrawFaceId(Graphics graphics, FaceDeterminerData face, PXCMPointF32 centerPoint)
             {
                 var faceId = face.FaceId == -1 ? "N/A" : face.FaceId.ToString(CultureInfo.CurrentCulture);
                 var faceIdText = String.Format("Face ID: {0}", faceId);
@@ -96,7 +96,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Creator
                     centerPoint.x + sizeMeasure, centerPoint.y);
             }
 
-            private void DrawRecognizedId(Graphics graphics, FaceData face, PXCMPointF32 centerPoint)
+            private void DrawRecognizedId(Graphics graphics, FaceDeterminerData face, PXCMPointF32 centerPoint)
             {
                 if (!realSenseConfiguration.FaceDetection.UseIdentification)
                 {

@@ -4,28 +4,30 @@ using IntelRealSenseStart.Code.RealSense.Data.Determiner;
 using IntelRealSenseStart.Code.RealSense.Data.Event;
 using IntelRealSenseStart.Code.RealSense.Factory;
 using IntelRealSenseStart.Code.RealSense.Helper;
+using HandData = IntelRealSenseStart.Code.RealSense.Data.Event.HandData;
+using HandsData = IntelRealSenseStart.Code.RealSense.Data.Event.HandsData;
 
 namespace IntelRealSenseStart.Code.RealSense.Component.Creator
 {
-    public class HandsJointsBuilder
+    public class HandsBuilder
     {
         private readonly RealSenseFactory factory;
 
-        public HandsJointsBuilder(RealSenseFactory factory)
+        public HandsBuilder(RealSenseFactory factory)
         {
             this.factory = factory;
         }
 
-        public HandsJointsData GetJointsData(List<HandData> handsData)
+        public HandsData GetHandsData(List<Data.Determiner.HandData> handsData)
         {
-            var handsJoints = factory.Data.Events.HandsJoints();
+            var handsJoints = factory.Data.Events.Hands();
             handsData.Do(handData => handsJoints.WithFaceLandmarks(GetHandJoints(handData)));
             return handsJoints.Build();
         }
 
-        private HandJointsData.Builder GetHandJoints(HandData handData)
+        private HandData.Builder GetHandJoints(Data.Determiner.HandData handData)
         {
-            var handJoints = factory.Data.Events.HandJoints();
+            var handJoints = factory.Data.Events.Hand();
             0.To(handData.Joints.Count - 1).ToArray().Do(index =>
                 handJoints.WithDetectionPoint(
                     GetJointName(index),
@@ -57,14 +59,14 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Creator
 
         public class Builder
         {
-            private readonly HandsJointsBuilder handsJointsBuilder;
+            private readonly HandsBuilder handsJointsBuilder;
 
             public Builder(RealSenseFactory factory)
             {
-                handsJointsBuilder = new HandsJointsBuilder(factory);
+                handsJointsBuilder = new HandsBuilder(factory);
             }
 
-            public HandsJointsBuilder Build()
+            public HandsBuilder Build()
             {
                 return handsJointsBuilder;
             }

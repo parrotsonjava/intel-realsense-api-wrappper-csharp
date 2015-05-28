@@ -4,24 +4,24 @@ namespace IntelRealSenseStart.Code.RealSense.Factory.Data
 {
     public class EventDataFactory
     {
-        public FacesLandmarksData.Builder FacesLandmarks()
+        public FacesData.Builder Faces()
         {
-           return new FacesLandmarksData.Builder(); 
+           return new FacesData.Builder(); 
         }
 
-        public FaceLandmarksData.Builder FaceLandmarks()
+        public FaceData.Builder Face()
         {
-            return new FaceLandmarksData.Builder();
+            return new FaceData.Builder();
         }
 
-        public HandsJointsData.Builder HandsJoints()
+        public HandsData.Builder Hands()
         {
-            return new HandsJointsData.Builder();
+            return new HandsData.Builder();
         }
 
-        public HandJointsData.Builder HandJoints()
+        public HandData.Builder Hand()
         {
-            return new HandJointsData.Builder();
+            return new HandData.Builder();
         }
 
         public DetectionPoint.Builder DetectionPoint()

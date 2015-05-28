@@ -5,14 +5,14 @@ namespace IntelRealSenseStart.Code.RealSense.Data.Determiner
 {
     public class FacesData
     {
-        private readonly List<FaceData> faces;
+        private readonly List<FaceDeterminerData> faces;
 
         public FacesData()
         {
-            faces = new List<FaceData>();
+            faces = new List<FaceDeterminerData>();
         }
 
-        public List<FaceData> Faces
+        public List<FaceDeterminerData> Faces
         {
             get { return faces; }
         }
@@ -26,13 +26,13 @@ namespace IntelRealSenseStart.Code.RealSense.Data.Determiner
                 facesData = new FacesData();
             }
 
-            public Builder WithFace(FaceData.Builder faceData)
+            public Builder WithFace(FaceDeterminerData.Builder faceData)
             {
                 facesData.Faces.Add(faceData.Build());
                 return this;
             }
 
-            public Builder WithFaces(IEnumerable<FaceData.Builder> faceData)
+            public Builder WithFaces(IEnumerable<FaceDeterminerData.Builder> faceData)
             {
                 facesData.Faces.AddRange(faceData.Select(faceBuilder => faceBuilder.Build()));
                 return this;

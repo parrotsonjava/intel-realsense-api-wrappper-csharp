@@ -3,6 +3,8 @@ using IntelRealSenseStart.Code.RealSense.Config.RealSense;
 using IntelRealSenseStart.Code.RealSense.Data.Determiner;
 using IntelRealSenseStart.Code.RealSense.Data.Event;
 using IntelRealSenseStart.Code.RealSense.Factory;
+using FacesData = IntelRealSenseStart.Code.RealSense.Data.Event.FacesData;
+using HandsData = IntelRealSenseStart.Code.RealSense.Data.Event.HandsData;
 
 namespace IntelRealSenseStart.Code.RealSense.Event
 {
@@ -10,8 +12,8 @@ namespace IntelRealSenseStart.Code.RealSense.Event
     {
         private ImageBuilder imageBuilder;
 
-        private FacesLandmarksBuilder facesLandmarksBuilder;
-        private HandsJointsBuilder handsJointsBuilder;
+        private FacesBuilder facesLandmarksBuilder;
+        private HandsBuilder handsJointsBuilder;
 
         private DeterminerData determinerData;
 
@@ -20,22 +22,22 @@ namespace IntelRealSenseStart.Code.RealSense.Event
             return imageBuilder;
         }
 
-        public FacesLandmarksData FaceLandmarks
+        public FacesData Faces
         {
-            get { return facesLandmarksBuilder.GetLandmarkData(determinerData.FacesData.Faces); }
+            get { return facesLandmarksBuilder.GetFacesData(determinerData.FacesData.Faces); }
         }
 
-        public HandsJointsData HandsJoints
+        public HandsData Hands
         {
-            get { return handsJointsBuilder.GetJointsData(determinerData.HandsData.Hands); }
+            get { return handsJointsBuilder.GetHandsData(determinerData.HandsData.Hands); }
         }
 
         public class Builder
         {
             private readonly FrameEventArgs frameEventArgs;
 
-            private FacesLandmarksBuilder facesLandmarksBuilder;
-            private HandsJointsBuilder handsJointsBuilder;
+            private FacesBuilder facesLandmarksBuilder;
+            private HandsBuilder handsJointsBuilder;
             
             private readonly ImageBuilder.Builder handsImageBuilderBuilder;
             private OverallImageCreator overallImageCreator;
@@ -49,13 +51,13 @@ namespace IntelRealSenseStart.Code.RealSense.Event
                 handsImageBuilderBuilder = factory.Components.Creator.HandsImageBuilder();
             }
 
-            public Builder WithFacesLandmarksBuilder(FacesLandmarksBuilder facesLandmarksBuilder)
+            public Builder WithFacesLandmarksBuilder(FacesBuilder facesLandmarksBuilder)
             {
                 this.facesLandmarksBuilder = facesLandmarksBuilder;
                 return this;
             }
 
-            public Builder WithHandsJointsBuilder(HandsJointsBuilder handsJointsBuilder)
+            public Builder WithHandsJointsBuilder(HandsBuilder handsJointsBuilder)
             {
                 this.handsJointsBuilder = handsJointsBuilder;
                 return this;

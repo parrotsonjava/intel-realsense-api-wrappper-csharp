@@ -52,8 +52,8 @@ namespace RealSenseExample
                         .UsingAudioInputDevice(audioDeviceProperties => audioDeviceProperties.DeviceName.Contains(AUDIO_DEVICE_NAME)))
                     .WithVideoConfiguration(factory.VideoConfiguration()
                         .WithVideoDeviceName(CAMERA_NAME)))
-                //.WithSpeechRecognition(factory.SpeechRecognition().UsingGrammmar(grammarIdle))
-                //.WithSpeechSynthesis(factory.SpeechSynthesis())
+                .WithSpeechRecognition(factory.SpeechRecognition().UsingGrammmar(grammarIdle))
+                .WithSpeechSynthesis(factory.SpeechSynthesis())
                 .WithHandsDetection(factory.HandsDetection().WithSegmentationImage())
                 .WithFaceDetection(factory.FaceDetection()
                     .UsingLandmarks()
@@ -102,7 +102,7 @@ namespace RealSenseExample
 
         private void realSense_Ready()
         {
-            //realSenseManager.StartRecognition();
+            realSenseManager.StartRecognition();
 
             BeginInvoke((Action) (() => {
                 buttonRegisterFaces.Enabled = true;
@@ -133,8 +133,8 @@ namespace RealSenseExample
                 Console.WriteLine(@"Error creating the image: {0}", e.Message);
             }
 
-            var facesLandmarksData = frameEventArgs.FaceLandmarks;
-            var handsJoints = frameEventArgs.HandsJoints;
+            var faces = frameEventArgs.Faces;
+            var hands = frameEventArgs.Hands;
         }
 
         private void realSense_SpeechRecognized(SpeechRecognitionEventArgs eventArgs)

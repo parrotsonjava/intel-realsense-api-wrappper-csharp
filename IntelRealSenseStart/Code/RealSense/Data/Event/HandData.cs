@@ -2,11 +2,11 @@
 
 namespace IntelRealSenseStart.Code.RealSense.Data.Event
 {
-    public class HandJointsData
+    public class HandData
     {
         private readonly Dictionary<HandJoint, DetectionPoint> detectionPoints;
 
-        private HandJointsData()
+        private HandData()
         {
             detectionPoints = new Dictionary<HandJoint, DetectionPoint>();
         }
@@ -23,22 +23,22 @@ namespace IntelRealSenseStart.Code.RealSense.Data.Event
 
         public class Builder
         {
-            private readonly HandJointsData handJointsData;
+            private readonly HandData handData;
 
             public Builder()
             {
-                handJointsData = new HandJointsData();
+                handData = new HandData();
             }
 
             public Builder WithDetectionPoint(HandJoint handJoint, DetectionPoint.Builder detectionPoint)
             {
-                handJointsData.detectionPoints[handJoint] = detectionPoint.Build();
+                handData.detectionPoints[handJoint] = detectionPoint.Build();
                 return this;
             }
 
-            public HandJointsData Build()
+            public HandData Build()
             {
-                return handJointsData;
+                return handData;
             }
         }
     }

@@ -29,9 +29,9 @@ namespace IntelRealSenseStart.Code.RealSense.Factory.Data
             return new FacesData.Builder();
         }
 
-        public FaceData.Builder Face()
+        public FaceDeterminerData.Builder Face()
         {
-            return new FaceData.Builder();
+            return new FaceDeterminerData.Builder();
         }
     }
 }

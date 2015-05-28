@@ -36,14 +36,14 @@ namespace IntelRealSenseStart.Code.RealSense.Factory.Component
             return new OverallImageCreator.Builder();
         }
 
-        public FacesLandmarksBuilder.Builder FacesLandmarksBuilder()
+        public FacesBuilder.Builder FacesLandmarksBuilder()
         {
-            return new FacesLandmarksBuilder.Builder(realSenseFactory);
+            return new FacesBuilder.Builder(realSenseFactory);
         }
 
-        public HandsJointsBuilder.Builder HandsJointsBuilder()
+        public HandsBuilder.Builder HandsJointsBuilder()
         {
-            return new HandsJointsBuilder.Builder(realSenseFactory);
+            return new HandsBuilder.Builder(realSenseFactory);
         }
 
         public UserIdsImageCreator.Builder UserIdsImageCreator()
