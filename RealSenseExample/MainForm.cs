@@ -4,6 +4,7 @@ using System.IO;
 using System.Windows.Forms;
 using IntelRealSenseStart.Code.RealSense;
 using IntelRealSenseStart.Code.RealSense.Config.Image;
+using IntelRealSenseStart.Code.RealSense.Config.RealSense.Data;
 using IntelRealSenseStart.Code.RealSense.Data.Status;
 using IntelRealSenseStart.Code.RealSense.Event;
 using IntelRealSenseStart.Code.RealSense.Event.Data;
@@ -22,6 +23,7 @@ namespace RealSenseExample
 
         public const String CAMERA_NAME = "Intel(R) RealSense(TM) 3D Camera"; // or "Lenovo EasyCamera"
         public const String AUDIO_DEVICE_NAME = "VF0800";
+        public const String FACE_DATABASE_PATH = "faces.db";
 
         public delegate void BitmapHandler(Bitmap bitmap);
 
@@ -50,10 +52,15 @@ namespace RealSenseExample
                         .UsingAudioInputDevice(audioDeviceProperties => audioDeviceProperties.DeviceName.Contains(AUDIO_DEVICE_NAME)))
                     .WithVideoConfiguration(factory.VideoConfiguration()
                         .WithVideoDeviceName(CAMERA_NAME)))
-                .WithSpeechRecognition(factory.SpeechRecognition().UsingGrammmar(grammarIdle))
-                .WithSpeechSynthesis(factory.SpeechSynthesis())
+                //.WithSpeechRecognition(factory.SpeechRecognition().UsingGrammmar(grammarIdle))
+                //.WithSpeechSynthesis(factory.SpeechSynthesis())
                 .WithHandsDetection(factory.HandsDetection().WithSegmentationImage())
-                .WithFaceDetection(factory.FaceDetection().UsingLandmarks())
+                .WithFaceDetection(factory.FaceDetection()
+                    .UsingLandmarks()
+                    .UsingFaceIdentification(factory.FaceIdentification()
+                        .WithFaceIdentificationMode(FaceIdentificationMode.ON_DEMAND)
+                        .WithDataBasePath(FACE_DATABASE_PATH)
+                        .UsingExistingDatabase(true)))
                 .WithImage(factory.Image()
                     .WithColorStream(factory.ColorStream().From(new Size(640, 480), 30))
                     .WithDepthStream(factory.ColorStream().From(new Size(640, 480), 30))
@@ -83,9 +90,29 @@ namespace RealSenseExample
             }
         }
 
+        private void buttonRegisterFaces_Click(object sender, EventArgs e)
+        {
+            realSenseManager.RegisterFaces();
+        }
+
+        private void buttonUnregisterFaces_Click(object sender, EventArgs e)
+        {
+            realSenseManager.UnregisterFaces();
+        }
+
         private void realSense_Ready()
         {
-            realSenseManager.StartRecognition();
+            //realSenseManager.StartRecognition();
+
+            BeginInvoke((Action) (() => {
+                buttonRegisterFaces.Enabled = true;
+                buttonUnregisterFaces.Enabled = true;
+            }));
+        }
+
+        public void EnableButtons()
+        {
+            
         }
 
         private void realSense_Frame(FrameEventArgs frameEventArgs)
@@ -97,6 +124,7 @@ namespace RealSenseExample
                     .WithBackgroundImage(ImageBackground.ColorImage)
                     .WithOverlay(ImageOverlay.ColorCoordinateHandJoints)
                     .WithOverlay(ImageOverlay.ColorCoordinateFaceLandmarks)
+                    .WithOverlay(ImageOverlay.UserIds)
                     .Create();
                 BeginInvoke(new BitmapHandler(SetImage), new object[] { bitmap });
             }

@@ -66,7 +66,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
                 componentsBuilder.CreateSpeechRecognitionDeterminerComponent(),
                 componentsBuilder.CreateSpeechSynthesisOutputComponent()
             };
-            return realSenseComponents.Where(component => component.ShouldBeStarted);
+            return realSenseComponents;
         }
 
         private OverallImageCreator GetImageCreator(RealSenseComponentsBuilder componentsBuilder)
@@ -75,7 +75,8 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
             {
                 componentsBuilder.CreateBasicImageCreatorComponent(),
                 componentsBuilder.CreateHandsImageCreatorComponent(),
-                componentsBuilder.CreateFaceImageCreatorComponent()
+                componentsBuilder.CreateFaceImageCreatorComponent(),
+                componentsBuilder.CreateUserIdsImageCreator()
             });
         }
 
@@ -101,7 +102,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
             {
                 determinerStatus = DeterminerStatus.STARTING;
 
-                components.Do(component => component.EnableFeatures());
+                GetActiveComponents().Do(component => component.EnableFeatures());
                 nativeSense.SenseManager.Init();
                 (determinerThread = new Thread(StartDetection)).Start();
             }
@@ -148,7 +149,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
 
         private void StartComponents()
         {
-            components.Do(component => component.Configure());
+            GetActiveComponents().Do(component => component.Configure());
             determinerStatus = DeterminerStatus.STARTED;
             InvokeReadyEvent();
         }
@@ -189,7 +190,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
         private FrameEventArgs.Builder ProcessComponents()
         {
             DeterminerData.Builder determinerDataBuilder = factory.Data.Determiner.DeterminerData();
-            components.OfType<FrameDeterminerComponent>().Do(component => component.Process(determinerDataBuilder));
+            GetActiveComponents().OfType<FrameDeterminerComponent>().Do(component => component.Process(determinerDataBuilder));
             return factory.Events.FrameEvent()
                 .WithOverallImageCreator(overallImageCreator)
                 .WithFacesLandmarksBuilder(facesLandmarksBuilder)
@@ -213,7 +214,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
 
         private void StopComponents()
         {
-            components.Do(component => component.Stop());
+            GetActiveComponents().Do(component => component.Stop());
         }
 
         public void Stop()
@@ -247,16 +248,31 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
             }
         }
 
+        public IEnumerable<RealSenseComponent> GetActiveComponents()
+        {
+            return components.Where(component => component.ShouldBeStarted);
+        } 
+
         public T GetComponent<T>() where T : RealSenseComponent
         {
             try
             {
-                return (T) components.First(component => component.GetType() == typeof(T));
+                T namedComponent = (T) components.First(component => component.GetType() == typeof(T));
+                if (!namedComponent.ShouldBeStarted)
+                {
+                    throw new IllegalStateException(String.Format("The component of type {0} was not configured", typeof(T).Name));
+                }
+                return namedComponent;
             }
             catch (InvalidOperationException)
             {
-                throw new RealSenseException(String.Format("No component with type {0} was found", typeof(T).Name));
+                throw new IllegalStateException(String.Format("No component with type {0} was found", typeof(T).Name));
             }
+        }
+
+        public bool IsComponentActive(Type type)
+        {
+            return GetActiveComponents().Any(component => component.GetType() == type);
         }
 
         public void OnFrame(FrameEventListener frameEventListener)

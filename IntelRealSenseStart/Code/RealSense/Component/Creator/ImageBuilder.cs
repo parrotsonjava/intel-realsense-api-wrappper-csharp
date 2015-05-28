@@ -54,9 +54,14 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Creator
                 case ImageOverlay.DepthCoordinateHandsSegmentationImage:
                     AddDepthCoordinateHandsSegmentationImage();
                     break;
+                case ImageOverlay.UserIds:
+                    AddUserIds();
+                    break;
             }
             return this;
         }
+
+
 
         private void AddColorCoordinateHandJoints()
         {
@@ -86,7 +91,6 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Creator
                 throw new RealSenseException(
                     "Cannot use projected face landmarks since landmark detection or image projection is not configured");
             }
-
             imageConfigurationBuilder.WithOverlay(ImageOverlay.ColorCoordinateFaceLandmarks);
         }
 
@@ -97,6 +101,16 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Creator
             {
                 throw new RealSenseException("Cannot use hand segmentation image since it is not configured");
             }
+            imageConfigurationBuilder.WithOverlay(ImageOverlay.DepthCoordinateHandsSegmentationImage);
+        }
+
+        private void AddUserIds()
+        {
+            if (!realSenseConfiguration.FaceDetectionEnabled)
+            {
+                throw new RealSenseException("Cannot use user IDs image since it face detection not configured");
+            }
+            imageConfigurationBuilder.WithOverlay(ImageOverlay.UserIds);
         }
 
         public Bitmap Create()

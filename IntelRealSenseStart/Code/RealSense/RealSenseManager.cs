@@ -4,7 +4,6 @@ using IntelRealSenseStart.Code.RealSense.Data.Properties;
 using IntelRealSenseStart.Code.RealSense.Data.Status;
 using IntelRealSenseStart.Code.RealSense.Event;
 using IntelRealSenseStart.Code.RealSense.Factory;
-using IntelRealSenseStart.Code.RealSense.Factory.Configuration;
 using IntelRealSenseStart.Code.RealSense.Helper;
 using IntelRealSenseStart.Code.RealSense.Manager;
 using IntelRealSenseStart.Code.RealSense.Manager.Builder;
@@ -45,8 +44,6 @@ namespace IntelRealSenseStart.Code.RealSense
             componentsManager.OnSpeechOutput(componentsManager_SpeechOutput);
         }
 
-
-
         public void Start()
         {
             componentsManager.Start();
@@ -76,6 +73,16 @@ namespace IntelRealSenseStart.Code.RealSense
         public void StopRecognition()
         {
             componentsManager.StopRecognition();
+        }
+
+        public void RegisterFaces()
+        {
+            componentsManager.RegisterFaces();
+        }
+
+        public void UnregisterFaces()
+        {
+            componentsManager.UnregisterFaces();
         }
 
         private void componentsManager_Frame(FrameEventArgs frameEventArgs)

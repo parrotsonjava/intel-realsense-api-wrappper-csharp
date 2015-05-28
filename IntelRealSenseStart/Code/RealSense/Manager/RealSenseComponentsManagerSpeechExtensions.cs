@@ -29,7 +29,10 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
 
         public static void OnSpeechRecognized(this RealSenseComponentsManager manager, SpeechRecognitionEventListener listener)
         {
-            manager.GetComponent<SpeechRecognitionDeterminerComponent>().Speech += listener;
+            if (manager.IsComponentActive(typeof(SpeechRecognitionDeterminerComponent)))
+            {
+                manager.GetComponent<SpeechRecognitionDeterminerComponent>().Speech += listener;
+            }
         }
 
         public static void Speak(this RealSenseComponentsManager manager, String sentence)
@@ -40,7 +43,12 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
 
         public static void OnSpeechOutput(this RealSenseComponentsManager manager, SpeechOutputStatusListener listener)
         {
-            manager.GetComponent<SpeechSynthesisOutputComponent>().Speech += listener;
+            if (manager.IsComponentActive(typeof(SpeechRecognitionDeterminerComponent)))
+            {
+                manager.GetComponent<SpeechSynthesisOutputComponent>().Speech += listener;
+            }
         }
+
+
     }
 }

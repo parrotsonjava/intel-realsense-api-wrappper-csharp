@@ -5,6 +5,7 @@
         DepthCoordinateHandsSegmentationImage,
         DepthCoordinateHandJoints,
         ColorCoordinateHandJoints,
-        ColorCoordinateFaceLandmarks
+        ColorCoordinateFaceLandmarks,
+        UserIds
     }
 }

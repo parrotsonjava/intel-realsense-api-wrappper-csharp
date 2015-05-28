@@ -103,6 +103,13 @@ namespace IntelRealSenseStart.Code.RealSense.Manager.Builder
                 .Build();
         }
 
+        public UserIdsImageCreator CreateUserIdsImageCreator()
+        {
+            return factory.Components.Creator.UserIdsImageCreator()
+                .WithRealSenseConfiguration(configuration)
+                .Build();
+        }
+
         public OverallImageCreator CreateOverallImageCreator(ImageCreator[] imageCreators)
         {
             return factory.Components.Creator.OverallImageCreator()
@@ -148,5 +155,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager.Builder
                 return componentsBuilder;
             }
         }
+
+
     }
 }

@@ -3,28 +3,35 @@
     public class FaceConfiguration
     {
         private bool useLandmarks;
-        private bool useBoundingRectangle;
         private bool usePulse;
+
+        private FaceIdentificationConfiguration identificationConfiguration;
 
         private FaceConfiguration()
         {
             useLandmarks = false;
             usePulse = false;
+            identificationConfiguration = null;
         }
 
         public bool UseLandmarks
         {
-            get { return useLandmarks;  }
-        }
-
-        public bool UseBoundingRectangle
-        {
-            get { return useBoundingRectangle; }
+            get { return useLandmarks; }
         }
 
         public bool UsePulse
         {
-            get { return usePulse;  }
+            get { return usePulse; }
+        }
+
+        public bool UseIdentification
+        {
+            get { return identificationConfiguration != null; }
+        }
+
+        public FaceIdentificationConfiguration Identification
+        {
+            get { return identificationConfiguration; }
         }
 
         public class Builder
@@ -33,7 +40,7 @@
 
             public Builder()
             {
-                configuration = new FaceConfiguration();    
+                configuration = new FaceConfiguration();
             }
 
             public Builder UsingLandmarks()
@@ -42,15 +49,16 @@
                 return this;
             }
 
-            public Builder UsingBoundingRectangle()
-            {
-                configuration.useBoundingRectangle = true;
-                return this;
-            }
-
             public Builder UsingPulse()
             {
                 configuration.usePulse = true;
+                return this;
+            }
+
+            public Builder UsingFaceIdentification(
+                FaceIdentificationConfiguration.Builder identificationConfiguration)
+            {
+                configuration.identificationConfiguration = identificationConfiguration.Build();
                 return this;
             }
 
