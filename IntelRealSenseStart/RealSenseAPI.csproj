@@ -72,8 +72,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Code\DialogFlow\Decision\DialogDecision.cs" />
-    <Compile Include="Code\DialogFlow\DialogFlow.cs" />
     <Compile Include="Code\RealSense\Component\Creator\BasicImageCreator.cs" />
     <Compile Include="Code\RealSense\Component\Creator\UserIdsImageCreator.cs" />
     <Compile Include="Code\RealSense\Component\Creator\FaceImageCreator.cs" />

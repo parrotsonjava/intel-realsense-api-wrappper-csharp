@@ -92,7 +92,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
             recognitionConfig.UseStorage(FACE_IDENTIFICATION_DB);
             recognitionConfig.SetRegistrationMode(GetRegistrationMode());
 
-            LoadRecognitionDatabaseFromFile(configuration.FaceDetection.Identification.DatabasePath,
+            LoadRecognitionDatabaseFromFile(recognitionConfig, configuration.FaceDetection.Identification.DatabasePath,
                 configuration.FaceDetection.Identification.UseExistingDatabase);
         }
 
@@ -106,14 +106,17 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
                     .REGISTRATION_MODE_ON_DEMAND;
         }
 
-        private void LoadRecognitionDatabaseFromFile(string databasePath, bool useExistingDatabase)
+        private void LoadRecognitionDatabaseFromFile(
+            PXCMFaceConfiguration.RecognitionConfiguration recognitionConfig, 
+            string databasePath, bool useExistingDatabase)
         {
             if (databasePath == null || !useExistingDatabase || !File.Exists(databasePath))
             {
                 return;
             }
 
-            // TODO load database
+            var buffer = File.ReadAllBytes(databasePath);
+            recognitionConfig.SetDatabaseBuffer(buffer);
         }
 
         public void Stop()
@@ -138,7 +141,13 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
                 return;
             }
 
-            // TODO save database
+            var recognitionModule = faceData.QueryRecognitionModule();
+            recognitionModule.QueryDatabaseSize();
+            var byteSize = recognitionModule.QueryDatabaseSize();
+            var buffer = new Byte[byteSize];
+            recognitionModule.QueryDatabaseBuffer(buffer);
+
+            File.WriteAllBytes(databasePath, buffer);
         }
 
         public void Process(DeterminerData.Builder determinerData)

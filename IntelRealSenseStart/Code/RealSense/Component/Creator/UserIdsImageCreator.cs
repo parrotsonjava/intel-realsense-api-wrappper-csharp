@@ -26,8 +26,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Creator
 
         public class UserIdsImageCreatorRun
         {
-            private static readonly Point OFFSET_FACE_ID = new Point(10, 0);
-            private static readonly Point OFFSET_RECOGNIZED_ID = new Point(10, 40);
+            private int sizeMeasure;
 
             private readonly Font font;
             private readonly SolidBrush brush;
@@ -48,7 +47,8 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Creator
                 this.realSenseConfiguration = realSenseConfiguration;
                 this.imageCreatorConfiguration = imageCreatorConfiguration;
 
-                font = new Font("Arial", 16);
+                sizeMeasure = 10 * (bitmap.Width / imageCreatorConfiguration.Resolution.Width);
+                font = new Font("Arial", sizeMeasure);
                 brush = new SolidBrush(Color.White);
             }
 
@@ -93,7 +93,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Creator
                 var faceIdText = String.Format("Face ID: {0}", faceId);
 
                 graphics.DrawString(faceIdText, font, brush,
-                    centerPoint.x + OFFSET_FACE_ID.X, centerPoint.y + OFFSET_FACE_ID.Y);
+                    centerPoint.x + sizeMeasure, centerPoint.y);
             }
 
             private void DrawRecognizedId(Graphics graphics, FaceData face, PXCMPointF32 centerPoint)
@@ -107,7 +107,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Creator
                 var recognizedIdText = String.Format("Rec. ID: {0}", recognizedId);
 
                 graphics.DrawString(recognizedIdText, font, brush,
-                    centerPoint.x + OFFSET_RECOGNIZED_ID.X, centerPoint.y + OFFSET_RECOGNIZED_ID.Y);
+                    centerPoint.x + sizeMeasure, centerPoint.y + (int) (1.5f * sizeMeasure));
             }
         }
 
