@@ -36,9 +36,9 @@ namespace IntelRealSenseStart.Code.RealSense.Factory.Component
             return new PulseDeterminerComponent.Builder();
         }
 
-        public DeviceDeterminerComponent.Builder Device()
+        public VideoDeviceDeterminerComponent.Builder Device()
         {
-            return new DeviceDeterminerComponent.Builder();
+            return new VideoDeviceDeterminerComponent.Builder();
         }
 
         public SpeechRecognitionDeterminerComponent.Builder SpeechRecognition()

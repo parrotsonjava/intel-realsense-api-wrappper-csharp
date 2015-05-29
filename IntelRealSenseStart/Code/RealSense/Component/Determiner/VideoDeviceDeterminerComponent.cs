@@ -11,7 +11,7 @@ using IntelRealSenseStart.Code.RealSense.Provider;
 
 namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
 {
-    public class DeviceDeterminerComponent : FrameDeterminerComponent
+    public class VideoDeviceDeterminerComponent : FrameDeterminerComponent
     {
         private readonly NativeSense nativeSense;
         private readonly RealSensePropertiesManager propertiesManager;
@@ -19,7 +19,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
 
         private PXCMCapture.Device device;
 
-        private DeviceDeterminerComponent(NativeSense nativeSense,
+        private VideoDeviceDeterminerComponent(NativeSense nativeSense,
             RealSensePropertiesManager propertiesManager, RealSenseConfiguration configuration)
         {
             this.nativeSense = nativeSense;
@@ -84,7 +84,10 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
 
         public bool ShouldBeStarted
         {
-            get { return true; }
+            get { return configuration.HandsDetectionEnabled ||
+                configuration.FaceDetectionEnabled ||
+                configuration.Image.ColorEnabled ||
+                configuration.Image.DepthEnabled; }
         }
 
         public class Builder
@@ -111,7 +114,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
                 return this;
             }
 
-            public DeviceDeterminerComponent Build()
+            public VideoDeviceDeterminerComponent Build()
             {
                 propertiesManager.Check(Preconditions.IsNotNull,
                     "The properties manager must be set to create the device component");
@@ -120,7 +123,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
                 configuration.Check(Preconditions.IsNotNull,
                     "The RealSense configuration must be set to create the device component");
 
-                return new DeviceDeterminerComponent(nativeSense, propertiesManager, configuration);
+                return new VideoDeviceDeterminerComponent(nativeSense, propertiesManager, configuration);
             }
         }
 

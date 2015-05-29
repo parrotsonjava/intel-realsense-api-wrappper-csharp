@@ -17,7 +17,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager.Builder
 
         private RealSensePropertiesManager propertiesManager;
 
-        public DeviceDeterminerComponent CreateDeviceDeterminerComponent()
+        public VideoDeviceDeterminerComponent CreateDeviceDeterminerComponent()
         {
             return factory.Components.Determiner.Device()
                 .WithPropertiesManager(propertiesManager)

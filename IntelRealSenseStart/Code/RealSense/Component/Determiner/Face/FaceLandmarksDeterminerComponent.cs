@@ -15,6 +15,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner.Face
 
         public void Configure(PXCMFaceConfiguration moduleConfiguration)
         {
+            // Nothing to do
         }
 
         public void Process(PXCMFaceData.Face face, FaceDeterminerData.Builder faceDeterminerData)

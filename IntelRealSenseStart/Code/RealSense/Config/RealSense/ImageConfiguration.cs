@@ -8,6 +8,13 @@ namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
         public static readonly ImageConfiguration DEFAULT_CONFIGURATION = new ImageConfiguration();
         public static readonly Size DEFAULT_RESOLUTION = new Size(640, 480);
 
+        protected ImageConfiguration()
+        {
+            ColorEnabled = false;
+            DepthEnabled = false;
+            ProjectionEnabled = false;
+        }
+
         public bool ColorEnabled { get; private set; }
         public bool DepthEnabled { get; private set; }
         public bool ProjectionEnabled { get; private set; }
@@ -15,63 +22,56 @@ namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
         public StreamConfiguration ColorStreamConfiguration { get; private set; }
         public StreamConfiguration DepthStreamConfiguration { get; private set; }
 
-        protected ImageConfiguration()
-        {
-            ColorEnabled = true;
-            DepthEnabled = true;
-            ProjectionEnabled = true;
-        }
-
         public class Builder
         {
-            private readonly ImageConfiguration imageFeature;
+            private readonly ImageConfiguration imageConfiguration;
 
             public Builder()
             {
-                imageFeature = new ImageConfiguration();
+                imageConfiguration = new ImageConfiguration();
             }
 
             public Builder WithColorEnabled()
             {
-                if (!imageFeature.ColorEnabled)
+                if (!imageConfiguration.ColorEnabled)
                 {
-                    imageFeature.ColorEnabled = true;
+                    imageConfiguration.ColorEnabled = true;
                 }
                 return this;
             }
 
             public Builder WithColorDisabled()
             {
-                imageFeature.ColorEnabled = false;
+                imageConfiguration.ColorEnabled = false;
                 return this;
             }
 
             public Builder WithDepthEnabled()
             {
-                if (!imageFeature.ColorEnabled)
+                if (!imageConfiguration.ColorEnabled)
                 {
-                    imageFeature.DepthEnabled = true;
+                    imageConfiguration.DepthEnabled = true;
                 }
                 return this;
             }
 
             public Builder WithDepthDisabled()
             {
-                imageFeature.DepthEnabled = false;
+                imageConfiguration.DepthEnabled = false;
                 return this;
             }
 
             public Builder WithColorStream(StreamConfiguration streamConfiguration)
             {
-                imageFeature.ColorEnabled = true;
-                imageFeature.ColorStreamConfiguration = streamConfiguration;
+                imageConfiguration.ColorEnabled = true;
+                imageConfiguration.ColorStreamConfiguration = streamConfiguration;
                 return this;
             }
 
             public Builder WithDepthStream(StreamConfiguration streamConfiguration)
             {
-                imageFeature.DepthEnabled = true;
-                imageFeature.DepthStreamConfiguration = streamConfiguration;
+                imageConfiguration.DepthEnabled = true;
+                imageConfiguration.DepthStreamConfiguration = streamConfiguration;
                 return this;
             }
 
@@ -80,24 +80,24 @@ namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
                 WithColorEnabled();
                 WithDepthEnabled();
 
-                imageFeature.ProjectionEnabled = true;
+                imageConfiguration.ProjectionEnabled = true;
                 return this;
             }
 
             public Builder WithProjectionDisabled()
             {
-                imageFeature.ProjectionEnabled = false;
+                imageConfiguration.ProjectionEnabled = false;
                 return this;
             }
 
             public ImageConfiguration Build()
             {
-                (!imageFeature.ColorEnabled || imageFeature.ColorStreamConfiguration != null).Check(
+                (!imageConfiguration.ColorEnabled || imageConfiguration.ColorStreamConfiguration != null).Check(
                     "When enabling color images, a color stream profile must be set");
-                (!imageFeature.DepthEnabled || imageFeature.DepthStreamConfiguration != null).Check(
+                (!imageConfiguration.DepthEnabled || imageConfiguration.DepthStreamConfiguration != null).Check(
                     "When enabling depth images, a depth stream profile must be set");
 
-                return imageFeature;
+                return imageConfiguration;
             }
         }
     }

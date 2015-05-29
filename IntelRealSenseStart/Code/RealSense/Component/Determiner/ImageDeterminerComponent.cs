@@ -32,7 +32,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
                     streamConfiguration.Resolution.Width, streamConfiguration.Resolution.Height,
                     streamConfiguration.FrameRate);
             }
-            if (configuration.Image.DepthEnabled || configuration.HandsDetectionEnabled)
+            if (configuration.Image.DepthEnabled || configuration.HandsDetectionEnabled || configuration.FaceDetectionEnabled)
             {
                 StreamConfiguration streamConfiguration = configuration.Image.DepthStreamConfiguration;
                 nativeSense.SenseManager.EnableStream(PXCMCapture.StreamType.STREAM_TYPE_DEPTH,

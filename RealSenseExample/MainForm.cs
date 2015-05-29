@@ -49,7 +49,8 @@ namespace RealSenseExample
             var manager = builder.Configure(factory => factory.Configuration()
                 .UsingBaseConfiguration(factory.BaseConfiguration()
                     .WithAudioConfiguration(factory.AudioConfiguration()
-                        .UsingAudioInputDevice(audioDeviceProperties => audioDeviceProperties.DeviceName.Contains(AUDIO_DEVICE_NAME)))
+                        .UsingAudioInputDevice(
+                            audioDeviceProperties => audioDeviceProperties.DeviceName.Contains(AUDIO_DEVICE_NAME)))
                     .WithVideoConfiguration(factory.VideoConfiguration()
                         .WithVideoDeviceName(CAMERA_NAME)))
                 .WithSpeechRecognition(factory.SpeechRecognition().UsingGrammmar(grammarIdle))
@@ -108,11 +109,6 @@ namespace RealSenseExample
                 buttonRegisterFaces.Enabled = true;
                 buttonUnregisterFaces.Enabled = true;
             }));
-        }
-
-        public void EnableButtons()
-        {
-            
         }
 
         private void realSense_Frame(FrameEventArgs frameEventArgs)
