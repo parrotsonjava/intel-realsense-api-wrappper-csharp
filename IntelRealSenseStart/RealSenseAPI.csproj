@@ -82,6 +82,10 @@
     <Compile Include="Code\RealSense\Component\Creator\OverallImageCreator.cs" />
     <Compile Include="Code\RealSense\Component\Determiner\Builder\GrammarBuilder.cs" />
     <Compile Include="Code\RealSense\Component\Determiner\Data\RecognitionAction.cs" />
+    <Compile Include="Code\RealSense\Component\Determiner\Face\FaceComponent.cs" />
+    <Compile Include="Code\RealSense\Component\Determiner\Face\PulseDeterminerComponent.cs" />
+    <Compile Include="Code\RealSense\Component\Determiner\Face\FaceLandmarksDeterminerComponent.cs" />
+    <Compile Include="Code\RealSense\Component\Determiner\Face\FaceRecognitionDeterminerComponent.cs" />
     <Compile Include="Code\RealSense\Component\Determiner\FrameDeterminerComponent.cs" />
     <Compile Include="Code\RealSense\Component\Determiner\DeterminerComponent.cs" />
     <Compile Include="Code\RealSense\Component\Determiner\DeviceDeterminerComponent.cs" />

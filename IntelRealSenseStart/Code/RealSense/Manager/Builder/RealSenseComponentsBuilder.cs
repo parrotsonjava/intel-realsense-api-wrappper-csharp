@@ -1,5 +1,6 @@
 ﻿using IntelRealSenseStart.Code.RealSense.Component.Creator;
 using IntelRealSenseStart.Code.RealSense.Component.Determiner;
+using IntelRealSenseStart.Code.RealSense.Component.Determiner.Face;
 using IntelRealSenseStart.Code.RealSense.Component.Output;
 using IntelRealSenseStart.Code.RealSense.Config.RealSense;
 using IntelRealSenseStart.Code.RealSense.Factory;
@@ -37,10 +38,31 @@ namespace IntelRealSenseStart.Code.RealSense.Manager.Builder
         public FaceDeterminerComponent CreateFaceDeterminerComponent()
         {
             return factory.Components.Determiner.Face()
+                .WithFaceComponent(CreateFaceLandmarksDeterminerComponent().Build())
+                .WithFaceComponent(CreateFaceRecognitionDeterminerComponent().Build())
+                .WithFaceComponent(CreatePulseDeterminerComponent().Build())
                 .WithFactory(factory)
                 .WithNativeSense(nativeSense)
                 .WithConfiguration(configuration)
                 .Build();
+        }
+        
+        private FaceLandmarksDeterminerComponent.Builder CreateFaceLandmarksDeterminerComponent()
+        {
+            return factory.Components.Determiner.FaceLandmarks()
+                .WithConfiguration(configuration);
+        }
+
+        private FaceRecognitionDeterminerComponent.Builder CreateFaceRecognitionDeterminerComponent()
+        {
+            return factory.Components.Determiner.FaceRecognition()
+                .WithConfiguration(configuration);
+        }
+
+        private PulseDeterminerComponent.Builder CreatePulseDeterminerComponent()
+        {
+            return factory.Components.Determiner.Pulse()
+                .WithConfiguration(configuration);
         }
 
         public ImageDeterminerComponent CreatePictureDeterminerComponent()
@@ -155,7 +177,5 @@ namespace IntelRealSenseStart.Code.RealSense.Manager.Builder
                 return componentsBuilder;
             }
         }
-
-
     }
 }

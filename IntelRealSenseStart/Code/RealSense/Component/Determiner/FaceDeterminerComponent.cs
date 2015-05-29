@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using IntelRealSenseStart.Code.RealSense.Component.Determiner.Data;
+using IntelRealSenseStart.Code.RealSense.Component.Determiner.Face;
 using IntelRealSenseStart.Code.RealSense.Config.RealSense;
-using IntelRealSenseStart.Code.RealSense.Config.RealSense.Data;
 using IntelRealSenseStart.Code.RealSense.Data.Determiner;
-using IntelRealSenseStart.Code.RealSense.Exception;
 using IntelRealSenseStart.Code.RealSense.Factory;
 using IntelRealSenseStart.Code.RealSense.Helper;
 using IntelRealSenseStart.Code.RealSense.Provider;
@@ -16,25 +11,21 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
 {
     public class FaceDeterminerComponent : FrameDeterminerComponent
     {
-        private const String FACE_IDENTIFICATION_DB = "FaceIdentificationDB";
+        private readonly IEnumerable<FaceComponent> faceComponents;
 
         private readonly RealSenseConfiguration configuration;
         private readonly RealSenseFactory factory;
         private readonly NativeSense nativeSense;
 
         private PXCMFaceData faceData;
-
-        private volatile RecognitionAction currentFaceRecognitionAction, nextFaceRecognitionAction;
-
-        private FaceDeterminerComponent(RealSenseFactory factory, NativeSense nativeSense,
-            RealSenseConfiguration configuration)
+        
+        private FaceDeterminerComponent(IEnumerable<FaceComponent> faceComponents,
+            RealSenseFactory factory, NativeSense nativeSense, RealSenseConfiguration configuration)
         {
+            this.faceComponents = faceComponents;
             this.factory = factory;
             this.nativeSense = nativeSense;
             this.configuration = configuration;
-
-            currentFaceRecognitionAction = RecognitionAction.DO_NOTHING;
-            nextFaceRecognitionAction = RecognitionAction.DO_NOTHING;
         }
 
         public bool ShouldBeStarted
@@ -57,104 +48,22 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
 
             moduleConfiguration.SetTrackingMode(PXCMFaceConfiguration.TrackingModeType.FACE_MODE_COLOR_PLUS_DEPTH);
             moduleConfiguration.strategy = PXCMFaceConfiguration.TrackingStrategyType.STRATEGY_RIGHT_TO_LEFT;
-            ConfigurePulse(moduleConfiguration);
-            ConfigureRecognition(moduleConfiguration);
-            moduleConfiguration.ApplyChanges();
 
+            ConfigureComponents(moduleConfiguration);
+            
+            moduleConfiguration.ApplyChanges();
             faceData = faceModule.CreateOutput();
         }
 
-        private void ConfigurePulse(PXCMFaceConfiguration moduleConfiguration)
+        private void ConfigureComponents(PXCMFaceConfiguration moduleConfiguration)
         {
-            if (!configuration.FaceDetection.UsePulse)
-            {
-                return;
-            }
-
-            var pulseConfig = moduleConfiguration.QueryPulse();
-            pulseConfig.properties.maxTrackedFaces = 4;
-            pulseConfig.Enable();
-        }
-
-        private void ConfigureRecognition(PXCMFaceConfiguration moduleConfiguration)
-        {
-            if (!configuration.FaceDetection.UseIdentification)
-            {
-                return;
-            }
-
-            var recognitionConfig = moduleConfiguration.QueryRecognition();
-            recognitionConfig.Enable();
-
-            PXCMFaceConfiguration.RecognitionConfiguration.RecognitionStorageDesc description;
-            recognitionConfig.CreateStorage(FACE_IDENTIFICATION_DB, out description);
-            description.maxUsers = configuration.FaceDetection.Identification.MaxDetectedUsers;
-            recognitionConfig.UseStorage(FACE_IDENTIFICATION_DB);
-            recognitionConfig.SetRegistrationMode(GetRegistrationMode());
-
-            LoadRecognitionDatabaseFromFile(recognitionConfig, configuration.FaceDetection.Identification.DatabasePath,
-                configuration.FaceDetection.Identification.UseExistingDatabase);
-        }
-
-        private PXCMFaceConfiguration.RecognitionConfiguration.RecognitionRegistrationMode GetRegistrationMode()
-        {
-            return configuration.FaceDetection.Identification.FaceIdentificationMode ==
-                   FaceIdentificationMode.CONTINUOUS
-                ? PXCMFaceConfiguration.RecognitionConfiguration.RecognitionRegistrationMode
-                    .REGISTRATION_MODE_CONTINUOUS
-                : PXCMFaceConfiguration.RecognitionConfiguration.RecognitionRegistrationMode
-                    .REGISTRATION_MODE_ON_DEMAND;
-        }
-
-        private void LoadRecognitionDatabaseFromFile(
-            PXCMFaceConfiguration.RecognitionConfiguration recognitionConfig, 
-            string databasePath, bool useExistingDatabase)
-        {
-            if (databasePath == null || !useExistingDatabase || !File.Exists(databasePath))
-            {
-                return;
-            }
-
-            var buffer = File.ReadAllBytes(databasePath);
-            recognitionConfig.SetDatabaseBuffer(buffer);
-        }
-
-        public void Stop()
-        {
-            SaveFaceRecognitionDatabase();
-        }
-
-        private void SaveFaceRecognitionDatabase()
-        {
-            if (!configuration.FaceDetectionEnabled || !configuration.FaceDetection.UseIdentification)
-            {
-                return;
-            }
-
-            SaveFaceRecognitionDatabaseToFile(configuration.FaceDetection.Identification.DatabasePath);
-        }
-
-        private void SaveFaceRecognitionDatabaseToFile(String databasePath)
-        {
-            if (databasePath == null)
-            {
-                return;
-            }
-
-            var recognitionModule = faceData.QueryRecognitionModule();
-            recognitionModule.QueryDatabaseSize();
-            var byteSize = recognitionModule.QueryDatabaseSize();
-            var buffer = new Byte[byteSize];
-            recognitionModule.QueryDatabaseBuffer(buffer);
-
-            File.WriteAllBytes(databasePath, buffer);
+            faceComponents.Do(faceComponent => faceComponent.Configure(moduleConfiguration));
         }
 
         public void Process(DeterminerData.Builder determinerData)
         {
             faceData.Update();
             determinerData.WithFacesData(GetFacesData());
-            ForgetAboutRecognitionAction();
         }
 
         private FacesData.Builder GetFacesData()
@@ -172,122 +81,58 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
 
         private FaceDeterminerData.Builder GetIndividualFaceData(PXCMFaceData.Face face)
         {
-            return factory.Data.Determiner.Face()
-                .WithLandmarks(GetLandmarkData(face))
-                .WithPulse(GetPulseData(face))
-                .WithFaceId(GetFaceId(face))
-                .WithRecognizedId(GetRecognizedId(face));
+            var faceDeterminerData = factory.Data.Determiner.Face();
+            ProcessComponents(face, faceDeterminerData);
+            return faceDeterminerData;
         }
 
-        private PXCMFaceData.LandmarkPoint[] GetLandmarkData(PXCMFaceData.Face face)
+        private void ProcessComponents(PXCMFaceData.Face face, FaceDeterminerData.Builder faceDeterminerData)
         {
-            if (configuration.FaceDetection.UseLandmarks)
-            {
-                var landMarks = face.QueryLandmarks();
-                return GetLandmarkPoints(landMarks);
-            }
-            return null;
+            faceComponents.Do(faceComponent => faceComponent.Process(face, faceDeterminerData));
         }
 
-        private static PXCMFaceData.LandmarkPoint[] GetLandmarkPoints(PXCMFaceData.LandmarksData landMarks)
+        public void Stop()
         {
-            if (landMarks == null)
-            {
-                return null;
-            }
-
-            PXCMFaceData.LandmarkPoint[] points;
-            landMarks.QueryPoints(out points);
-            return points;
+            faceComponents.Do(faceComponent => faceComponent.Stop(faceData));
         }
 
-        private PXCMFaceData.PulseData GetPulseData(PXCMFaceData.Face face)
-        {
-            if (configuration.FaceDetection.UsePulse)
-            {
-                return face.QueryPulse();
-            }
-            return null;
-        }
-
-        private int GetFaceId(PXCMFaceData.Face face)
-        {
-            return face.QueryUserID();
-        }
-
-        private int GetRecognizedId(PXCMFaceData.Face face)
-        {
-            if (!configuration.FaceDetection.UseIdentification)
-            {
-                return -1;
-            }
-
-            var recognitionData = face.QueryRecognition();
-            if (recognitionData == null)
-            {
-                throw new RealSenseException("Error while querying the recognition data");
-            }
-
-            PerformRecognitionAction(recognitionData);
-            return recognitionData.QueryUserID();
-        }
-
-        private void PerformRecognitionAction(PXCMFaceData.RecognitionData recognitionData)
-        {
-            if (currentFaceRecognitionAction == RecognitionAction.REGISTER)
-            {
-                recognitionData.RegisterUser();
-            }
-            else if (currentFaceRecognitionAction == RecognitionAction.UNREGISTER && recognitionData.IsRegistered())
-            {
-                recognitionData.UnregisterUser();
-            }
-        }
-
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        private void ForgetAboutRecognitionAction()
-        {
-            currentFaceRecognitionAction = nextFaceRecognitionAction;
-            nextFaceRecognitionAction = RecognitionAction.DO_NOTHING;
-        }
-
-        [MethodImpl(MethodImplOptions.Synchronized)]
         public void RegisterFaces()
         {
-            CheckRecognitionForAction();
-            nextFaceRecognitionAction = RecognitionAction.REGISTER;
+            GetFaceComponentOfType<FaceRecognitionDeterminerComponent>().RegisterFaces();
         }
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
         public void UnregisterFaces()
         {
-            CheckRecognitionForAction();
-            nextFaceRecognitionAction = RecognitionAction.UNREGISTER;
+            GetFaceComponentOfType<FaceRecognitionDeterminerComponent>().UnregisterFaces();
         }
 
-        private void CheckRecognitionForAction()
+        private T GetFaceComponentOfType<T>() where T : FaceComponent
         {
-            if (!configuration.FaceDetectionEnabled ||
-                !configuration.FaceDetection.UseIdentification)
-            {
-                throw new RealSenseException("Face detection or face identifation was not configured");
-            }
-            if (configuration.FaceDetection.Identification.FaceIdentificationMode != FaceIdentificationMode.ON_DEMAND)
-            {
-                throw new RealSenseException(
-                    "Face recognition works automatically unless the face identifaction mode is set to on demand");
-            }
+            return (T) faceComponents.First(component => component.GetType() == typeof (T));
         }
 
         public class Builder
         {
+            private readonly List<FaceComponent> faceComponents;
+
             private RealSenseFactory factory;
             private NativeSense nativeSense;
             private RealSenseConfiguration configuration;
 
+            public Builder()
+            {
+                faceComponents = new List<FaceComponent>();
+            }
+
             public Builder WithFactory(RealSenseFactory factory)
             {
                 this.factory = factory;
+                return this;
+            }
+
+            public Builder WithFaceComponent(FaceComponent faceComponent)
+            {
+                faceComponents.Add(faceComponent);
                 return this;
             }
 
@@ -306,13 +151,13 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
             public FaceDeterminerComponent Build()
             {
                 factory.Check(Preconditions.IsNotNull,
-                    "The factory must be set in order to create the hands determiner component");
+                    "The factory must be set in order to create the face determiner component");
                 nativeSense.Check(Preconditions.IsNotNull,
-                    "The RealSense manager must be set in order to create the hands determiner component");
+                    "The RealSense manager must be set in order to create the face determiner component");
                 configuration.Check(Preconditions.IsNotNull,
-                    "The RealSense configuration must be set in order to create the hands determiner component");
+                    "The RealSense configuration must be set in order to create the face determiner component");
 
-                return new FaceDeterminerComponent(factory, nativeSense, configuration);
+                return new FaceDeterminerComponent(faceComponents, factory, nativeSense, configuration);
             }
         }
     }

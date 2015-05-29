@@ -186,6 +186,8 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Output
                 stopped = true;
                 speechOutputThread.Join();
                 speechOutputThread = null;
+
+                speechSynthesis.Dispose();
             }
         }
 

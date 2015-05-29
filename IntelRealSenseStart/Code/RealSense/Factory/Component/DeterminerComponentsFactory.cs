@@ -1,5 +1,6 @@
 ﻿using IntelRealSenseStart.Code.RealSense.Component.Determiner;
 using IntelRealSenseStart.Code.RealSense.Component.Determiner.Builder;
+using IntelRealSenseStart.Code.RealSense.Component.Determiner.Face;
 
 namespace IntelRealSenseStart.Code.RealSense.Factory.Component
 {
@@ -18,6 +19,21 @@ namespace IntelRealSenseStart.Code.RealSense.Factory.Component
         public FaceDeterminerComponent.Builder Face()
         {
             return new FaceDeterminerComponent.Builder();
+        }
+
+        public FaceLandmarksDeterminerComponent.Builder FaceLandmarks()
+        {
+            return new FaceLandmarksDeterminerComponent.Builder();
+        }
+
+        public FaceRecognitionDeterminerComponent.Builder FaceRecognition()
+        {
+            return new FaceRecognitionDeterminerComponent.Builder();
+        }
+
+        public PulseDeterminerComponent.Builder Pulse()
+        {
+            return new PulseDeterminerComponent.Builder();
         }
 
         public DeviceDeterminerComponent.Builder Device()
