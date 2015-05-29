@@ -19,6 +19,8 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
 {
     public class RealSenseComponentsManager
     {
+        private const int IDLE_DETERMINER_TIMEOUT = 500;
+
         public event ReadyEventListener Ready;
         public event FrameEventListener Frame;
 
@@ -34,7 +36,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
         private readonly NativeSense nativeSense;
 
         private Thread determinerThread;
-        private readonly Thread reconnectThread;
+        private Thread reconnectThread;
 
         private volatile DeterminerStatus determinerStatus;
         
@@ -51,8 +53,6 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
             overallImageCreator = GetImageCreator(componentsBuilder);
             facesLandmarksBuilder = componentsBuilder.GetFacesLandmarksBuilder();
             handsJointsBuilder = componentsBuilder.getHandsJointsBuilder();
-
-            reconnectThread = new Thread(StartReconnect);
         }
 
         private IEnumerable<RealSenseComponent> GetComponents(RealSenseComponentsBuilder componentsBuilder)
@@ -115,6 +115,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
 
         private void StartReconnecting()
         {
+            reconnectThread = new Thread(StartReconnect);
             reconnectThread.Start();
         }
 
@@ -142,7 +143,14 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
             StartComponents();
             while (determinerStatus == DeterminerStatus.STARTED)
             {
-                ProcessFrame();
+                if (realSenseConfiguration.NeedsFrame)
+                {
+                    ProcessFrame();
+                }
+                else
+                {
+                    Thread.Sleep(IDLE_DETERMINER_TIMEOUT);
+                }
             }
             StopComponents();
         }

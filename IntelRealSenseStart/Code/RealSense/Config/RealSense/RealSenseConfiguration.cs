@@ -1,4 +1,5 @@
-﻿using IntelRealSenseStart.Code.RealSense.Exception;
+﻿using System;
+using IntelRealSenseStart.Code.RealSense.Exception;
 
 namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
 {
@@ -93,6 +94,11 @@ namespace IntelRealSenseStart.Code.RealSense.Config.RealSense
                 }
                 return speechSynthesisConfiguration;
             }
+        }
+
+        public bool NeedsFrame
+        {
+            get { return HandsDetectionEnabled || FaceDetectionEnabled || Image.ColorEnabled || Image.DepthEnabled; }
         }
 
         public class Builder
