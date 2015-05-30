@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
@@ -136,6 +135,7 @@ namespace RealSenseExample
                     .WithOverlay(ImageOverlay.ColorCoordinateHandJoints)
                     .WithOverlay(ImageOverlay.ColorCoordinateFaceLandmarks)
                     .WithOverlay(ImageOverlay.UserIds)
+                    .WithOverlay(ImageOverlay.Emotions)
                     .Create();
                 BeginInvoke(new BitmapHandler(SetImage), new object[] {bitmap});
             }

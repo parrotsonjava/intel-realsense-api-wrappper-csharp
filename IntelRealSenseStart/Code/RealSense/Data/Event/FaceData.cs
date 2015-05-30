@@ -25,7 +25,7 @@ namespace IntelRealSenseStart.Code.RealSense.Data.Event
 
         public DetectionPoint GetPoint(FaceLandmark landmark)
         {
-            return detectionPoints[landmark];
+            return detectionPoints.ContainsKey(landmark) ? detectionPoints[landmark] : null;
         }
 
         public float HeartRate

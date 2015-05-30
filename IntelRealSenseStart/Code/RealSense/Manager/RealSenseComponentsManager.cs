@@ -51,7 +51,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
 
             components = GetComponents(componentsBuilder);
             overallImageCreator = GetImageCreator(componentsBuilder);
-            facesLandmarksBuilder = componentsBuilder.GetFacesLandmarksBuilder();
+            facesLandmarksBuilder = componentsBuilder.GetFacesBuilder();
             handsJointsBuilder = componentsBuilder.getHandsJointsBuilder();
         }
 
@@ -76,7 +76,8 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
                 componentsBuilder.CreateBasicImageCreatorComponent(),
                 componentsBuilder.CreateHandsImageCreatorComponent(),
                 componentsBuilder.CreateFaceImageCreatorComponent(),
-                componentsBuilder.CreateUserIdsImageCreator()
+                componentsBuilder.CreateUserIdsImageCreator(),
+                componentsBuilder.CreateEmotionsImageCreator()
             });
         }
 
@@ -180,7 +181,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
                 
                 InvokeFrameEvent(frameEvent);
             }
-            catch (RealSenseAcquireException e)
+            catch (RealSenseAcquireException)
             {
                 ReleaseFrame();
             }

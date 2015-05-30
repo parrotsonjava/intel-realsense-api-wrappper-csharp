@@ -6,6 +6,7 @@
         DepthCoordinateHandJoints,
         ColorCoordinateHandJoints,
         ColorCoordinateFaceLandmarks,
-        UserIds
+        UserIds,
+        Emotions
     }
 }

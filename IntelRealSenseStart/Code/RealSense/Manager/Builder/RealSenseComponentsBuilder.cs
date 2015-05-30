@@ -102,7 +102,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager.Builder
                 .Build();
         }
 
-        public FacesBuilder GetFacesLandmarksBuilder()
+        public FacesBuilder GetFacesBuilder()
         {
             return factory.Components.Creator.FacesLandmarksBuilder().Build();
         }
@@ -137,6 +137,13 @@ namespace IntelRealSenseStart.Code.RealSense.Manager.Builder
         {
             return factory.Components.Creator.UserIdsImageCreator()
                 .WithRealSenseConfiguration(configuration)
+                .Build();
+        }
+
+        public EmotionsImageCreator CreateEmotionsImageCreator()
+        {
+            return factory.Components.Creator.EmotionsImageCreator()
+                .WithFacesBuilder(GetFacesBuilder())
                 .Build();
         }
 

@@ -31,6 +31,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
@@ -73,7 +74,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Code\RealSense\Component\Creator\BasicImageCreator.cs" />
-    <Compile Include="Code\RealSense\Component\Creator\EmotionImageCreator.cs" />
+    <Compile Include="Code\RealSense\Component\Creator\EmotionsImageCreator.cs" />
     <Compile Include="Code\RealSense\Component\Creator\UserIdsImageCreator.cs" />
     <Compile Include="Code\RealSense\Component\Creator\FaceImageCreator.cs" />
     <Compile Include="Code\RealSense\Component\Creator\FacesBuilder.cs" />
