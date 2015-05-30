@@ -80,7 +80,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Creator
 
             private void OverlayBitmapWithHandsSegmentationImages()
             {
-                foreach (HandData hand in determinerData.HandsData.Hands)
+                foreach (HandDeterminerData hand in determinerData.HandsData.Hands)
                 {
                     OverlayBitmapWithHandsSegmentationImage(hand.SegmentationImage, (byte) hand.BodySide);
                 }
@@ -119,7 +119,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Creator
 
             private void OverlayBitmapWithHandJoints(bool projectColorToDepthCoordinates)
             {
-                foreach (HandData hand in determinerData.HandsData.Hands)
+                foreach (HandDeterminerData hand in determinerData.HandsData.Hands)
                 {
                     AddJointData(projectColorToDepthCoordinates, hand.Joints.Values.ToArray());
                 }

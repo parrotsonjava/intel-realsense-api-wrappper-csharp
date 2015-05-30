@@ -5,7 +5,7 @@
         private PXCMCapture.Device device;
 
         private ImageData imageData;
-        private HandsData handsData;
+        private HandsDeterminerData handsData;
         private FacesData facesData;
 
         private DeterminerData()
@@ -22,7 +22,7 @@
             get { return imageData; }
         }
 
-        public HandsData HandsData
+        public HandsDeterminerData HandsData
         {
             get { return handsData; }
         }
@@ -53,7 +53,7 @@
                 return this;
             }
 
-            public Builder WithHandsData(HandsData.Builder handsData)
+            public Builder WithHandsData(HandsDeterminerData.Builder handsData)
             {
                 determinerData.handsData = handsData.Build();
                 return this;

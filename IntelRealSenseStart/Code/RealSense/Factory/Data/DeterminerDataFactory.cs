@@ -14,14 +14,14 @@ namespace IntelRealSenseStart.Code.RealSense.Factory.Data
             return new ImageData.Builder();
         }
 
-        public HandsData.Builder Hands()
+        public HandsDeterminerData.Builder Hands()
         {
-            return new HandsData.Builder();
+            return new HandsDeterminerData.Builder();
         }
 
-        public HandData.Builder Hand()
+        public HandDeterminerData.Builder Hand()
         {
-            return new HandData.Builder();
+            return new HandDeterminerData.Builder();
         }
 
         public FacesData.Builder Faces()

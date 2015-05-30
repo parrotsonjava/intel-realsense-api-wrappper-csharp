@@ -4,9 +4,11 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner.Face
 {
     public interface FaceComponent
     {
+        void EnableFeatures();
+
         void Configure(PXCMFaceConfiguration moduleConfiguration);
 
-        void Process(PXCMFaceData.Face face, FaceDeterminerData.Builder faceDeterminerData);
+        void Process(int index, PXCMFaceData.Face face, FaceDeterminerData.Builder faceDeterminerData);
 
         void Stop(PXCMFaceData faceData);
     }

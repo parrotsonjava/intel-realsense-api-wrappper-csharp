@@ -180,7 +180,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
                 
                 InvokeFrameEvent(frameEvent);
             }
-            catch (RealSenseAcquireException)
+            catch (RealSenseAcquireException e)
             {
                 ReleaseFrame();
             }

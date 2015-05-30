@@ -18,20 +18,20 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Creator
             this.factory = factory;
         }
 
-        public HandsData GetHandsData(List<Data.Determiner.HandData> handsData)
+        public HandsData GetHandsData(List<Data.Determiner.HandDeterminerData> handsData)
         {
             var handsJoints = factory.Data.Events.Hands();
             handsData.Do(handData => handsJoints.WithFaceLandmarks(GetHandJoints(handData)));
             return handsJoints.Build();
         }
 
-        private HandData.Builder GetHandJoints(Data.Determiner.HandData handData)
+        private HandData.Builder GetHandJoints(Data.Determiner.HandDeterminerData handDeterminerData)
         {
             var handJoints = factory.Data.Events.Hand();
-            0.To(handData.Joints.Count - 1).ToArray().Do(index =>
+            0.To(handDeterminerData.Joints.Count - 1).ToArray().Do(index =>
                 handJoints.WithDetectionPoint(
                     GetJointName(index),
-                    GetDetectionPoint(handData.Joints[(PXCMHandData.JointType) index])));
+                    GetDetectionPoint(handDeterminerData.Joints[(PXCMHandData.JointType) index])));
             return handJoints;
         }
 

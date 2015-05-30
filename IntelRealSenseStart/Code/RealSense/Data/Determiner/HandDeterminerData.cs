@@ -2,13 +2,13 @@
 
 namespace IntelRealSenseStart.Code.RealSense.Data.Determiner
 {
-    public class HandData
+    public class HandDeterminerData
     {
         private PXCMHandData.BodySideType bodySide;
         private Dictionary<PXCMHandData.JointType, PXCMHandData.JointData> joints;
         private PXCMImage segmentationImage;
 
-        private HandData()
+        private HandDeterminerData()
         {
         }
 
@@ -39,11 +39,11 @@ namespace IntelRealSenseStart.Code.RealSense.Data.Determiner
 
         public class Builder
         {
-            private readonly HandData frameEvent;
+            private readonly HandDeterminerData frameEvent;
 
             public Builder()
             {
-                frameEvent = new HandData();
+                frameEvent = new HandDeterminerData();
             }
             public Builder WithBodySide(PXCMHandData.BodySideType bodySide)
             {
@@ -63,7 +63,7 @@ namespace IntelRealSenseStart.Code.RealSense.Data.Determiner
                 return this;
             }
 
-            public HandData Build()
+            public HandDeterminerData Build()
             {
                 return frameEvent;
             }

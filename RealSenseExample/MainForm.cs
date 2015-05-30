@@ -58,6 +58,7 @@ namespace RealSenseExample
                 .WithHandsDetection(factory.HandsDetection().WithSegmentationImage())
                 .WithFaceDetection(factory.FaceDetection()
                     .UsingLandmarks()
+                    .UsingEmotions()
                     .UsingFaceIdentification(factory.FaceIdentification()
                         .WithFaceIdentificationMode(FaceIdentificationMode.ON_DEMAND)
                         .WithDataBasePath(FACE_DATABASE_PATH)
@@ -103,6 +104,7 @@ namespace RealSenseExample
 
         private void realSense_Ready()
         {
+            realSenseManager.Speak("Hello");
             realSenseManager.StartRecognition();
 
             BeginInvoke((Action) (() => {
@@ -113,6 +115,12 @@ namespace RealSenseExample
 
         private void realSense_Frame(FrameEventArgs frameEventArgs)
         {
+            DrawBitmap(frameEventArgs);
+            ProcessEventArgs(frameEventArgs);
+        }
+
+        private void DrawBitmap(FrameEventArgs frameEventArgs)
+        {
             try
             {
                 Bitmap bitmap = frameEventArgs.CreateImage()
@@ -122,15 +130,29 @@ namespace RealSenseExample
                     .WithOverlay(ImageOverlay.ColorCoordinateFaceLandmarks)
                     .WithOverlay(ImageOverlay.UserIds)
                     .Create();
-                BeginInvoke(new BitmapHandler(SetImage), new object[] { bitmap });
+                BeginInvoke(new BitmapHandler(SetImage), new object[] {bitmap});
             }
             catch (RealSenseException e)
             {
                 Console.WriteLine(@"Error creating the image: {0}", e.Message);
             }
+        }
 
+        private void ProcessEventArgs(FrameEventArgs frameEventArgs)
+        {
             var faces = frameEventArgs.Faces;
             var hands = frameEventArgs.Hands;
+
+            if (faces.Faces.Count > 0)
+            {
+                var firstFace = faces.Faces[0];
+                var primaryEmotion = firstFace.Emotions.PrimaryEmotion;
+
+                /*if (primaryEmotion.Present && primaryEmotion.Type == EmotionType.SADNESS)
+                {
+                    realSenseManager.Speak("Why are you so sad?");
+                }*/
+            }
         }
 
         private void realSense_SpeechRecognized(SpeechRecognitionEventArgs eventArgs)

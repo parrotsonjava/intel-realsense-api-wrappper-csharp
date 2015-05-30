@@ -26,6 +26,11 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner.Face
             nextFaceRecognitionAction = RecognitionAction.DO_NOTHING;
         }
 
+        public void EnableFeatures()
+        {
+            // Nothing to do
+        }
+
         public void Configure(PXCMFaceConfiguration moduleConfiguration)
         {
             ConfigureRecognition(moduleConfiguration);
@@ -73,7 +78,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner.Face
                     .REGISTRATION_MODE_ON_DEMAND;
         }
 
-        public void Process(PXCMFaceData.Face face, FaceDeterminerData.Builder faceDeterminerData)
+        public void Process(int index, PXCMFaceData.Face face, FaceDeterminerData.Builder faceDeterminerData)
         {
             faceDeterminerData
                 .WithFaceId(GetFaceId(face))

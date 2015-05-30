@@ -19,7 +19,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager.Builder
 
         public VideoDeviceDeterminerComponent CreateDeviceDeterminerComponent()
         {
-            return factory.Components.Determiner.Device()
+            return factory.Components.Determiner.VideoDevice()
                 .WithPropertiesManager(propertiesManager)
                 .WithNativeSense(nativeSense)
                 .WithConfiguration(configuration)
@@ -41,12 +41,13 @@ namespace IntelRealSenseStart.Code.RealSense.Manager.Builder
                 .WithFaceComponent(CreateFaceLandmarksDeterminerComponent().Build())
                 .WithFaceComponent(CreateFaceRecognitionDeterminerComponent().Build())
                 .WithFaceComponent(CreatePulseDeterminerComponent().Build())
+                .WithFaceComponent(CreateEmotionDeterminerComponet().Build())
                 .WithFactory(factory)
                 .WithNativeSense(nativeSense)
                 .WithConfiguration(configuration)
                 .Build();
         }
-        
+
         private FaceLandmarksDeterminerComponent.Builder CreateFaceLandmarksDeterminerComponent()
         {
             return factory.Components.Determiner.FaceLandmarks()
@@ -62,6 +63,13 @@ namespace IntelRealSenseStart.Code.RealSense.Manager.Builder
         private PulseDeterminerComponent.Builder CreatePulseDeterminerComponent()
         {
             return factory.Components.Determiner.Pulse()
+                .WithConfiguration(configuration);
+        }
+
+        private EmotionDeterminerComponent.Builder CreateEmotionDeterminerComponet()
+        {
+            return factory.Components.Determiner.Emotion()
+                .WithNativeSense(nativeSense)
                 .WithConfiguration(configuration);
         }
 

@@ -7,13 +7,13 @@ using IntelRealSenseStart.Code.RealSense.Data.Determiner;
 
 namespace IntelRealSenseStart.Code.RealSense.Component.Creator
 {
-    public class UserIdsImageCreator : ImageCreator
+    public class EmotionImageCreator : ImageCreator
     {
-        private const int RIGHT_LANDMARK_INDEX = 68;
+        private const int LEFT_LANDMARK_INDEX = 54;
 
         private readonly RealSenseConfiguration realSenseConfiguration;
 
-        private UserIdsImageCreator(RealSenseConfiguration realSenseConfiguration)
+        private EmotionImageCreator(RealSenseConfiguration realSenseConfiguration)
         {
             this.realSenseConfiguration = realSenseConfiguration;
         }
@@ -21,10 +21,10 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Creator
         public Bitmap Create(Bitmap bitmap, DeterminerData determinerData,
             ImageCreatorConfiguration imageCreatorConfiguration)
         {
-            return new UserIdsImageCreatorRun(bitmap, determinerData, realSenseConfiguration, imageCreatorConfiguration).Create();
+            return new EmotionImageCreatorRun(bitmap, determinerData, realSenseConfiguration, imageCreatorConfiguration).Create();
         }
 
-        public class UserIdsImageCreatorRun
+        public class EmotionImageCreatorRun
         {
             private readonly int sizeMeasure;
 
@@ -37,7 +37,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Creator
             private readonly RealSenseConfiguration realSenseConfiguration;
             private readonly ImageCreatorConfiguration imageCreatorConfiguration;
 
-            public UserIdsImageCreatorRun(Bitmap bitmap, DeterminerData determinerData,
+            public EmotionImageCreatorRun(Bitmap bitmap, DeterminerData determinerData,
                 RealSenseConfiguration realSenseConfiguration,
                 ImageCreatorConfiguration imageCreatorConfiguration)
             {
@@ -72,42 +72,22 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Creator
                 foreach (FaceDeterminerData face in determinerData.FacesData.Faces)
                 {
                     if (face.LandmarkPoints != null &&
-                        face.LandmarkPoints.Length > RIGHT_LANDMARK_INDEX)
+                        face.LandmarkPoints.Length > LEFT_LANDMARK_INDEX)
                     {
-                        DrawUserIds(graphics, face);
+                        DrawCurrentEmotion(graphics, face);
                     }
                 }
             }
 
-            private void DrawUserIds(Graphics graphics, FaceDeterminerData face)
+            private void DrawCurrentEmotion(Graphics graphics, FaceDeterminerData face)
             {
-                var centerPoint = face.LandmarkPoints[RIGHT_LANDMARK_INDEX].image;
+                var centerPoint = face.LandmarkPoints[LEFT_LANDMARK_INDEX].image;
 
-                DrawFaceId(graphics, face, centerPoint);
-                DrawRecognizedId(graphics, face, centerPoint);
-            }
-
-            private void DrawFaceId(Graphics graphics, FaceDeterminerData face, PXCMPointF32 centerPoint)
-            {
                 var faceId = face.FaceId == -1 ? "N/A" : face.FaceId.ToString(CultureInfo.CurrentCulture);
                 var faceIdText = String.Format("Face ID: {0}", faceId);
 
                 graphics.DrawString(faceIdText, font, brush,
-                    centerPoint.x + sizeMeasure, centerPoint.y);
-            }
-
-            private void DrawRecognizedId(Graphics graphics, FaceDeterminerData face, PXCMPointF32 centerPoint)
-            {
-                if (!realSenseConfiguration.FaceDetection.UseIdentification)
-                {
-                    return;
-                }
-
-                var recognizedId = face.FaceId == -1 ? "N/A" : face.RecognizedId.ToString(CultureInfo.CurrentCulture);
-                var recognizedIdText = String.Format("Rec. ID: {0}", recognizedId);
-
-                graphics.DrawString(recognizedIdText, font, brush,
-                    centerPoint.x + sizeMeasure, centerPoint.y + (int) (1.5f * sizeMeasure));
+                    centerPoint.x - sizeMeasure, centerPoint.y);
             }
         }
 
@@ -121,9 +101,9 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Creator
                 return this;
             }
 
-            public UserIdsImageCreator Build()
+            public EmotionImageCreator Build()
             {
-                return new UserIdsImageCreator(realSenseConfiguration);
+                return new EmotionImageCreator(realSenseConfiguration);
             }
         }
     }

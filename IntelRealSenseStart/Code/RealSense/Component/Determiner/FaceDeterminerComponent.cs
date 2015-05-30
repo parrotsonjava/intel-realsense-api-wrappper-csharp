@@ -35,10 +35,13 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
 
         public void EnableFeatures()
         {
-            if (configuration.FaceDetectionEnabled)
-            {
-                nativeSense.SenseManager.EnableFace();
-            }
+            nativeSense.SenseManager.EnableFace();
+            EnableComponents();
+        }
+
+        private void EnableComponents()
+        {
+            faceComponents.Do(faceComponent => faceComponent.EnableFeatures());
         }
 
         public void Configure()
@@ -68,8 +71,9 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
 
         private FacesData.Builder GetFacesData()
         {
+            int index = 0;
             return factory.Data.Determiner.Faces().WithFaces(
-                GetIndividualFaces().Select(GetIndividualFaceData));
+                GetIndividualFaces().Select(face => GetIndividualFaceData(index++, face)));
         }
 
         private IEnumerable<PXCMFaceData.Face> GetIndividualFaces()
@@ -79,16 +83,16 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
                 .Where(face => face != null);
         }
 
-        private FaceDeterminerData.Builder GetIndividualFaceData(PXCMFaceData.Face face)
+        private FaceDeterminerData.Builder GetIndividualFaceData(int index, PXCMFaceData.Face face)
         {
             var faceDeterminerData = factory.Data.Determiner.Face();
-            ProcessComponents(face, faceDeterminerData);
+            ProcessComponents(index, face, faceDeterminerData);
             return faceDeterminerData;
         }
 
-        private void ProcessComponents(PXCMFaceData.Face face, FaceDeterminerData.Builder faceDeterminerData)
+        private void ProcessComponents(int index, PXCMFaceData.Face face, FaceDeterminerData.Builder faceDeterminerData)
         {
-            faceComponents.Do(faceComponent => faceComponent.Process(face, faceDeterminerData));
+            faceComponents.Do(faceComponent => faceComponent.Process(index, face, faceDeterminerData));
         }
 
         public void Stop()

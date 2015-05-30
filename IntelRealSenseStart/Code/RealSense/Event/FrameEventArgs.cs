@@ -1,7 +1,6 @@
 ﻿using IntelRealSenseStart.Code.RealSense.Component.Creator;
 using IntelRealSenseStart.Code.RealSense.Config.RealSense;
 using IntelRealSenseStart.Code.RealSense.Data.Determiner;
-using IntelRealSenseStart.Code.RealSense.Data.Event;
 using IntelRealSenseStart.Code.RealSense.Factory;
 using FacesData = IntelRealSenseStart.Code.RealSense.Data.Event.FacesData;
 using HandsData = IntelRealSenseStart.Code.RealSense.Data.Event.HandsData;

@@ -4,6 +4,7 @@
     {
         private bool useLandmarks;
         private bool usePulse;
+        private bool useEmotions;
 
         private FaceIdentificationConfiguration identificationConfiguration;
 
@@ -11,6 +12,7 @@
         {
             useLandmarks = false;
             usePulse = false;
+            useEmotions = false;
             identificationConfiguration = null;
         }
 
@@ -22,6 +24,11 @@
         public bool UsePulse
         {
             get { return usePulse; }
+        }
+
+        public bool UseEmotions
+        {
+            get { return useEmotions; }
         }
 
         public bool UseIdentification
@@ -52,6 +59,12 @@
             public Builder UsingPulse()
             {
                 configuration.usePulse = true;
+                return this;
+            }
+
+            public Builder UsingEmotions()
+            {
+                configuration.useEmotions = true;
                 return this;
             }
 

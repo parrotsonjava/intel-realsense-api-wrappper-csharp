@@ -13,6 +13,11 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner.Face
             this.configuration = configuration;
         }
 
+        public void EnableFeatures()
+        {
+            // Nothing to do
+        }
+
         public void Configure(PXCMFaceConfiguration moduleConfiguration)
         {
             ConfigurePulse(moduleConfiguration);
@@ -30,7 +35,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner.Face
             pulseConfig.Enable();
         }
 
-        public void Process(PXCMFaceData.Face face, FaceDeterminerData.Builder faceDeterminerData)
+        public void Process(int index, PXCMFaceData.Face face, FaceDeterminerData.Builder faceDeterminerData)
         {
             faceDeterminerData.WithPulse(GetPulseData(face));
         }

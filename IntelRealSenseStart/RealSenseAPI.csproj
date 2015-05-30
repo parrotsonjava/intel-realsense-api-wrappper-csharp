@@ -73,6 +73,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Code\RealSense\Component\Creator\BasicImageCreator.cs" />
+    <Compile Include="Code\RealSense\Component\Creator\EmotionImageCreator.cs" />
     <Compile Include="Code\RealSense\Component\Creator\UserIdsImageCreator.cs" />
     <Compile Include="Code\RealSense\Component\Creator\FaceImageCreator.cs" />
     <Compile Include="Code\RealSense\Component\Creator\FacesBuilder.cs" />
@@ -100,6 +101,9 @@
     <Compile Include="Code\RealSense\Config\RealSense\Data\FaceIdentificationMode.cs" />
     <Compile Include="Code\RealSense\Config\RealSense\FaceIdentificationConfiguration.cs" />
     <Compile Include="Code\RealSense\Config\RealSense\SpeechSynthesisConfiguration.cs" />
+    <Compile Include="Code\RealSense\Data\Event\EmotionData.cs" />
+    <Compile Include="Code\RealSense\Data\Event\EmotionsData.cs" />
+    <Compile Include="Code\RealSense\Data\Event\EmotionType.cs" />
     <Compile Include="Code\RealSense\Data\Properties\SpeechSynthesisModuleProperties.cs" />
     <Compile Include="Code\RealSense\Data\Properties\SpeechSynthesisProfileProperties.cs" />
     <Compile Include="Code\RealSense\Data\Properties\SpeechRecognitionProfileProperties.cs" />
@@ -127,8 +131,8 @@
     <Compile Include="Code\RealSense\Data\Determiner\DeterminerData.cs" />
     <Compile Include="Code\RealSense\Data\Determiner\FaceDeterminerData.cs" />
     <Compile Include="Code\RealSense\Data\Determiner\FacesData.cs" />
-    <Compile Include="Code\RealSense\Data\Determiner\HandData.cs" />
-    <Compile Include="Code\RealSense\Data\Determiner\HandsData.cs" />
+    <Compile Include="Code\RealSense\Data\Determiner\HandDeterminerData.cs" />
+    <Compile Include="Code\RealSense\Data\Determiner\HandsDeterminerData.cs" />
     <Compile Include="Code\RealSense\Data\Determiner\ImageData.cs" />
     <Compile Include="Code\RealSense\Data\Event\DetectionPoint.cs" />
     <Compile Include="Code\RealSense\Data\Event\FaceLandmark.cs" />

@@ -13,12 +13,17 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner.Face
             this.configuration = configuration;
         }
 
+        public void EnableFeatures()
+        {
+            // Nothing to do
+        }
+
         public void Configure(PXCMFaceConfiguration moduleConfiguration)
         {
             // Nothing to do
         }
 
-        public void Process(PXCMFaceData.Face face, FaceDeterminerData.Builder faceDeterminerData)
+        public void Process(int index, PXCMFaceData.Face face, FaceDeterminerData.Builder faceDeterminerData)
         {
             faceDeterminerData.WithLandmarks(GetLandmarkData(face));
         }
