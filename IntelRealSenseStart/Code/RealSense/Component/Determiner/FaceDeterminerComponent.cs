@@ -52,6 +52,9 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Determiner
             moduleConfiguration.SetTrackingMode(PXCMFaceConfiguration.TrackingModeType.FACE_MODE_COLOR_PLUS_DEPTH);
             moduleConfiguration.strategy = PXCMFaceConfiguration.TrackingStrategyType.STRATEGY_RIGHT_TO_LEFT;
 
+            moduleConfiguration.detection.maxTrackedFaces = configuration.FaceDetection.MaxNumberOfTrackedFaces;
+            moduleConfiguration.landmarks.maxTrackedFaces = configuration.FaceDetection.MaxNumberOfTrackedFacesWithLandmarks;
+
             ConfigureComponents(moduleConfiguration);
             
             moduleConfiguration.ApplyChanges();

@@ -6,6 +6,9 @@
         private bool usePulse;
         private bool useEmotions;
 
+        private int maxNumberOfTrackedFaces;
+        private int maxNumberOfTrackedFacesWithLandmarks;
+
         private FaceIdentificationConfiguration identificationConfiguration;
 
         private FaceConfiguration()
@@ -41,6 +44,16 @@
             get { return identificationConfiguration; }
         }
 
+        public int MaxNumberOfTrackedFaces
+        {
+            get { return maxNumberOfTrackedFaces; }
+        }
+
+        public int MaxNumberOfTrackedFacesWithLandmarks
+        {
+            get { return maxNumberOfTrackedFacesWithLandmarks; }
+        }
+
         public class Builder
         {
             private readonly FaceConfiguration configuration;
@@ -48,6 +61,13 @@
             public Builder()
             {
                 configuration = new FaceConfiguration();
+                WithDefaultConfiguration();
+            }
+
+            public Builder WithDefaultConfiguration()
+            {
+                return WithMaxNumberOfTrackedFaces(4)
+                    .WithMaxNumberOfTrackedFacesWithLandmarks(4);
             }
 
             public Builder UsingLandmarks()
@@ -65,6 +85,18 @@
             public Builder UsingEmotions()
             {
                 configuration.useEmotions = true;
+                return this;
+            }
+
+            public Builder WithMaxNumberOfTrackedFaces(int maxNumberOfTrackedFaces)
+            {
+                configuration.maxNumberOfTrackedFaces = maxNumberOfTrackedFaces;
+                return this;
+            }
+
+            public Builder WithMaxNumberOfTrackedFacesWithLandmarks(int maxNumberOfTrackedFacesWithLandmarks)
+            {
+                configuration.maxNumberOfTrackedFacesWithLandmarks = maxNumberOfTrackedFacesWithLandmarks;
                 return this;
             }
 

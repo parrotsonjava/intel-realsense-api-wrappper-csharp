@@ -43,9 +43,8 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Creator
 
                 this.imageCreatorConfiguration = imageCreatorConfiguration;
 
-                landmarkSize = 3.0f*bitmap.Width/imageCreatorConfiguration.Resolution.Width;
-                landmarkPen = new Pen(Color.Red,
-                    landmarkSize/2.0f*bitmap.Width/imageCreatorConfiguration.Resolution.Width);
+                landmarkSize = 2.0f * bitmap.Width / imageCreatorConfiguration.Resolution.Width;
+                landmarkPen = new Pen(Color.Red, landmarkSize * 0.5f);
             }
 
             public Bitmap Create()

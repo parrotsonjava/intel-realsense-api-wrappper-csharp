@@ -70,7 +70,7 @@ namespace RealSenseExample
                         .WithDataBasePath(FACE_DATABASE_PATH)
                         .UsingExistingDatabase(true)))
                 .WithImage(factory.Image()
-                    .WithColorStream(factory.ColorStream().From(new Size(640, 480), 30))
+                    .WithColorStream(factory.ColorStream().From(new Size(1280, 720), 30))
                     .WithDepthStream(factory.ColorStream().From(new Size(640, 480), 30))
                     .WithProjectionEnabled())).Build();
 
