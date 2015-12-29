@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using IntelRealSenseStart.Code.RealSense.Data.Common;
 using IntelRealSenseStart.Code.RealSense.Data.Determiner;
 using IntelRealSenseStart.Code.RealSense.Data.Event;
@@ -12,11 +11,6 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Creator
 {
     public class FacesBuilder
     {
-        private const int NUMBER_OF_DISTINCT_EMOTIONS = 7;
-        private const int NUMBER_OF_DISTINCT_FEELINGS = 3;
-
-        private const float INTENSITY_THRESHOLD = 0.5f;
-
         private readonly RealSenseFactory factory;
 
             public FacesBuilder(RealSenseFactory factory)
@@ -44,8 +38,7 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Creator
 
             return face.WithPulseData(faceDeterminerData.PulseData)
                 .WithFaceId(faceDeterminerData.FaceId)
-                .WithRecognizedId(GetRecognizedId(faceDeterminerData))
-                .WithEmotionsData(GetEmotionsData(faceDeterminerData));
+                .WithRecognizedId(GetRecognizedId(faceDeterminerData));
         }
 
         private FaceLandmark GetLandmarkName(int index)
@@ -77,54 +70,6 @@ namespace IntelRealSenseStart.Code.RealSense.Component.Creator
                 return null;
             }
             return faceDeterminerData.RecognizedId;
-        }
-
-        private EmotionsData.Builder GetEmotionsData(FaceDeterminerData faceDeterminerData)
-        {
-            var emotions = factory.Data.Events.Emotions();
-            if (faceDeterminerData.Emotions == null)
-            {
-                return emotions;
-            }
-
-            DetermineEmotionsFor(faceDeterminerData, emotions);
-            return emotions
-                .WithPrimaryEmotion(GetPrimaryEmotion(faceDeterminerData))
-                .WithPrimaryFeeling(GetPrimaryFeeling(faceDeterminerData));
-        }
-
-        private void DetermineEmotionsFor(FaceDeterminerData faceDeterminerData, EmotionsData.Builder emotions)
-        {
-            faceDeterminerData.Emotions.Select(GetEmotionData).Do(emotion => emotions.WithEmotion(emotion));
-        }
-
-        private PresentEmotionData.Builder GetPrimaryEmotion(FaceDeterminerData faceDeterminerData)
-        {
-            var determinerEmotionData = faceDeterminerData.Emotions
-                .Take(NUMBER_OF_DISTINCT_EMOTIONS)
-                .OrderBy(emotion => emotion.evidence)
-                .LastOrDefault(emotion => emotion.intensity > INTENSITY_THRESHOLD);
-
-            return determinerEmotionData == null ? null : GetEmotionData(determinerEmotionData);
-        }
-
-        private PresentEmotionData.Builder GetPrimaryFeeling(FaceDeterminerData faceDeterminerData)
-        {
-            var determinerEmotionData = faceDeterminerData.Emotions
-                .Reverse()
-                .Take(NUMBER_OF_DISTINCT_FEELINGS)
-                .OrderBy(emotion => emotion.evidence)
-                .LastOrDefault(emotion => emotion.intensity > INTENSITY_THRESHOLD);
-
-            return determinerEmotionData == null ? null : GetEmotionData(determinerEmotionData);
-        }
-
-        private PresentEmotionData.Builder GetEmotionData(PXCMEmotion.EmotionData emotionData)
-        {
-            return factory.Data.Events.PresentEmotion()
-                .WithEmotionType(emotionData.eid.EmotionType())
-                .WithEvidence(emotionData.evidence)
-                .WithIntensity(emotionData.intensity);
         }
 
         public class Builder

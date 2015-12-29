@@ -5,7 +5,6 @@ using System.Windows.Forms;
 using IntelRealSenseStart.Code.RealSense;
 using IntelRealSenseStart.Code.RealSense.Config.Image;
 using IntelRealSenseStart.Code.RealSense.Config.RealSense.Data;
-using IntelRealSenseStart.Code.RealSense.Data.Event;
 using IntelRealSenseStart.Code.RealSense.Data.Status;
 using IntelRealSenseStart.Code.RealSense.Event;
 using IntelRealSenseStart.Code.RealSense.Event.Data;
@@ -33,11 +32,6 @@ namespace RealSenseExample
 
         private Status status = Status.IDLE;
         private String detectedName;
-
-        private EmotionType currentEmotionType;
-        private DateTime emotionStartTime;
-        private bool emotionTriggered;
-        private readonly TimeSpan timeSpanUntilEmotionTrigger = new TimeSpan(0, 0, 3);
 
         public MainForm()
         {
@@ -153,36 +147,7 @@ namespace RealSenseExample
             if (faces.Faces.Count > 0)
             {
                 var firstFace = faces.Faces[0];
-                var primaryEmotion = firstFace.Emotions.PrimaryEmotion;
-
-                ProcessEmotion(primaryEmotion);
-            }
-        }
-
-        private void ProcessEmotion(EmotionData emotionData)
-        {
-            var emotionType = emotionData.Present ? emotionData.Type : EmotionType.NONE;
-
-            if (currentEmotionType != emotionType)
-            {
-                emotionStartTime = DateTime.Now;
-                emotionTriggered = false;
-                currentEmotionType = emotionType;
-            }
-            else if(!emotionTriggered)
-            {
-                if (DateTime.Now - emotionStartTime > timeSpanUntilEmotionTrigger)
-                {
-                    emotionTriggered = true;
-                    if (currentEmotionType == EmotionType.SADNESS)
-                    {
-                        realSenseManager.Speak("Why are you so sad?");
-                    }
-                    else if (currentEmotionType == EmotionType.DISGUST)
-                    {
-                        realSenseManager.Speak("Am I disgusting you?");
-                    }
-                }
+                // TODO emotions were removed with R5, so there is no real use for this method anymore
             }
         }
 

@@ -5,7 +5,6 @@
         private PXCMFaceData.LandmarkPoint[] landmarkPoints;
 
         private PXCMFaceData.PulseData pulseData;
-        private PXCMEmotion.EmotionData[] emotions;
 
         private int faceId;
         private int recognizedId;
@@ -18,11 +17,6 @@
         public PXCMFaceData.PulseData PulseData
         {
             get { return pulseData; }
-        }
-
-        public PXCMEmotion.EmotionData[] Emotions
-        {
-            get { return emotions; }
         }
 
         public int FaceId
@@ -58,11 +52,6 @@
             public Builder WithPulse(PXCMFaceData.PulseData pulseData)
             {
                 faceDeterminerData.pulseData = pulseData;
-                return this;
-            }
-            public Builder WithEmotions(PXCMEmotion.EmotionData[] emotionData)
-            {
-                faceDeterminerData.emotions = emotionData;
                 return this;
             }
 

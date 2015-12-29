@@ -76,8 +76,7 @@ namespace IntelRealSenseStart.Code.RealSense.Manager
                 componentsBuilder.CreateBasicImageCreatorComponent(),
                 componentsBuilder.CreateHandsImageCreatorComponent(),
                 componentsBuilder.CreateFaceImageCreatorComponent(),
-                componentsBuilder.CreateUserIdsImageCreator(),
-                componentsBuilder.CreateEmotionsImageCreator()
+                componentsBuilder.CreateUserIdsImageCreator()
             });
         }
 

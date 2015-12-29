@@ -41,7 +41,6 @@ namespace IntelRealSenseStart.Code.RealSense.Manager.Builder
                 .WithFaceComponent(CreateFaceLandmarksDeterminerComponent().Build())
                 .WithFaceComponent(CreateFaceRecognitionDeterminerComponent().Build())
                 .WithFaceComponent(CreatePulseDeterminerComponent().Build())
-                .WithFaceComponent(CreateEmotionDeterminerComponet().Build())
                 .WithFactory(factory)
                 .WithNativeSense(nativeSense)
                 .WithConfiguration(configuration)
@@ -63,13 +62,6 @@ namespace IntelRealSenseStart.Code.RealSense.Manager.Builder
         private PulseDeterminerComponent.Builder CreatePulseDeterminerComponent()
         {
             return factory.Components.Determiner.Pulse()
-                .WithConfiguration(configuration);
-        }
-
-        private EmotionDeterminerComponent.Builder CreateEmotionDeterminerComponet()
-        {
-            return factory.Components.Determiner.Emotion()
-                .WithNativeSense(nativeSense)
                 .WithConfiguration(configuration);
         }
 
@@ -137,13 +129,6 @@ namespace IntelRealSenseStart.Code.RealSense.Manager.Builder
         {
             return factory.Components.Creator.UserIdsImageCreator()
                 .WithRealSenseConfiguration(configuration)
-                .Build();
-        }
-
-        public EmotionsImageCreator CreateEmotionsImageCreator()
-        {
-            return factory.Components.Creator.EmotionsImageCreator()
-                .WithFacesBuilder(GetFacesBuilder())
                 .Build();
         }
 

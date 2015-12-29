@@ -7,7 +7,6 @@ namespace IntelRealSenseStart.Code.RealSense.Data.Event
         private readonly Dictionary<FaceLandmark, DetectionPoint> detectionPoints;
 
         private float heartRate;
-        private EmotionsData emotionsData;
 
         private int faceId;
         private int? recognizedId;
@@ -15,7 +14,6 @@ namespace IntelRealSenseStart.Code.RealSense.Data.Event
         private FaceData()
         {
             detectionPoints = new Dictionary<FaceLandmark, DetectionPoint>();
-            emotionsData = null;
         }
 
         protected Dictionary<FaceLandmark, DetectionPoint> DetectionPoints
@@ -31,11 +29,6 @@ namespace IntelRealSenseStart.Code.RealSense.Data.Event
         public float HeartRate
         {
             get { return heartRate; }
-        }
-
-        public EmotionsData Emotions
-        {
-            get { return emotionsData; }
         }
 
         public int FaceId
@@ -81,12 +74,6 @@ namespace IntelRealSenseStart.Code.RealSense.Data.Event
             public Builder WithRecognizedId(int? recognizedId)
             {
                 faceData.recognizedId = recognizedId;
-                return this;
-            }
-
-            public Builder WithEmotionsData(EmotionsData.Builder emotionsData)
-            {
-                faceData.emotionsData = emotionsData.Build();
                 return this;
             }
 
